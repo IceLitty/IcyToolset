@@ -1,0 +1,111 @@
+<idea-plugin>
+  <id>com.gmail.litalways.toolset</id>
+  <name>Icy Toolset</name>
+  <version>1.2</version>
+  <vendor email="litalways@gmail.com">Icyr</vendor>
+
+  <description><![CDATA[
+      <div>IDEA Toolset plugin for own use.</div>
+      <hr/>
+      <div>TODO LIST:</div>
+      <ul>
+        <li>UI Problem</li>
+      </ul>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      <b>1.2</b>
+      <ul>
+        <li>调整部分UI大小。</li>
+        <li>将可关联的水平、垂直滚动条进行滚动事件关联。</li>
+      </ul>
+      <hr/>
+      <b>1.1</b>
+      <ul>
+        <li>修复转换-文件中使用文本框解码为文件功能发生堆栈溢出的问题。</li>
+        <li>调整全部的保存为文件功能对话框初始目录，设计为上次保存的路径或导入文件操作的路径。</li>
+      </ul>
+      <hr/>
+      <b>1.0 Release</b>
+      <ul>
+        <li>
+          <b>转换-通用功能：</b>
+          <ul>
+            <li>支持Base64转换、2/8/10/16进制运算显示、XML/HTML特殊字符转换、Unicode转换、</li>
+            <li>Uri参数特殊字符转换、Json特殊字符转换、时间/Unix时间戳猜测/运算显示。</li>
+          </ul>
+        </li>
+        <li>
+          <b>转换-文件功能：</b>
+          <ul>
+            <li>支持导入导出通过BASE64编/解码的任何文件。</li>
+          </ul>
+        </li>
+        <li>
+          <b>加解密-摘要计算功能：</b>
+          <ul>
+            <li>支持常见摘要算法及文件导入、批量计算、比对计算结果、批量比对的功能。</li>
+          </ul>
+        </li>
+        <li>
+          <b>加解密-非对称/对称加密功能：</b>
+          <ul>
+            <li>支持常见非对称/对称加密算法文本计算。</li>
+          </ul>
+        </li>
+        <li>
+          <b>条码转换器功能：</b>
+          <ul>
+            <li>支持QR码/条形码/DataMatrix的文本-二维码图片互相转换。</li>
+          </ul>
+        </li>
+        <li>
+          <b>格式化文档功能：</b>
+          <ul>
+            <li>支持Json/XML的美化格式化。</li>
+          </ul>
+        </li>
+        <li>
+          <b>脚本环境功能：</b>
+          <ul>
+            <li>支持JavaScript脚本运行环境。</li>
+          </ul>
+        </li>
+        <li>
+          <b>标志功能：</b>
+          <ul>
+            <li>纯文本展现大多数的符号标志供复制使用。</li>
+          </ul>
+        </li>
+        <li>
+          <b>其他：</b>
+          <ul>
+            <li>其他功能如显示当前编辑器的JVM系统编码。</li>
+          </ul>
+        </li>
+      </ul>
+    ]]>
+  </change-notes>
+
+  <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
+  <idea-version since-build="203"/>
+
+  <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
+  <depends>com.intellij.modules.java</depends>
+  <depends>com.intellij.java</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <toolWindow id="Icy Toolset" anchor="bottom" icon="AllIcons.General.ExternalTools"
+                factoryClass="com.gmail.litalways.toolset.gui.MainFormFactory" />
+    <notificationGroup displayType="TOOL_WINDOW" id="com.gmail.litalways.toolset" />
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>
