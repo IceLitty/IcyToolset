@@ -44,7 +44,8 @@ test {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = '2020.3'
+//    version = '2020.3'
+    version = '203.5981.155'
     updateSinceUntilBuild = false
     plugins = [
             'com.intellij.java'
@@ -52,19 +53,19 @@ intellij {
 }
 
 ext {
-    lombokVersion = '1.18.22'
-    junitJupiterVersion = '5.8.2'
+    lombokVersion = '1.18.24'
+    junitJupiterVersion = '5.9.0'
 }
 
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-text
     implementation 'org.apache.commons:commons-text:1.9'
     // https://mvnrepository.com/artifact/cn.hutool/hutool-all
-    implementation 'cn.hutool:hutool-all:5.7.20'
+    implementation 'cn.hutool:hutool-all:5.8.7'
     // https://mvnrepository.com/artifact/com.google.zxing/core
-    implementation 'com.google.zxing:core:3.4.1'
+    implementation 'com.google.zxing:core:3.5.0'
     // https://mvnrepository.com/artifact/com.google.zxing/javase
-    implementation 'com.google.zxing:javase:3.4.1'
+    implementation 'com.google.zxing:javase:3.5.0'
     // 解决 gradle 使用 lombok 的问题
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
