@@ -43,6 +43,9 @@ public class MainFormAboutFunction {
     private void selectGenerateHashPath(ActionEvent e) {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, true, true, true, false, true);
         this.generateHashToSelect = FileChooser.chooseFile(descriptor, null, this.generateHashToSelect);
+        if (this.generateHashToSelect != null) {
+            this.mainForm.fileAboutGenHashPath.setText(this.generateHashToSelect.getPath());
+        }
     }
 
     private void autoWriteGenerateHashSuffix(ActionEvent e) {
@@ -56,20 +59,19 @@ public class MainFormAboutFunction {
 
     private void generateHash(ActionEvent event) {
         // valid
-        File target = new File("C:\\Users\\IceRain\\.m22\\moe\\icyr\\filesystem-spring-boot-api\\1.1\\filesystem-spring-boot-api-1.1.jar");
-//        if (this.generateHashToSelect == null) {
-//            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-//                    .createNotification("Generate hash", null, "Not select file(s).", NotificationType.ERROR)
-//                    .notify(null);
-//            return;
-//        }
-//        File target = new File(this.generateHashToSelect.getPath());
-//        if (!target.exists() || !target.canRead()) {
-//            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-//                    .createNotification("Generate hash", null, "Select file(s) can't exist or doesn't be read.", NotificationType.ERROR)
-//                    .notify(null);
-//            return;
-//        }
+        if (this.generateHashToSelect == null) {
+            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
+                    .createNotification("Generate hash", null, "Not select file(s).", NotificationType.ERROR)
+                    .notify(null);
+            return;
+        }
+        File target = new File(this.generateHashToSelect.getPath());
+        if (!target.exists() || !target.canRead()) {
+            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
+                    .createNotification("Generate hash", null, "Select file(s) can't exist or doesn't be read.", NotificationType.ERROR)
+                    .notify(null);
+            return;
+        }
         if (this.mainForm.selectAboutGenHashType.getSelectedIndex() == -1) {
             NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
                     .createNotification("Generate hash", null, "Not select hash type.", NotificationType.ERROR)
@@ -123,11 +125,11 @@ public class MainFormAboutFunction {
             boolean isDependence = f.getName().endsWith(".jar") && !(f.getName().endsWith("javadoc.jar") || f.getName().endsWith("sources.jar") || f.getName().endsWith("src.jar"));
             if (genPom && isDependence) {
                 String pomStr = null;
-                String jarName = target.getName();
+                String jarName = f.getName();
                 String artifactId = null;
                 String groupId = null;
                 Map<String, String> pom = new HashMap<>();
-                try (ZipInputStream zip = new ZipInputStream(new FileInputStream(target))) {
+                try (ZipInputStream zip = new ZipInputStream(new FileInputStream(f))) {
                     ZipEntry entry;
                     while ((entry = zip.getNextEntry()) != null) {
                         String name = entry.getName();
@@ -207,14 +209,7 @@ public class MainFormAboutFunction {
     }
 
     private static void hashFileAndWriteHashFile(File src, String hashType, String fileSuffixWithDot) {
-        String targetFilename;
-        if (src.getName().contains(".")) {
-            int i = src.getName().lastIndexOf(".");
-            targetFilename = src.getName().substring(0, i) + fileSuffixWithDot;
-        } else {
-            targetFilename = src.getName() + fileSuffixWithDot;
-        }
-        File target = new File(src.getPath().substring(0, src.getPath().length() - src.getName().length()), targetFilename);
+        File target = new File(src.getPath().substring(0, src.getPath().length() - src.getName().length()), src.getName() + fileSuffixWithDot);
         try (FileWriter fw = new FileWriter(target, StandardCharsets.UTF_8)) {
             Digester digester = DigestUtil.digester(hashType);
             String resultHex = digester.digestHex(src);
