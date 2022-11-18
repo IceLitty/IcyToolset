@@ -18,6 +18,7 @@ import lombok.Data;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -36,6 +37,7 @@ public class MainFormEncryptHashFunction {
     public MainFormEncryptHashFunction(MainForm mainForm) {
         this.mainForm = mainForm;
         this.mainForm.buttonEncryptHashGenerateKey.addActionListener(this::generateHMacKey);
+        this.mainForm.buttonEncryptHashClean.addActionListener(e -> this.clean());
         this.mainForm.fileEncryptHashFile.addActionListener(e -> {
             FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, true, true, false, true);
             this.toSelects = FileChooser.chooseFiles(descriptor, null, this.toSelects.length == 0 ? null : this.toSelects[this.toSelects.length - 1]);
@@ -92,6 +94,11 @@ public class MainFormEncryptHashFunction {
         this.mainForm.scrollEncryptHashText.getHorizontalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptHashResult.getVerticalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptHashResult.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+    }
+
+    private void clean() {
+        this.mainForm.textareaEncryptHashText.setText("");
+        this.mainForm.textareaEncryptHashResult.setText("");
     }
 
     private DigestAssert getAssertStr(VirtualFile source) {
@@ -187,13 +194,12 @@ public class MainFormEncryptHashFunction {
             }
         }
         if (0 == sourceType) {
+            // hash file
             this.mainForm.textareaEncryptHashResult.setText("");
             for (VirtualFile file : this.toSelects) {
-                String source;
-                try (InputStream fileIs = file.getInputStream()) {
-                    source = new String(fileIs.readAllBytes(), getCharset());
+                try {
                     DigestAssert assertStr = this.getAssertStr(file);
-                    DigestAssertResult eachResult = this.hash(type, key, source, assertStr);
+                    DigestAssertResult eachResult = this.hash(type, key, file.getPath(), true, assertStr);
                     this.mainForm.textareaEncryptHashResult.append("Name: " + file.getPresentableUrl());
                     this.mainForm.textareaEncryptHashResult.append("\n");
                     String _type = type;
@@ -212,13 +218,14 @@ public class MainFormEncryptHashFunction {
                 }
             }
         } else if (1 == sourceType) {
+            // hash text
             if (this.mainForm.checkEncryptHashLine.isSelected()) {
                 String source = this.mainForm.textareaEncryptHashText.getText();
                 String[] split = source.replace("\r", "").split("\n");
                 this.mainForm.textareaEncryptHashResult.setText("");
                 for (String line : split) {
                     try {
-                        DigestAssertResult eachResult = this.hash(type, key, line, this.getAssertStr(null));
+                        DigestAssertResult eachResult = this.hash(type, key, line, false, this.getAssertStr(null));
                         this.mainForm.textareaEncryptHashResult.append((eachResult.getIsMatch() == null ? "" : (eachResult.getIsMatch() ? "[MATCH] " : "[NOT MATCH] ")) + eachResult.getResult());
                         this.mainForm.textareaEncryptHashResult.append("\n");
                     } catch (Exception ex) {
@@ -230,7 +237,7 @@ public class MainFormEncryptHashFunction {
             } else {
                 String source = this.mainForm.textareaEncryptHashText.getText();
                 try {
-                    DigestAssertResult eachResult = this.hash(type, key, source, this.getAssertStr(null));
+                    DigestAssertResult eachResult = this.hash(type, key, source, false, this.getAssertStr(null));
                     this.mainForm.textareaEncryptHashResult.setText((eachResult.getIsMatch() == null ? "" : (eachResult.getIsMatch() ? "[MATCH] " : "[NOT MATCH] ")) + eachResult.getResult());
                 } catch (Exception ex) {
                     NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
@@ -273,7 +280,7 @@ public class MainFormEncryptHashFunction {
         return charset;
     }
 
-    private DigestAssertResult hash(String type, byte[] key, String source, DigestAssert assertStr) throws UnsupportedEncodingException {
+    private DigestAssertResult hash(String type, byte[] key, String source, boolean sourceIsFile, DigestAssert assertStr) throws UnsupportedEncodingException {
         if (assertStr != null && assertStr.getForceDigest() != null) {
             type = assertStr.getForceDigest();
         }
@@ -284,10 +291,10 @@ public class MainFormEncryptHashFunction {
         String resultHex;
         if (type.toUpperCase().startsWith("HMAC")) {
             HMac digester = new HMac(type, key);
-            resultHex = digester.digestHex(source);
+            resultHex = sourceIsFile ? digester.digestHex(new File(source)) : digester.digestHex(source);
         } else {
             Digester digester = DigestUtil.digester(type);
-            resultHex = digester.digestHex(source);
+            resultHex = sourceIsFile ? digester.digestHex(new File(source)) : digester.digestHex(source);
         }
         if ("Base64".equalsIgnoreCase(outputType)) {
             resultHex = new String(Base64.getEncoder().encode(HexUtil.decodeHex(resultHex)), getCharset());

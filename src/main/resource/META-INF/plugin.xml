@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.3</version>
+  <version>1.4</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,16 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      <b>1.4</b>
+      <ul>
+        <li>升级依赖版本。</li>
+        <li>修复哈希计算中导入文件计算错误的问题。</li>
+        <li>为通用转换功能和三个加解密功能加入一键清空按钮。</li>
+        <li>添加大文本分割工具。</li>
+        <li>格式化JSON/XML支持平铺模式。</li>
+        <li>批量哈希文件计算/生成工具（支持自动生成POM文件，用于导入jar包生成.m2仓库）。</li>
+      </ul>
+      <hr/>
       <b>1.3</b>
       <ul>
         <li>调整文本域UI设置。</li>
@@ -93,7 +103,7 @@
   </change-notes>
 
   <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
-  <idea-version since-build="203"/>
+  <idea-version since-build="203.5981.155"/>
 
   <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
        on how to target different products -->

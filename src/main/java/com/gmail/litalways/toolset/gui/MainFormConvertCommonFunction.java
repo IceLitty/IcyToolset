@@ -35,8 +35,17 @@ public class MainFormConvertCommonFunction {
 
     public MainFormConvertCommonFunction(MainForm mainForm) {
         this.mainForm = mainForm;
-        this.mainForm.buttonConvertCommonEncode.addActionListener(e -> this.encode());
-        this.mainForm.buttonConvertCommonDecode.addActionListener(e -> this.decode());
+        this.mainForm.buttonConvertCommonEncode.addActionListener(e -> {
+            flagCanDecode.set(false);
+            this.encode();
+            flagCanDecode.set(true);
+        });
+        this.mainForm.buttonConvertCommonDecode.addActionListener(e -> {
+            flagCanEncode.set(false);
+            this.decode();
+            flagCanEncode.set(true);
+        });
+        this.mainForm.buttonConvertCommonClean.addActionListener(e -> this.clean());
         this.mainForm.textareaConvertCommonDecoded.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -140,6 +149,15 @@ public class MainFormConvertCommonFunction {
         if (this.mainForm.checkConvertCommonAuto.isSelected()) {
             encode();
         }
+    }
+
+    private void clean() {
+        flagCanEncode.set(false);
+        flagCanDecode.set(false);
+        this.mainForm.textareaConvertCommonEncoded.setText("");
+        this.mainForm.textareaConvertCommonDecoded.setText("");
+        flagCanEncode.set(true);
+        flagCanDecode.set(true);
     }
 
     private void encode() {

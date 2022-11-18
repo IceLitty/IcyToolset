@@ -4,6 +4,8 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.wm.ToolWindow;
 
 import javax.swing.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.text.NumberFormat;
 
 /**
@@ -33,18 +35,28 @@ public class MainForm {
     JCheckBox checkConvertCommonAuto;
     JScrollPane scrollConvertCommonDecoded;
     JScrollPane scrollConvertCommonEncoded;
+    JButton buttonConvertCommonClean;
     // 转换 - 文件
     JTextArea textareaConvertImgBase64;
     TextFieldWithBrowseButton fileConvertImgBase64Path;
     JComboBox<String> selectConvertImgBase64Charset;
     JButton buttonConvertImgBase64Decode;
     JButton buttonConvertImgBase64Encode;
+    // 转换 - 大文本分割
+    JTextArea textAreaConvertSpliterOutput;
+    TextFieldWithBrowseButton fileConvertSpliterPath;
+    JFormattedTextField textConvertSpliterCacheSize;
+    JCheckBox checkConvertSpliterLineFlag;
+    JFormattedTextField textConvertSpliterCount;
+    JFormattedTextField textConvertSpliterSize;
+    JButton buttonConvertSpliterRun;
     // 加解密
     JTabbedPane tabEncrypt;
     // 加解密 - 摘要计算
     TextFieldWithBrowseButton fileEncryptHashFile;
     JButton buttonEncryptHashFile;
     JButton buttonEncryptHashText;
+    JButton buttonEncryptHashClean;
     JTextArea textareaEncryptHashText;
     JTextArea textareaEncryptHashResult;
     JComboBox<String> selectEncryptHashEncoding;
@@ -69,6 +81,7 @@ public class MainForm {
     JButton buttonEncryptAsymmetricEncryptWithPrivateKey;
     JButton buttonEncryptAsymmetricDecryptWithPublicKey;
     JButton buttonEncryptAsymmetricGenerateKey;
+    JButton buttonEncryptAsymmetricClean;
     JComboBox<String> selectEncryptAsymmetricEncoding;
     JComboBox<String> selectEncryptAsymmetricType;
     JScrollPane scrollEncryptAsymmetricDecrypted;
@@ -83,6 +96,7 @@ public class MainForm {
     JComboBox<String> selectEncryptSymmetricEncoding;
     JButton buttonEncryptSymmetricEncrypt;
     JButton buttonEncryptSymmetricDecrypt;
+    JButton buttonEncryptSymmetricClean;
     JTextArea textareaEncryptSymmetricDecrypted;
     JTextArea textareaEncryptSymmetricEncrypted;
     JScrollPane scrollEncryptSymmetricDecrypted;
@@ -94,13 +108,15 @@ public class MainForm {
     JTextArea textareaZxingText;
     TextFieldWithBrowseButton fileZxingFromFile;
     JButton buttonZxingToFile;
+    JButton buttonZxingClean;
     JFormattedTextField textZxingWidth;
     JFormattedTextField textZxingHeight;
     JComboBox<String> selectZxingEncoding;
     JComboBox<String> selectZxingErrorCorrection;
     // 格式化
     JTextArea textareaFormat;
-    JButton buttonFormat;
+    JButton buttonFormatDo;
+    JButton buttonFormatUndo;
     // 脚本
     JTextArea textareaScriptSource;
     JTextArea textareaScriptResult;
@@ -110,6 +126,14 @@ public class MainForm {
     JTextArea textareaSymbol;
     // 其他
     JButton buttonAboutEncoding;
+    JButton buttonAboutGC;
+    JButton buttonAboutGenHashRun;
+    TextFieldWithBrowseButton fileAboutGenHashPath;
+    JComboBox<String> selectAboutGenHashType;
+    JTextField textAboutGenHashSuffix;
+    JCheckBox checkAboutGenHashPom;
+    JTextField textAboutGenHashPathFilter;
+    JTextField textAboutGenHashFileFilter;
 
     private final ToolWindow toolWindow;
 
@@ -122,6 +146,9 @@ public class MainForm {
     }
 
     private void createUIComponents() {
+        this.textConvertSpliterCacheSize = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        this.textConvertSpliterCount = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        this.textConvertSpliterSize = new JFormattedTextField(NumberFormat.getIntegerInstance());
         this.textZxingWidth = new JFormattedTextField(NumberFormat.getIntegerInstance());
         this.textZxingHeight = new JFormattedTextField(NumberFormat.getIntegerInstance());
     }

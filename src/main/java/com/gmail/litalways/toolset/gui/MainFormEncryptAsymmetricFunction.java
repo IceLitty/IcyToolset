@@ -34,6 +34,7 @@ public class MainFormEncryptAsymmetricFunction {
         this.mainForm.fileEncryptAsymmetricPublicKey.addActionListener(this::selectPublicKey);
         this.mainForm.fileEncryptAsymmetricPrivateKey.addActionListener(this::selectPrivateKey);
         this.mainForm.buttonEncryptAsymmetricGenerateKey.addActionListener(this::generateKey);
+        this.mainForm.buttonEncryptAsymmetricClean.addActionListener(e -> this.clean());
         this.mainForm.buttonEncryptAsymmetricEncryptWithPublicKey.addActionListener(e -> {
             String result;
             try {
@@ -75,6 +76,11 @@ public class MainFormEncryptAsymmetricFunction {
         this.mainForm.scrollEncryptAsymmetricDecrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptAsymmetricEncrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptAsymmetricEncrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+    }
+
+    private void clean() {
+        this.mainForm.textareaEncryptAsymmetricEncrypted.setText("");
+        this.mainForm.textareaEncryptAsymmetricDecrypted.setText("");
     }
 
     private void selectPublicKey(ActionEvent e) {

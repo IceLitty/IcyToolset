@@ -27,11 +27,17 @@ public class MainFormEncryptSymmetricFunction {
         this.mainForm = mainForm;
         this.mainForm.buttonEncryptSymmetricEncrypt.addActionListener(this::encrypt);
         this.mainForm.buttonEncryptSymmetricDecrypt.addActionListener(this::decrypt);
+        this.mainForm.buttonEncryptSymmetricClean.addActionListener(e -> this.clean());
         ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollEncryptSymmetricDecrypted, this.mainForm.scrollEncryptSymmetricEncrypted);
         this.mainForm.scrollEncryptSymmetricDecrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptSymmetricDecrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptSymmetricEncrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptSymmetricEncrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+    }
+
+    private void clean() {
+        this.mainForm.textareaEncryptSymmetricEncrypted.setText("");
+        this.mainForm.textareaEncryptSymmetricDecrypted.setText("");
     }
 
     private void encrypt(ActionEvent e) {

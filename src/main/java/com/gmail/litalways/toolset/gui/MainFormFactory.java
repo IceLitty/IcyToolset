@@ -22,6 +22,7 @@ public class MainFormFactory implements ToolWindowFactory {
         // 调用注册方法
         MainFormConvertCommonFunction convertCommon = new MainFormConvertCommonFunction(mainForm);
         MainFormConvertImgBase64Function convertImgBase64 = new MainFormConvertImgBase64Function(mainForm);
+        MainFormConvertSpliterFunction convertSpliter = new MainFormConvertSpliterFunction(mainForm);
         MainFormEncryptHashFunction encryptHash = new MainFormEncryptHashFunction(mainForm);
         MainFormEncryptAsymmetricFunction encryptAsymmetric = new MainFormEncryptAsymmetricFunction(mainForm);
         MainFormEncryptSymmetricFunction encryptSymmetric = new MainFormEncryptSymmetricFunction(mainForm);
