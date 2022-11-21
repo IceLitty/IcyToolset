@@ -31,6 +31,11 @@ public class MainFormConvertImgBase64Function {
         this.mainForm.selectConvertImgBase64Charset.addItemListener(e -> this.encodeToString());
         this.mainForm.buttonConvertImgBase64Encode.addActionListener(e -> this.encodeToFile(this.encodeToString()));
         this.mainForm.buttonConvertImgBase64Decode.addActionListener(this::decodeToFile);
+        this.mainForm.buttonConvertImgBase64Clean.addActionListener(e -> this.clean());
+    }
+
+    private void clean() {
+        this.mainForm.textareaConvertImgBase64.setText("");
     }
 
     private void encodeToString(ActionEvent e) {

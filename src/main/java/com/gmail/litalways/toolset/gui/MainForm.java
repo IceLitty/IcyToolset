@@ -4,8 +4,6 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.wm.ToolWindow;
 
 import javax.swing.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.text.NumberFormat;
 
 /**
@@ -42,6 +40,7 @@ public class MainForm {
     JComboBox<String> selectConvertImgBase64Charset;
     JButton buttonConvertImgBase64Decode;
     JButton buttonConvertImgBase64Encode;
+    JButton buttonConvertImgBase64Clean;
     // 转换 - 大文本分割
     JTextArea textAreaConvertSpliterOutput;
     TextFieldWithBrowseButton fileConvertSpliterPath;

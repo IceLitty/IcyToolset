@@ -99,6 +99,10 @@ public class MainFormEncryptHashFunction {
     private void clean() {
         this.mainForm.textareaEncryptHashText.setText("");
         this.mainForm.textareaEncryptHashResult.setText("");
+        this.mainForm.fileEncryptHashAsserts.setText("");
+        this.toSelectAssets = new VirtualFile[0];
+        this.mainForm.textareaEncryptHashText.setText("");
+        this.mainForm.textEncryptHashKey.setText("");
     }
 
     private DigestAssert getAssertStr(VirtualFile source) {
