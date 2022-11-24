@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
 import com.gmail.litalways.toolset.util.StrUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 
 import javax.swing.*;
@@ -25,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author IceRain
  * @since 2022/01/20
  */
-@Slf4j
 public class MainFormConvertCommonFunction {
 
     private final MainForm mainForm;

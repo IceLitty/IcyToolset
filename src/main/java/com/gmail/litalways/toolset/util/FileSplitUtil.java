@@ -1,7 +1,5 @@
 package com.gmail.litalways.toolset.util;
 
-import lombok.Data;
-
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,7 +10,6 @@ import java.util.function.Consumer;
  * @author IceRain
  * @since 2022/11/15
  */
-@Data
 public class FileSplitUtil {
 
     boolean splitByLineBreaker = true;
@@ -134,6 +131,46 @@ public class FileSplitUtil {
             return false;
         }
         return true;
+    }
+
+    public boolean isSplitByLineBreaker() {
+        return splitByLineBreaker;
+    }
+
+    public FileSplitUtil setSplitByLineBreaker(boolean splitByLineBreaker) {
+        this.splitByLineBreaker = splitByLineBreaker;
+        return this;
+    }
+
+    public long getSplitLength() {
+        return splitLength;
+    }
+
+    public FileSplitUtil setSplitLength(long splitLength) {
+        this.splitLength = splitLength;
+        return this;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public FileSplitUtil setFile(File file) {
+        this.file = file;
+        return this;
+    }
+
+    public Integer getReadCacheSize() {
+        return readCacheSize;
+    }
+
+    public FileSplitUtil setReadCacheSize(Integer readCacheSize) {
+        this.readCacheSize = readCacheSize;
+        return this;
+    }
+
+    public List<Long> getReadBytes() {
+        return readBytes;
     }
 
 }

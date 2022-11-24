@@ -1,5 +1,6 @@
 package com.gmail.litalways.toolset.gui;
 
+import com.gmail.litalways.toolset.filter.FileSizeTextFormat;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.wm.ToolWindow;
 
@@ -147,7 +148,7 @@ public class MainForm {
     private void createUIComponents() {
         this.textConvertSpliterCacheSize = new JFormattedTextField(NumberFormat.getIntegerInstance());
         this.textConvertSpliterCount = new JFormattedTextField(NumberFormat.getIntegerInstance());
-        this.textConvertSpliterSize = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        this.textConvertSpliterSize = new JFormattedTextField(FileSizeTextFormat.getInstance());
         this.textZxingWidth = new JFormattedTextField(NumberFormat.getIntegerInstance());
         this.textZxingHeight = new JFormattedTextField(NumberFormat.getIntegerInstance());
     }

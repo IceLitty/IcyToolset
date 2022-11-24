@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.4</version>
+  <version>1.5</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,10 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      <b>1.5</b>
+      <ul>
+        <li>大文本分割工具控件屏蔽字符修复。</li>
+      </ul>
       <b>1.4</b>
       <ul>
         <li>升级依赖版本。</li>

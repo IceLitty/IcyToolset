@@ -7,7 +7,6 @@ import com.intellij.notification.NotificationType;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.vfs.VirtualFile;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +18,6 @@ import java.util.Base64;
  * @author IceRain
  * @since 2022/01/20
  */
-@Slf4j
 public class MainFormConvertImgBase64Function {
 
     private final MainForm mainForm;
