@@ -92,8 +92,8 @@ public class MainFormZxingFunction {
                     .notify(null);
             return;
         }
-        Integer width = (Integer) this.mainForm.textZxingWidth.getValue();
-        Integer height = (Integer) this.mainForm.textZxingHeight.getValue();
+        Integer width = this.mainForm.textZxingWidth.getValue() == null ? null : Integer.parseInt(String.valueOf(this.mainForm.textZxingWidth.getValue()));
+        Integer height = this.mainForm.textZxingHeight.getValue() == null ? null : Integer.parseInt(String.valueOf(this.mainForm.textZxingHeight.getValue()));
         if (width == null || height == null) {
             NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
                     .createNotification("Image width or height can not be null!", null, null, NotificationType.ERROR)

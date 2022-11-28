@@ -52,7 +52,7 @@ public class MainFormConvertSpliterFunction {
     }
 
     private boolean check(FileSplitUtil fileSplitUtil) {
-        String cacheSize = this.mainForm.textConvertSpliterCacheSize.getText();
+        String cacheSize = String.valueOf(this.mainForm.textConvertSpliterCacheSize.getValue());
         if (Pattern.compile("^\\d+$").matcher(cacheSize).matches()) {
             if (cacheSize.length() >= 19) {
                 NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
@@ -76,7 +76,7 @@ public class MainFormConvertSpliterFunction {
         }
         //
         int splitCount = 1;
-        String countText = this.mainForm.textConvertSpliterCount.getText();
+        String countText = this.mainForm.textConvertSpliterCount.getValue() == null ? null : String.valueOf(this.mainForm.textConvertSpliterCount.getValue());
         if (countText != null && countText.trim().length() > 0) {
             if (Pattern.compile("^\\d+$").matcher(countText).matches()) {
                 splitCount = Integer.parseInt(countText);
@@ -94,7 +94,7 @@ public class MainFormConvertSpliterFunction {
             }
         }
         //
-        String splitLength = this.mainForm.textConvertSpliterSize.getText();
+        String splitLength = this.mainForm.textConvertSpliterSize.getValue() == null ? null : String.valueOf(this.mainForm.textConvertSpliterSize.getValue());
         if (splitLength != null && splitLength.trim().length() > 0) {
             if (Pattern.compile("^\\d+[gGmMkK]$").matcher(splitLength).matches()) {
                 String number = splitLength.substring(0, splitLength.length() - 1);
