@@ -24,7 +24,7 @@ public class MainFormConvertSpliterFunction {
 
     public MainFormConvertSpliterFunction(MainForm mainForm) {
         this.mainForm = mainForm;
-        this.mainForm.textConvertSpliterCacheSize.setText("1024");
+        this.mainForm.textConvertSpliterCacheSize.setValue(1024);
         this.mainForm.fileConvertSpliterPath.addActionListener(this::loadFile);
         this.mainForm.buttonConvertSpliterRun.addActionListener(e -> {
             Thread thread = new Thread(() -> {
