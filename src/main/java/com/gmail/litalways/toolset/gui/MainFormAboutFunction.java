@@ -2,7 +2,6 @@ package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.crypto.digest.Digester;
-import cn.hutool.crypto.digest.HMac;
 import com.gmail.litalways.toolset.enums.KeyEnum;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
@@ -38,6 +37,7 @@ public class MainFormAboutFunction {
         this.mainForm.selectAboutGenHashType.setSelectedItem("SHA-1");
         this.mainForm.textAboutGenHashPathFilter.setText(".*");
         this.mainForm.textAboutGenHashFileFilter.setText(".*");
+        this.mainForm.buttonAboutGC.addActionListener(this::forceGC);
     }
 
     private void selectGenerateHashPath(ActionEvent e) {
@@ -219,6 +219,10 @@ public class MainFormAboutFunction {
                     .createNotification("Generate hash", null, "File: " + src.getName() + " write hash file error: " + e.getClass().getSimpleName() + ": " + e.getLocalizedMessage(), NotificationType.ERROR)
                     .notify(null);
         }
+    }
+
+    private void forceGC(ActionEvent event) {
+        System.gc();
     }
 
 }
