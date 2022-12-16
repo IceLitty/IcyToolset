@@ -1,11 +1,21 @@
 package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.script.ScriptUtil;
+import com.gmail.litalways.toolset.enums.KeyEnum;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
-import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.notification.NotificationGroupManager;
+import com.intellij.notification.NotificationType;
+import org.luaj.vm2.script.LuaScriptEngineFactory;
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import org.python.jsr223.PyScriptEngineFactory;
 
+import javax.script.ScriptEngineManager;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.event.ActionEvent;
+import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author IceRain
@@ -14,31 +24,89 @@ import javax.swing.event.DocumentListener;
 public class MainFormScriptFunction {
 
     private final MainForm mainForm;
+    private final AtomicBoolean injectedNashorn = new AtomicBoolean(false);
 
     public MainFormScriptFunction(MainForm mainForm) {
         this.mainForm = mainForm;
         this.mainForm.textareaScriptSource.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                eval();
+                if (mainForm.checkScriptAutoRun.isSelected()) {
+                    eval();
+                }
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-                eval();
+                if (mainForm.checkScriptAutoRun.isSelected()) {
+                    eval();
+                }
             }
             @Override
             public void changedUpdate(DocumentEvent e) {}
         });
+        this.mainForm.radioScriptJavascript.addActionListener(this::radioChanged);
+        this.mainForm.radioScriptPython.addActionListener(this::radioChanged);
+        this.mainForm.radioScriptLua.addActionListener(this::radioChanged);
+        this.mainForm.radioScriptGroovy.addActionListener(this::radioChanged);
         ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollScriptSource, this.mainForm.scrollScriptResult);
         this.mainForm.scrollScriptSource.getVerticalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollScriptSource.getHorizontalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollScriptResult.getVerticalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollScriptResult.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        injectNashorn();
+    }
+
+    private void radioChanged(ActionEvent e) {
+        if (((JRadioButton) e.getSource()).isSelected()) {
+            if (this.mainForm.checkScriptAutoRun.isSelected()) {
+                eval();
+            }
+        }
+    }
+
+    private void injectNashorn() {
+        if (injectedNashorn.compareAndSet(false, true)) {
+            try {
+                Field[] declaredFields = ScriptUtil.class.getDeclaredFields();
+                ScriptEngineManager manager = null;
+                for (Field f : declaredFields) {
+                    if (f.getType() == ScriptEngineManager.class) {
+                        f.setAccessible(true);
+                        manager = (ScriptEngineManager) f.get(null);
+                    }
+                }
+                if (manager != null) {
+                    NashornScriptEngineFactory nashornScriptEngineFactory = new NashornScriptEngineFactory();
+                    manager.registerEngineName("js", nashornScriptEngineFactory);
+                    LuaScriptEngineFactory luaScriptEngineFactory = new LuaScriptEngineFactory();
+                    manager.registerEngineName("lua", luaScriptEngineFactory);
+                    PyScriptEngineFactory pyScriptEngineFactory = new PyScriptEngineFactory();
+                    manager.registerEngineName("python", pyScriptEngineFactory);
+                }
+            } catch (Exception e) {
+                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
+                        .createNotification("Nashorn Script Engine inject failed", null, e.getClass().getSimpleName() + ": " + e.getLocalizedMessage(), NotificationType.WARNING)
+                        .notify(null);
+            }
+        }
     }
 
     private void eval() {
         try {
-            this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.eval(this.mainForm.textareaScriptSource.getText())));
+            String script = this.mainForm.textareaScriptSource.getText();
+            if (this.mainForm.radioScriptJavascript.isSelected()) {
+                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getJsEngine().eval(script)));
+            } else if (this.mainForm.radioScriptLua.isSelected()) {
+                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getLuaEngine().eval(script)));
+            } else if (this.mainForm.radioScriptGroovy.isSelected()) {
+                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getGroovyEngine().eval(script)));
+            } else if (this.mainForm.radioScriptPython.isSelected()) {
+                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getPythonEngine().eval(script)));
+            } else {
+                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
+                        .createNotification("Not selected type", null, null, NotificationType.WARNING)
+                        .notify(null);
+            }
         } catch (Exception ex) {
             this.mainForm.textareaScriptResult.setText(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
         }

@@ -122,6 +122,11 @@ public class MainForm {
     JTextArea textareaScriptResult;
     JScrollPane scrollScriptSource;
     JScrollPane scrollScriptResult;
+    JCheckBox checkScriptAutoRun;
+    JRadioButton radioScriptJavascript;
+    JRadioButton radioScriptPython;
+    JRadioButton radioScriptLua;
+    JRadioButton radioScriptGroovy;
     // 标志
     JTextArea textareaSymbol;
     // 其他

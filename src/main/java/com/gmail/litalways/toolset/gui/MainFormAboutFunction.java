@@ -129,7 +129,8 @@ public class MainFormAboutFunction {
                 String artifactId = null;
                 String groupId = null;
                 Map<String, String> pom = new HashMap<>();
-                try (ZipInputStream zip = new ZipInputStream(new FileInputStream(f))) {
+                try (FileInputStream fis = new FileInputStream(f);
+                     ZipInputStream zip = new ZipInputStream(fis)) {
                     ZipEntry entry;
                     while ((entry = zip.getNextEntry()) != null) {
                         String name = entry.getName();

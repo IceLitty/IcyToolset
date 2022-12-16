@@ -55,18 +55,27 @@ intellij {
 
 ext {
     lombokVersion = '1.18.24'
-    junitJupiterVersion = '5.9.0'
+    junitJupiterVersion = '5.9.1'
 }
 
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-text
     implementation 'org.apache.commons:commons-text:1.10.0'
     // https://mvnrepository.com/artifact/cn.hutool/hutool-all
-    implementation 'cn.hutool:hutool-all:5.8.9'
+    implementation 'cn.hutool:hutool-all:5.8.10'
     // https://mvnrepository.com/artifact/com.google.zxing/core
     implementation 'com.google.zxing:core:3.5.1'
     // https://mvnrepository.com/artifact/com.google.zxing/javase
     implementation 'com.google.zxing:javase:3.5.1'
+    // jdk15移除了nashorn引擎，从而不支持用java直接运行js
+    // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
+    implementation 'org.openjdk.nashorn:nashorn-core:15.4'
+    // https://mvnrepository.com/artifact/org.python/jython
+    implementation 'org.python:jython:2.7.3'
+    // https://mvnrepository.com/artifact/org.luaj/luaj-jse
+    implementation 'org.luaj:luaj-jse:3.0.1'
+    // https://mvnrepository.com/artifact/org.apache.groovy/groovy-all
+    implementation 'org.apache.groovy:groovy-all:4.0.6'
     // 解决 gradle 使用 lombok 的问题
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"

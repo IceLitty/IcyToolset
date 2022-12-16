@@ -9,11 +9,19 @@
       <hr/>
       <div>TODO LIST:</div>
       <ul>
-        <li>UI Problem</li>
+        <li>UI设计问题：在支持自动宽高的情况下需要保持左右排布的文本框不由内在文本改变其控件宽度。</li>
       </ul>
     ]]></description>
 
   <change-notes><![CDATA[
+      <b>1.6</b>
+      <ul>
+        <li>大文本分割工具控件屏蔽字符修复。</li>
+        <li>升级依赖版本。</li>
+        <li>支持四种ScriptEngine脚本执行（js/python/lua/groovy）并支持运行在JDK17下的IDEA运行该功能。</li>
+        <li>针对IDEA新UI改变了文本框的描边。</li>
+        <li>转换-文件功能支持选择文件夹（按住Ctrl点击UI控件）批量转换。</li>
+      </ul>
       <b>1.5</b>
       <ul>
         <li>大文本分割工具控件屏蔽字符修复。</li>
