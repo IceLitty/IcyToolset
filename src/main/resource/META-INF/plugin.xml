@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.5</version>
+  <version>1.6</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -22,10 +22,12 @@
         <li>针对IDEA新UI改变了文本框的描边。</li>
         <li>转换-文件功能支持选择文件夹（按住Ctrl点击UI控件）批量转换。</li>
       </ul>
+      <hr/>
       <b>1.5</b>
       <ul>
         <li>大文本分割工具控件屏蔽字符修复。</li>
       </ul>
+      <hr/>
       <b>1.4</b>
       <ul>
         <li>升级依赖版本。</li>
