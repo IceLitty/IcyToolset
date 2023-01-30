@@ -19,6 +19,7 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -149,6 +150,14 @@ public class MainFormZxingFunction {
     }
 
     private void decode() {
+        BarcodeFormat barcodeFormat = null;
+        if (this.mainForm.radioZxingQr.isSelected()) {
+            barcodeFormat = BarcodeFormat.QR_CODE;
+        } else if (this.mainForm.radioZxingBar.isSelected()) {
+            barcodeFormat = BarcodeFormat.CODE_128;
+        } else if (this.mainForm.radioZxingMatrix.isSelected()) {
+            barcodeFormat = BarcodeFormat.DATA_MATRIX;
+        }
         try (InputStream fileIs = this.toSelect.getInputStream()) {
             BufferedImage bufferedImage = ImageIO.read(fileIs);
             LuminanceSource luminanceSource = new BufferedImageLuminanceSource(bufferedImage);
@@ -156,6 +165,9 @@ public class MainFormZxingFunction {
             BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
             Map<DecodeHintType, Object> hints = new HashMap<>();
             hints.put(DecodeHintType.CHARACTER_SET, getCharset());
+            if (barcodeFormat != null) {
+                hints.put(DecodeHintType.POSSIBLE_FORMATS, Collections.singletonList(barcodeFormat));
+            }
             Result result = new MultiFormatReader().decode(binaryBitmap, hints);
             this.mainForm.textareaZxingText.setText(result.getText());
         } catch (Exception ex) {
