@@ -139,6 +139,7 @@ public class MainForm {
     JCheckBox checkAboutGenHashPom;
     JTextField textAboutGenHashPathFilter;
     JTextField textAboutGenHashFileFilter;
+    JTextField textEncryptSymmetricSalt;
 
     private final ToolWindow toolWindow;
 

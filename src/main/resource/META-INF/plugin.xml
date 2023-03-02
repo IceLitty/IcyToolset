@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.6</version>
+  <version>1.7</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -14,9 +14,10 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      <b></b>
+      <b>1.7</b>
       <ul>
         <li>修复条码解码功能未根据条码类型单选进行处理的问题。</li>
+        <li>非对称加解密功能中添加Jasypt默认加解密模式。</li>
       </ul>
       <hr/>
       <b>1.6</b>

@@ -11,11 +11,18 @@ import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEParameterSpec;
 import java.awt.event.ActionEvent;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 /**
+ * 非对称加解密
+ *
  * @author IceRain
  * @since 2022/01/26
  */
@@ -48,8 +55,9 @@ public class MainFormEncryptSymmetricFunction {
             int padding = this.mainForm.selectEncryptSymmetricPadding.getSelectedIndex();
             String key = this.mainForm.textEncryptSymmetricKey.getText();
             String iv = this.mainForm.textEncryptSymmetricIV.getText();
+            String salt = this.mainForm.textEncryptSymmetricSalt.getText();
             String outputType = (String) this.mainForm.selectEncryptSymmetricOutputType.getModel().getSelectedItem();
-            String dest = func(true, type, mode, padding, key, iv, source, outputType);
+            String dest = func(true, type, mode, padding, key, iv, salt, source, outputType);
             this.mainForm.textareaEncryptSymmetricEncrypted.setText(dest);
         } catch (Exception ex) {
             NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
@@ -66,8 +74,9 @@ public class MainFormEncryptSymmetricFunction {
             int padding = this.mainForm.selectEncryptSymmetricPadding.getSelectedIndex();
             String key = this.mainForm.textEncryptSymmetricKey.getText();
             String iv = this.mainForm.textEncryptSymmetricIV.getText();
+            String salt = this.mainForm.textEncryptSymmetricSalt.getText();
             String outputType = (String) this.mainForm.selectEncryptSymmetricOutputType.getModel().getSelectedItem();
-            String dest = func(false, type, mode, padding, key, iv, source, outputType);
+            String dest = func(false, type, mode, padding, key, iv, salt, source, outputType);
             this.mainForm.textareaEncryptSymmetricDecrypted.setText(dest);
         } catch (Exception ex) {
             NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
@@ -88,7 +97,7 @@ public class MainFormEncryptSymmetricFunction {
         return charset;
     }
 
-    private String func(boolean isEncrypt, String type, String modeStr, int paddingIndex, String keyStr, String ivStr, String sourceStr, String outputType) throws UnsupportedEncodingException {
+    private String func(boolean isEncrypt, String type, String modeStr, int paddingIndex, String keyStr, String ivStr, String saltStr, String sourceStr, String outputType) throws UnsupportedEncodingException {
         Mode mode;
         if ("CBC".equalsIgnoreCase(modeStr)) {
             mode = Mode.CBC;
@@ -138,29 +147,123 @@ public class MainFormEncryptSymmetricFunction {
         if (ivStr != null && ivStr.trim().length() > 0) {
             iv = ivStr.getBytes(getCharset());
         }
-        SymmetricCrypto crypto = new SymmetricCrypto(type + "/" + mode + "/" + padding, key);
-        if (iv != null) {
+        SymmetricCrypto crypto;
+        boolean pbe = false;
+        boolean jasypt = false;
+        if ("PBEWithMD5AndDES".equalsIgnoreCase(type)) {
+            pbe = true;
+            crypto = new SymmetricCrypto("PBEWithMD5AndDES", key);
+        } else if ("JasyptDefault".equalsIgnoreCase(type)) {
+            pbe = true;
+            jasypt = true;
+            crypto = new SymmetricCrypto("PBEWithMD5AndDES", key);
+        } else {
+            crypto = new SymmetricCrypto(type + "/" + mode + "/" + padding, key);
+        }
+        if (!pbe && iv != null) {
             crypto.setIv(iv);
         }
         if (isEncrypt) {
             byte[] source = sourceStr.getBytes(getCharset());
-            if ("BASE64".equalsIgnoreCase(outputType)) {
-                return crypto.encryptBase64(source);
-            } else if ("HEX".equalsIgnoreCase(outputType)) {
-                return crypto.encryptHex(source);
+            if (pbe) {
+                int keyObtentionIterations = 1000;
+                if (iv == null) {
+                    iv = new byte[0];
+                }
+                if (jasypt) {
+                    int saltSizeBytes = 8;
+                    SecureRandom random;
+                    try {
+                        random = SecureRandom.getInstance("SHA1PRNG");
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new IllegalArgumentException("SecureRandom缺失SHA1PRNG实例，无法使用Jasypt默认随机盐");
+                    }
+                    byte[] salt = new byte[saltSizeBytes];
+                    random.nextBytes(salt);
+                    PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, keyObtentionIterations, new IvParameterSpec(iv));
+                    crypto.setParams(parameterSpec);
+                    byte[] encrypt = crypto.encrypt(source);
+                    byte[] encryptedBytes = new byte[iv.length + encrypt.length];
+                    System.arraycopy(iv, 0, encryptedBytes, 0, iv.length);
+                    System.arraycopy(encrypt, 0, encryptedBytes, iv.length, encrypt.length);
+                    byte[] encryptedBytes2 = new byte[salt.length + encryptedBytes.length];
+                    System.arraycopy(salt, 0, encryptedBytes2, 0, salt.length);
+                    System.arraycopy(encryptedBytes, 0, encryptedBytes2, salt.length, encryptedBytes.length);
+                    if ("BASE64".equalsIgnoreCase(outputType)) {
+                        return new String(Base64.getEncoder().encode(encryptedBytes2), StandardCharsets.US_ASCII);
+                    } else if ("HEX".equalsIgnoreCase(outputType)) {
+                        return HexUtil.encodeHexStr(encryptedBytes2);
+                    } else {
+                        throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                    }
+                } else {
+                    byte[] salt = saltStr.getBytes();
+                    PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, keyObtentionIterations, new IvParameterSpec(iv));
+                    crypto.setParams(parameterSpec);
+                    if ("BASE64".equalsIgnoreCase(outputType)) {
+                        return crypto.encryptBase64(source);
+                    } else if ("HEX".equalsIgnoreCase(outputType)) {
+                        return crypto.encryptHex(source);
+                    } else {
+                        throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                    }
+                }
             } else {
-                throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                if ("BASE64".equalsIgnoreCase(outputType)) {
+                    return crypto.encryptBase64(source);
+                } else if ("HEX".equalsIgnoreCase(outputType)) {
+                    return crypto.encryptHex(source);
+                } else {
+                    throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                }
             }
         } else {
             byte[] decode;
-            if ("BASE64".equalsIgnoreCase(outputType)) {
-                decode = Base64.getDecoder().decode(sourceStr);
-            } else if ("HEX".equalsIgnoreCase(outputType)) {
-                decode = HexUtil.decodeHex(sourceStr);
+            if (jasypt) {
+                if ("BASE64".equalsIgnoreCase(outputType)) {
+                    decode = Base64.getDecoder().decode(sourceStr.getBytes(StandardCharsets.US_ASCII));
+                } else if ("HEX".equalsIgnoreCase(outputType)) {
+                    decode = HexUtil.decodeHex(sourceStr);
+                } else {
+                    throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                }
             } else {
-                throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                if ("BASE64".equalsIgnoreCase(outputType)) {
+                    decode = Base64.getDecoder().decode(sourceStr);
+                } else if ("HEX".equalsIgnoreCase(outputType)) {
+                    decode = HexUtil.decodeHex(sourceStr);
+                } else {
+                    throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                }
             }
-            return new String(crypto.decrypt(decode), getCharset());
+            if (pbe) {
+                int keyObtentionIterations = 1000;
+                if (iv == null) {
+                    iv = new byte[0];
+                }
+                if (jasypt) {
+                    int saltSizeBytes = 8;
+                    int saltSize = Math.min(saltSizeBytes, decode.length);
+                    int encMesKernelStart = Math.min(saltSizeBytes, decode.length);
+                    int ivSize = saltSizeBytes < decode.length ? decode.length - saltSizeBytes : 0;
+                    byte[] salt = new byte[saltSize];
+                    byte[] encryptedMessageKernel = new byte[ivSize];
+                    System.arraycopy(decode, 0, salt, 0, saltSize);
+                    System.arraycopy(decode, encMesKernelStart, encryptedMessageKernel, 0, ivSize);
+                    PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, keyObtentionIterations, new IvParameterSpec(iv));
+                    crypto.setParams(parameterSpec);
+                    byte[] decrypt = crypto.decrypt(encryptedMessageKernel);
+                    return new String(decrypt, getCharset());
+                } else {
+                    byte[] salt = saltStr.getBytes();
+                    PBEParameterSpec parameterSpec = new PBEParameterSpec(salt, keyObtentionIterations, new IvParameterSpec(iv));
+                    crypto.setParams(parameterSpec);
+                    byte[] decrypt = crypto.decrypt(decode);
+                    return new String(decrypt, getCharset());
+                }
+            } else {
+                return new String(crypto.decrypt(decode), getCharset());
+            }
         }
     }
 

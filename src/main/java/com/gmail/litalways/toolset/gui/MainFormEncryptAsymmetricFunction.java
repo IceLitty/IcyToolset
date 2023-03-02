@@ -20,6 +20,8 @@ import java.security.KeyPair;
 import java.util.Base64;
 
 /**
+ * 对称加解密
+ *
  * @author IceRain
  * @since 2022/01/26
  */
