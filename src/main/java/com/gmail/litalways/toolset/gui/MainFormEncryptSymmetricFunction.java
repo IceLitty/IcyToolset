@@ -3,13 +3,10 @@ package com.gmail.litalways.toolset.gui;
 import cn.hutool.core.util.HexUtil;
 import cn.hutool.crypto.Mode;
 import cn.hutool.crypto.Padding;
-import cn.hutool.crypto.symmetric.AES;
-import cn.hutool.crypto.symmetric.DES;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import com.gmail.litalways.toolset.enums.KeyEnum;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
+import com.gmail.litalways.toolset.util.MessageUtil;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEParameterSpec;
@@ -28,7 +25,7 @@ import java.util.Base64;
  */
 public class MainFormEncryptSymmetricFunction {
 
-    private MainForm mainForm;
+    private final MainForm mainForm;
 
     public MainFormEncryptSymmetricFunction(MainForm mainForm) {
         this.mainForm = mainForm;
@@ -60,9 +57,7 @@ public class MainFormEncryptSymmetricFunction {
             String dest = func(true, type, mode, padding, key, iv, salt, source, outputType);
             this.mainForm.textareaEncryptSymmetricEncrypted.setText(dest);
         } catch (Exception ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 
@@ -79,9 +74,7 @@ public class MainFormEncryptSymmetricFunction {
             String dest = func(false, type, mode, padding, key, iv, salt, source, outputType);
             this.mainForm.textareaEncryptSymmetricDecrypted.setText(dest);
         } catch (Exception ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 
@@ -114,34 +107,20 @@ public class MainFormEncryptSymmetricFunction {
         } else if ("PCBC".equalsIgnoreCase(modeStr)) {
             mode = Mode.PCBC;
         } else {
-            throw new IllegalArgumentException("Mode " + modeStr + " not supported.");
+            throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.mode.not.support", modeStr));
         }
-        Padding padding;
-        switch (paddingIndex) {
-            case 0:
-                padding = Padding.NoPadding;
-                break;
-            case 1:
-                padding = Padding.ZeroPadding;
-                break;
-            case 2:
-                padding = Padding.ISO10126Padding;
-                break;
-            case 3:
-                padding = Padding.OAEPPadding;
-                break;
-            case 4:
-                padding = Padding.PKCS1Padding;
-                break;
-            case 5:
-                padding = Padding.PKCS5Padding;
-                break;
-            case 6:
-                padding = Padding.SSL3Padding;
-                break;
-            default:
-                throw new IllegalArgumentException("Padding " + this.mainForm.selectEncryptSymmetricPadding.getModel().getSelectedItem() + " not supported.");
-        }
+        Padding padding = switch (paddingIndex) {
+            case 0 -> Padding.NoPadding;
+            case 1 -> Padding.ZeroPadding;
+            case 2 -> Padding.ISO10126Padding;
+            case 3 -> Padding.OAEPPadding;
+            case 4 -> Padding.PKCS1Padding;
+            case 5 -> Padding.PKCS5Padding;
+            case 6 -> Padding.SSL3Padding;
+            default ->
+                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.padding.not.support",
+                            this.mainForm.selectEncryptSymmetricPadding.getModel().getSelectedItem()));
+        };
         byte[] key = keyStr.getBytes(getCharset());
         byte[] iv = null;
         if (ivStr != null && ivStr.trim().length() > 0) {
@@ -176,7 +155,7 @@ public class MainFormEncryptSymmetricFunction {
                     try {
                         random = SecureRandom.getInstance("SHA1PRNG");
                     } catch (NoSuchAlgorithmException e) {
-                        throw new IllegalArgumentException("SecureRandom缺失SHA1PRNG实例，无法使用Jasypt默认随机盐");
+                        throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.jasypt.secure.random.lose.sha1prng"));
                     }
                     byte[] salt = new byte[saltSizeBytes];
                     random.nextBytes(salt);
@@ -194,7 +173,7 @@ public class MainFormEncryptSymmetricFunction {
                     } else if ("HEX".equalsIgnoreCase(outputType)) {
                         return HexUtil.encodeHexStr(encryptedBytes2);
                     } else {
-                        throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                        throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
                     }
                 } else {
                     byte[] salt = saltStr.getBytes();
@@ -205,7 +184,7 @@ public class MainFormEncryptSymmetricFunction {
                     } else if ("HEX".equalsIgnoreCase(outputType)) {
                         return crypto.encryptHex(source);
                     } else {
-                        throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                        throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
                     }
                 }
             } else {
@@ -214,7 +193,7 @@ public class MainFormEncryptSymmetricFunction {
                 } else if ("HEX".equalsIgnoreCase(outputType)) {
                     return crypto.encryptHex(source);
                 } else {
-                    throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
                 }
             }
         } else {
@@ -225,7 +204,7 @@ public class MainFormEncryptSymmetricFunction {
                 } else if ("HEX".equalsIgnoreCase(outputType)) {
                     decode = HexUtil.decodeHex(sourceStr);
                 } else {
-                    throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
                 }
             } else {
                 if ("BASE64".equalsIgnoreCase(outputType)) {
@@ -233,7 +212,7 @@ public class MainFormEncryptSymmetricFunction {
                 } else if ("HEX".equalsIgnoreCase(outputType)) {
                     decode = HexUtil.decodeHex(sourceStr);
                 } else {
-                    throw new IllegalArgumentException("Output type " + outputType + " is not supported.");
+                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
                 }
             }
             if (pbe) {

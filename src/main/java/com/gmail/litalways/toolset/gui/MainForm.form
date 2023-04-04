@@ -331,12 +331,12 @@
                   <grid id="b3888" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <tabbedpane title-resource-bundle="formTitle" title-key="tab.convert.spliter.title"/>
+                      <tabbedpane title-resource-bundle="formTitle" title-key="tab.convert.splitter.title"/>
                     </constraints>
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <grid id="973b8" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="973b8" layout-manager="GridLayoutManager" row-count="1" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -344,7 +344,7 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="68985" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileConvertSpliterPath">
+                          <component id="68985" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileConvertSplitterPath">
                             <constraints>
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
@@ -355,51 +355,59 @@
                               <html.disable class="java.lang.Boolean" value="false"/>
                             </clientProperties>
                           </component>
-                          <component id="616cc" class="javax.swing.JFormattedTextField" binding="textConvertSpliterCacheSize" custom-create="true">
+                          <component id="616cc" class="javax.swing.JFormattedTextField" binding="textConvertSplitterCacheSize" custom-create="true">
                             <constraints>
                               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
                             <properties>
-                              <toolTipText resource-bundle="formTitle" key="text.convert.spliter.cachesize.tooltip"/>
+                              <toolTipText resource-bundle="formTitle" key="text.convert.splitter.cachesize.tooltip"/>
                             </properties>
                           </component>
-                          <component id="d5738" class="javax.swing.JFormattedTextField" binding="textConvertSpliterCount" custom-create="true">
+                          <component id="d5738" class="javax.swing.JFormattedTextField" binding="textConvertSplitterCount" custom-create="true">
                             <constraints>
                               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
                             <properties>
-                              <toolTipText resource-bundle="formTitle" key="text.convert.spliter.spiltcount.tooltip"/>
+                              <toolTipText resource-bundle="formTitle" key="text.convert.splitter.spiltcount.tooltip"/>
                             </properties>
                           </component>
-                          <component id="fd27e" class="javax.swing.JFormattedTextField" binding="textConvertSpliterSize" custom-create="true">
+                          <component id="fd27e" class="javax.swing.JFormattedTextField" binding="textConvertSplitterSize" custom-create="true">
                             <constraints>
                               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
                             <properties>
-                              <toolTipText resource-bundle="formTitle" key="text.convert.spliter.spiltsize.tooltip"/>
+                              <toolTipText resource-bundle="formTitle" key="text.convert.splitter.spiltsize.tooltip"/>
                             </properties>
                           </component>
-                          <component id="30c3c" class="javax.swing.JButton" binding="buttonConvertSpliterRun">
+                          <component id="30c3c" class="javax.swing.JButton" binding="buttonConvertSplitterRun">
                             <constraints>
                               <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <text resource-bundle="formTitle" key="button.convert.spliter.run.title"/>
+                              <text resource-bundle="formTitle" key="button.convert.splitter.run.title"/>
                             </properties>
                           </component>
-                          <component id="5d155" class="javax.swing.JCheckBox" binding="checkConvertSpliterLineFlag">
+                          <component id="5d155" class="javax.swing.JCheckBox" binding="checkConvertSplitterLineFlag">
                             <constraints>
                               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <selected value="true"/>
-                              <text resource-bundle="formTitle" key="check.convert.spliter.line.title"/>
+                              <text resource-bundle="formTitle" key="check.convert.splitter.line.title"/>
+                            </properties>
+                          </component>
+                          <component id="7c1e2" class="javax.swing.JButton" binding="buttonConvertSplitterClear">
+                            <constraints>
+                              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text resource-bundle="formTitle" key="button.convert.splitter.clean.title"/>
                             </properties>
                           </component>
                         </children>
@@ -411,11 +419,11 @@
                         <properties/>
                         <border type="empty"/>
                         <children>
-                          <component id="d221f" class="javax.swing.JTextArea" binding="textAreaConvertSpliterOutput">
+                          <component id="d221f" class="javax.swing.JTextArea" binding="textAreaConvertSplitterOutput">
                             <constraints/>
                             <properties>
                               <lineWrap value="true"/>
-                              <text resource-bundle="formTitle" key="text.convert.spliter.help.text"/>
+                              <text resource-bundle="formTitle" key="text.convert.splitter.help.text"/>
                             </properties>
                           </component>
                         </children>
@@ -595,8 +603,7 @@
                                   </grid>
                                 </constraints>
                                 <properties>
-                                  <icon value="actions/refresh.png"/>
-                                  <text value=""/>
+                                  <text resource-bundle="formTitle" key="button.encrypt.hash.generateKey.title"/>
                                   <toolTipText resource-bundle="formTitle" key="button.encrypt.hash.generateKey.tooltip"/>
                                 </properties>
                               </component>

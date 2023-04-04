@@ -30,12 +30,7 @@ public class FileSizeTextFormat extends Format {
         String objStr = String.valueOf(obj);
         char lastChar = objStr.charAt(objStr.length() - 1);
         switch (lastChar) {
-            case 'g':
-            case 'G':
-            case 'm':
-            case 'M':
-            case 'k':
-            case 'K':
+            case 'g', 'G', 'm', 'M', 'k', 'K' -> {
                 try {
                     String substring = objStr.substring(0, objStr.length() - 1);
                     BigDecimal bigDecimal = new BigDecimal(substring);
@@ -45,12 +40,14 @@ public class FileSizeTextFormat extends Format {
                 } catch (Exception ignored) {
                     return null;
                 }
-            default:
+            }
+            default -> {
                 try {
                     return numberFormat.format(obj, toAppendTo, pos);
                 } catch (Exception ignored) {
                     return null;
                 }
+            }
         }
     }
 
@@ -61,20 +58,17 @@ public class FileSizeTextFormat extends Format {
         }
         char lastChar = source.charAt(source.length() - 1);
         switch (lastChar) {
-            case 'g':
-            case 'G':
-            case 'm':
-            case 'M':
-            case 'k':
-            case 'K':
+            case 'g', 'G', 'm', 'M', 'k', 'K' -> {
                 String substring = source.substring(0, source.length() - 1);
                 Object o = numberFormat.parseObject(substring, pos);
                 if (o == null) {
                     return null;
                 }
                 return new BigDecimal(String.valueOf(o)).toPlainString() + String.valueOf(lastChar).toLowerCase();
-            default:
+            }
+            default -> {
                 return numberFormat.parseObject(source, pos);
+            }
         }
     }
 

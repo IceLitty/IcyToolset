@@ -1,15 +1,14 @@
 package com.gmail.litalways.toolset.gui;
 
-import com.gmail.litalways.toolset.enums.KeyEnum;
 import com.gmail.litalways.toolset.filter.PngFileFilter;
+import com.gmail.litalways.toolset.util.MessageUtil;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -88,17 +87,13 @@ public class MainFormZxingFunction {
         } else if (this.mainForm.radioZxingMatrix.isSelected()) {
             barcodeFormat = BarcodeFormat.DATA_MATRIX;
         } else {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Bar code type not supported!", null, null, NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("qr.type.not.support"));
             return;
         }
         Integer width = this.mainForm.textZxingWidth.getValue() == null ? null : Integer.parseInt(String.valueOf(this.mainForm.textZxingWidth.getValue()));
         Integer height = this.mainForm.textZxingHeight.getValue() == null ? null : Integer.parseInt(String.valueOf(this.mainForm.textZxingHeight.getValue()));
         if (width == null || height == null) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Image width or height can not be null!", null, null, NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("qr.width.height.not.specified"));
             return;
         }
         Map<EncodeHintType, Object> hints = new HashMap<>();
@@ -125,9 +120,7 @@ public class MainFormZxingFunction {
         try {
             bitMatrix = new MultiFormatWriter().encode(content, barcodeFormat, width, height, hints);
         } catch (WriterException ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             return;
         }
         JFileChooser fileChooser = new JFileChooser(this.lastSaveImgPath);
@@ -142,9 +135,7 @@ public class MainFormZxingFunction {
                 MatrixToImageWriter.writeToPath(bitMatrix, "png", file.toPath());
                 this.lastSaveImgPath = file.getPath();
             } catch (Exception ex) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                        .notify(null);
+                NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             }
         }
     }
@@ -171,9 +162,7 @@ public class MainFormZxingFunction {
             Result result = new MultiFormatReader().decode(binaryBitmap, hints);
             this.mainForm.textareaZxingText.setText(result.getText());
         } catch (Exception ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 

@@ -3,11 +3,8 @@ package com.gmail.litalways.toolset.gui;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.AsymmetricCrypto;
 import cn.hutool.crypto.asymmetric.KeyType;
-import cn.hutool.crypto.asymmetric.RSA;
-import com.gmail.litalways.toolset.enums.KeyEnum;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -96,9 +93,7 @@ public class MainFormEncryptAsymmetricFunction {
             // KeyFile not contain non-ASCII chars, so this use any charsets also can read file to use.
             publicKey = new String(fileIs.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             return;
         }
         this.mainForm.textEncryptAsymmetricPublicKey.setText(publicKey);
@@ -115,9 +110,7 @@ public class MainFormEncryptAsymmetricFunction {
             // KeyFile not contain non-ASCII chars, so this use any charsets also can read file to use.
             privateKey = new String(fileIs.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             return;
         }
         this.mainForm.textEncryptAsymmetricPrivateKey.setText(privateKey);
@@ -129,9 +122,7 @@ public class MainFormEncryptAsymmetricFunction {
             this.mainForm.textEncryptAsymmetricPublicKey.setText(new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()), getCharset()));
             this.mainForm.textEncryptAsymmetricPrivateKey.setText(new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()), getCharset()));
         } catch (UnsupportedEncodingException ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 

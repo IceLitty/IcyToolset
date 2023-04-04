@@ -43,13 +43,13 @@ public class MainForm {
     JButton buttonConvertImgBase64Encode;
     JButton buttonConvertImgBase64Clean;
     // 转换 - 大文本分割
-    JTextArea textAreaConvertSpliterOutput;
-    TextFieldWithBrowseButton fileConvertSpliterPath;
-    JFormattedTextField textConvertSpliterCacheSize;
-    JCheckBox checkConvertSpliterLineFlag;
-    JFormattedTextField textConvertSpliterCount;
-    JFormattedTextField textConvertSpliterSize;
-    JButton buttonConvertSpliterRun;
+    JTextArea textAreaConvertSplitterOutput;
+    TextFieldWithBrowseButton fileConvertSplitterPath;
+    JFormattedTextField textConvertSplitterCacheSize;
+    JCheckBox checkConvertSplitterLineFlag;
+    JFormattedTextField textConvertSplitterCount;
+    JFormattedTextField textConvertSplitterSize;
+    JButton buttonConvertSplitterRun;
     // 加解密
     JTabbedPane tabEncrypt;
     // 加解密 - 摘要计算
@@ -140,7 +140,9 @@ public class MainForm {
     JTextField textAboutGenHashPathFilter;
     JTextField textAboutGenHashFileFilter;
     JTextField textEncryptSymmetricSalt;
+    JButton buttonConvertSplitterClear;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final ToolWindow toolWindow;
 
     public MainForm(ToolWindow toolWindow) {
@@ -152,9 +154,9 @@ public class MainForm {
     }
 
     private void createUIComponents() {
-        this.textConvertSpliterCacheSize = new JFormattedTextField(NumberFormat.getIntegerInstance());
-        this.textConvertSpliterCount = new JFormattedTextField(NumberFormat.getIntegerInstance());
-        this.textConvertSpliterSize = new JFormattedTextField(FileSizeTextFormat.getInstance());
+        this.textConvertSplitterCacheSize = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        this.textConvertSplitterCount = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        this.textConvertSplitterSize = new JFormattedTextField(FileSizeTextFormat.getInstance());
         this.textZxingWidth = new JFormattedTextField(NumberFormat.getIntegerInstance());
         this.textZxingHeight = new JFormattedTextField(NumberFormat.getIntegerInstance());
     }

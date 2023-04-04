@@ -17,14 +17,15 @@ public class StrUtil {
             return "";
         }
         if (src.length() > length) {
-            return src.substring(0, length) + "...<and " + (src.length() - length) + " chars>";
+            return src.substring(0, length) + MessageUtil.getMessage("str.char.limit.tip", src.length() - length);
         }
         return src;
     }
 
     public static boolean endsWithShowMax(String src) {
         // Not use regex because it will cause StackOverflowException
-        return src.endsWith(" chars>");
+        String[] s = MessageUtil.getBundleString("str.char.limit.tip").split("\\{0}");
+        return src.endsWith(s[s.length == 0 ? 0 : s.length - 1]);
     }
 
     // Byte String to Hex solution from https://stackoverflow.com/a/9855338

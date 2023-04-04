@@ -1,10 +1,9 @@
 package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.script.ScriptUtil;
-import com.gmail.litalways.toolset.enums.KeyEnum;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
+import com.gmail.litalways.toolset.util.MessageUtil;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 import org.luaj.vm2.script.LuaScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.python.jsr223.PyScriptEngineFactory;
@@ -35,14 +34,17 @@ public class MainFormScriptFunction {
                     eval();
                 }
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 if (mainForm.checkScriptAutoRun.isSelected()) {
                     eval();
                 }
             }
+
             @Override
-            public void changedUpdate(DocumentEvent e) {}
+            public void changedUpdate(DocumentEvent e) {
+            }
         });
         this.mainForm.radioScriptJavascript.addActionListener(this::radioChanged);
         this.mainForm.radioScriptPython.addActionListener(this::radioChanged);
@@ -84,9 +86,7 @@ public class MainFormScriptFunction {
                     manager.registerEngineName("python", pyScriptEngineFactory);
                 }
             } catch (Exception e) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification("Nashorn Script Engine inject failed", null, e.getClass().getSimpleName() + ": " + e.getLocalizedMessage(), NotificationType.WARNING)
-                        .notify(null);
+                NotificationUtil.warning(MessageUtil.getMessage("script.nashorn.inject.fail"), e.getClass().getSimpleName() + ": " + e.getLocalizedMessage());
             }
         }
     }
@@ -103,9 +103,7 @@ public class MainFormScriptFunction {
             } else if (this.mainForm.radioScriptPython.isSelected()) {
                 this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getPythonEngine().eval(script)));
             } else {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification("Not selected type", null, null, NotificationType.WARNING)
-                        .notify(null);
+                NotificationUtil.warning(MessageUtil.getMessage("script.not.select.type"));
             }
         } catch (Exception ex) {
             this.mainForm.textareaScriptResult.setText(ex.getClass().getName() + ": " + ex.getLocalizedMessage());

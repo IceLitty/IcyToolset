@@ -2,9 +2,8 @@ package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.crypto.digest.Digester;
-import com.gmail.litalways.toolset.enums.KeyEnum;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
+import com.gmail.litalways.toolset.util.MessageUtil;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -60,36 +59,26 @@ public class MainFormAboutFunction {
     private void generateHash(ActionEvent event) {
         // valid
         if (this.generateHashToSelect == null) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Generate hash", null, "Not select file(s).", NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.not.select.file"));
             return;
         }
         File target = new File(this.generateHashToSelect.getPath());
         if (!target.exists() || !target.canRead()) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Generate hash", null, "Select file(s) can't exist or doesn't be read.", NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.file.not.found"));
             return;
         }
         if (this.mainForm.selectAboutGenHashType.getSelectedIndex() == -1) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Generate hash", null, "Not select hash type.", NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.no.hash.type"));
             return;
         }
         String type = String.valueOf(this.mainForm.selectAboutGenHashType.getSelectedItem());
         if ("null".equalsIgnoreCase(type) || type.trim().length() == 0) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Generate hash", null, "Hash type can not be empty.", NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.no.hash.type"));
             return;
         }
         String suffix = this.mainForm.textAboutGenHashSuffix.getText();
         if ("null".equalsIgnoreCase(suffix) || suffix.trim().length() == 0) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Generate hash", null, "Suffix can not be empty.", NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.suffix.can.not.be.none"));
             return;
         }
         String pathPattern = this.mainForm.textAboutGenHashPathFilter.getText();
@@ -112,9 +101,7 @@ public class MainFormAboutFunction {
                 regexPath = Pattern.compile(pathPattern);
                 regexFilename = Pattern.compile(filenamePattern);
             } catch (Exception e) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification("Generate hash", null, "Path or file name regex pattern is not valid.", NotificationType.ERROR)
-                        .notify(null);
+                NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.path.or.filename.regex.not.valid"));
                 return;
             }
             getFilesInDir(target, regexPath, regexFilename, files);
@@ -153,9 +140,7 @@ public class MainFormAboutFunction {
                         }
                     }
                 } catch (Exception e) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification("Generate hash", null, "File: " + f.getName() + " unzip pom file error: " + e.getClass().getSimpleName() + ": " + e.getLocalizedMessage(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.unzip.pom.error", f.getName(), e.getClass().getSimpleName(), e.getLocalizedMessage()));
                 }
                 if (artifactId != null && groupId != null && pom.size() > 0) {
                     for (Map.Entry<String, String> entry : pom.entrySet()) {
@@ -172,24 +157,18 @@ public class MainFormAboutFunction {
                         fw.write(pomStr);
                         writeSuccess = true;
                     } catch (Exception e) {
-                        NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                                .createNotification("Generate hash", null, "File: " + f.getName() + " write pom file error: " + e.getClass().getSimpleName() + ": " + e.getLocalizedMessage(), NotificationType.ERROR)
-                                .notify(null);
+                        NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.write.pom.error", f.getName(), e.getClass().getSimpleName(), e.getLocalizedMessage()));
                     }
                     if (writeSuccess) {
                         hashFileAndWriteHashFile(pomFile, type, suffix);
                     }
                 } else {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification("Generate hash", null, "File: " + f.getName() + " unzip pom file failed.", NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.unzip.pom.error", f.getName(), "", ""));
                 }
             }
             hashFileAndWriteHashFile(f, type, suffix);
         }
-        NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                .createNotification("Generate hash", null, "Hash file generated.", NotificationType.INFORMATION)
-                .notify(null);
+        NotificationUtil.info(MessageUtil.getMessage("about.generate.hash.done"));
     }
 
     private static void getFilesInDir(File dir, Pattern patternPath, Pattern patternFilename, List<File> back) {
@@ -216,9 +195,7 @@ public class MainFormAboutFunction {
             String resultHex = digester.digestHex(src);
             fw.write(resultHex);
         } catch (Exception e) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Generate hash", null, "File: " + src.getName() + " write hash file error: " + e.getClass().getSimpleName() + ": " + e.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.write.hash.error", src.getName(), e.getClass().getSimpleName(), e.getLocalizedMessage()));
         }
     }
 

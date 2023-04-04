@@ -1,9 +1,8 @@
 package com.gmail.litalways.toolset.gui;
 
-import com.gmail.litalways.toolset.enums.KeyEnum;
+import com.gmail.litalways.toolset.util.MessageUtil;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.gmail.litalways.toolset.util.StrUtil;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -36,45 +35,45 @@ public class MainFormConvertImgBase64Function {
         this.mainForm.textareaConvertImgBase64.setText("");
     }
 
+    /**
+     * 编码二进制文件到BASE64
+     *
+     * @param e 事件
+     */
     private void encodeToString(ActionEvent e) {
         FileChooserDescriptor descriptor;
         if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
             // 选择文件夹批量模式
             descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
-            descriptor.setTitle("Select Directory Contains Binary File:");
+            descriptor.setTitle(MessageUtil.getMessage("convert.img.select.bin.dir"));
         } else {
             // 选择单个文件
             descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
-            descriptor.setTitle("Select Binary File:");
+            descriptor.setTitle(MessageUtil.getMessage("convert.img.select.bin.file"));
         }
         this.toSelect = FileChooser.chooseFile(descriptor, null, this.toSelect);
         encodeToString();
     }
 
+    /**
+     * 编码二进制文件到BASE64
+     *
+     * @return BASE64
+     */
     private String encodeToString() {
         clean();
         if (this.toSelect != null) {
             this.mainForm.fileConvertImgBase64Path.setText(this.toSelect.getPath());
             if (this.toSelect.isDirectory()) {
-                int encodingModelIndex = this.mainForm.selectConvertImgBase64Charset.getSelectedIndex();
-                Object selectedObjects = this.mainForm.selectConvertImgBase64Charset.getModel().getSelectedItem();
-                String charset;
-                if (encodingModelIndex == 0) {
-                    charset = System.getProperty("file.encoding");
-                } else {
-                    charset = (String) selectedObjects;
-                }
                 File srcDir = new File(this.toSelect.getPath());
-                encodeToFileMulti(srcDir, charset);
+                encodeToFileMulti(srcDir);
                 return null;
             }
             byte[] bytes;
             try (InputStream fileIs = this.toSelect.getInputStream()) {
                 bytes = fileIs.readAllBytes();
             } catch (Exception ex) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                        .notify(null);
+                NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
                 return null;
             }
             byte[] encode = Base64.getEncoder().encode(bytes);
@@ -87,9 +86,7 @@ public class MainFormConvertImgBase64Function {
                 try {
                     text = new String(encode, (String) selectedObjects);
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
                     return null;
                 }
             }
@@ -99,11 +96,14 @@ public class MainFormConvertImgBase64Function {
         return null;
     }
 
+    /**
+     * 编码二进制文件到BASE64文件
+     *
+     * @param base64 BASE64
+     */
     private void encodeToFile(String base64) {
         if (base64 == null || base64.trim().length() == 0) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("No source BASE64 text.", null, null, NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("convert.img.not.base64"));
             return;
         }
         JFileChooser fileChooser = new JFileChooser(this.toSelect == null ? null : this.toSelect.getPath());
@@ -119,36 +119,34 @@ public class MainFormConvertImgBase64Function {
                     fw.write(base64);
                 }
             } catch (Exception ex) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                        .notify(null);
+                NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
                 return;
             }
         }
     }
 
-    private void encodeToFileMulti(File dir, String charset) {
-        if (dir == null || !dir.isDirectory() || !dir.exists() || !dir.canRead() || !dir.canWrite() || dir.listFiles() == null || dir.listFiles().length == 0) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("No source dir selected.", null, dir == null ? null : dir.getPath(), NotificationType.WARNING)
-                    .notify(null);
+    /**
+     * 编码二进制文件到多个BASE64文件
+     *
+     * @param dir 二进制文件根目录
+     */
+    private void encodeToFileMulti(File dir) {
+        File[] dirListFiles;
+        if (dir == null || !dir.isDirectory() || !dir.exists() || !dir.canRead() || !dir.canWrite() || (dirListFiles = dir.listFiles()) == null || dirListFiles.length == 0) {
+            NotificationUtil.warning(MessageUtil.getMessage("convert.img.not.select.bin.dir"), dir == null ? null : dir.getPath());
             return;
         }
-        for (File f : dir.listFiles()) {
+        for (File f : dirListFiles) {
             if (f.isFile()) {
                 byte[] bytes;
-                try (InputStream fileIs = this.toSelect.getInputStream()) {
+                try (InputStream fileIs = new FileInputStream(f)) {
                     bytes = fileIs.readAllBytes();
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), null, f.getPath(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.warning(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), f.getPath());
                     continue;
                 }
                 if (bytes == null || bytes.length == 0) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification("File is empty.", null, f.getPath(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.warning(MessageUtil.getMessage("convert.img.file.empty"), f.getPath());
                     continue;
                 }
                 byte[] encode = Base64.getEncoder().encode(bytes);
@@ -170,17 +168,20 @@ public class MainFormConvertImgBase64Function {
                         fw.write(base64);
                     }
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), null, f.getPath(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.error(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), f.getPath());
                     return;
                 }
             } else if (f.isDirectory()) {
-                encodeToFileMulti(f, charset);
+                encodeToFileMulti(f);
             }
         }
     }
 
+    /**
+     * 解码BASE64至文件
+     *
+     * @param e 事件
+     */
     private void decodeToFile(ActionEvent e) {
         String destPath = null;
         String text = this.mainForm.textareaConvertImgBase64.getText();
@@ -198,17 +199,15 @@ public class MainFormConvertImgBase64Function {
             if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
                 // 选择文件夹批量模式
                 descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
-                descriptor.setTitle("Select Source Directory Contains BASE64 File:");
+                descriptor.setTitle(MessageUtil.getMessage("convert.img.select.base64.dir"));
             } else {
                 // 选择单个文件
                 descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
-                descriptor.setTitle("Select Source File Contains BASE64 Code:");
+                descriptor.setTitle(MessageUtil.getMessage("convert.img.select.base64.file"));
             }
             VirtualFile src = FileChooser.chooseFile(descriptor, null, null);
             if (src == null) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification("No source file selected.", null, null, NotificationType.ERROR)
-                        .notify(null);
+                NotificationUtil.error(MessageUtil.getMessage("convert.img.not.select.bin.file"));
                 return;
             }
             if (src.isDirectory()) {
@@ -229,9 +228,7 @@ public class MainFormConvertImgBase64Function {
                         text = text.substring(0, text.length() - 1);
                     }
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
                     return;
                 }
                 destPath = src.getPath();
@@ -240,10 +237,8 @@ public class MainFormConvertImgBase64Function {
         if (destPath == null && this.toSelect != null) {
             destPath = this.toSelect.getPath();
         }
-        if (text == null || text.trim().length() == 0) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("No source BASE64 text.", null, null, NotificationType.ERROR)
-                    .notify(null);
+        if (text.trim().length() == 0) {
+            NotificationUtil.error(MessageUtil.getMessage("convert.img.not.base64"));
             return;
         }
         int encodingModelIndex = this.mainForm.selectConvertImgBase64Charset.getSelectedIndex();
@@ -258,9 +253,7 @@ public class MainFormConvertImgBase64Function {
             }
             decode = Base64.getDecoder().decode(bytes);
         } catch (Exception ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             return;
         }
         JFileChooser fileChooser = new JFileChooser(destPath);
@@ -276,22 +269,25 @@ public class MainFormConvertImgBase64Function {
                     fos.write(decode);
                 }
             } catch (Exception ex) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                        .notify(null);
+                NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
                 return;
             }
         }
     }
 
+    /**
+     * 解码BASE64至多个文件
+     *
+     * @param dir     BASE64根目录
+     * @param charset 字符集
+     */
     private void decodeToFileMulti(File dir, String charset) {
-        if (dir == null || !dir.isDirectory() || !dir.exists() || !dir.canRead() || !dir.canWrite() || dir.listFiles() == null || dir.listFiles().length == 0) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("No base64 dir selected.", null, dir == null ? null : dir.getPath(), NotificationType.WARNING)
-                    .notify(null);
+        File[] dirListFiles;
+        if (dir == null || !dir.isDirectory() || !dir.exists() || !dir.canRead() || !dir.canWrite() || (dirListFiles = dir.listFiles()) == null || dirListFiles.length == 0) {
+            NotificationUtil.error(MessageUtil.getMessage("convert.img.not.select.base64.dir"), dir == null ? null : dir.getPath());
             return;
         }
-        for (File f : dir.listFiles()) {
+        for (File f : dirListFiles) {
             if (f.isFile()) {
                 String suffix;
                 String text;
@@ -308,9 +304,7 @@ public class MainFormConvertImgBase64Function {
                         text = text.substring(0, text.length() - 1);
                     }
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), null, f.getPath(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.warning(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), f.getPath());
                     continue;
                 }
                 if (text.startsWith("JVBER")) {
@@ -331,10 +325,8 @@ public class MainFormConvertImgBase64Function {
                 } else {
                     destPath = f.getPath() + suffix;
                 }
-                if (text == null || text.trim().length() == 0) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification("Not source BASE64 text.", null, f.getPath(), NotificationType.ERROR)
-                            .notify(null);
+                if (text.trim().length() == 0) {
+                    NotificationUtil.warning(MessageUtil.getMessage("convert.img.not.base64"), f.getPath());
                     continue;
                 }
                 int encodingModelIndex = this.mainForm.selectConvertImgBase64Charset.getSelectedIndex();
@@ -349,9 +341,7 @@ public class MainFormConvertImgBase64Function {
                     }
                     decode = Base64.getDecoder().decode(bytes);
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification("Wrong charset or Base64 decode failed.", null, f.getPath(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.warning(MessageUtil.getMessage("convert.img.wrong.charset.or.base64"), f.getPath());
                     continue;
                 }
                 try {
@@ -364,9 +354,7 @@ public class MainFormConvertImgBase64Function {
                         fos.write(decode);
                     }
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), null, f.getPath(), NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.warning(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), f.getPath());
                     continue;
                 }
             } else if (f.isDirectory()) {

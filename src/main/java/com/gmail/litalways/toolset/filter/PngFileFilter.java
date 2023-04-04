@@ -11,10 +11,7 @@ public class PngFileFilter extends FileFilter {
 
     @Override
     public boolean accept(File f) {
-        if (f != null && !f.isDirectory() && f.getName().toLowerCase().endsWith(".png")) {
-            return true;
-        }
-        return false;
+        return f != null && !f.isDirectory() && f.getName().toLowerCase().endsWith(".png");
     }
 
     @Override

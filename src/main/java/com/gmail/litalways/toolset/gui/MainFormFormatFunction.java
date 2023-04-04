@@ -4,9 +4,8 @@ import cn.hutool.core.util.XmlUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.gmail.litalways.toolset.enums.KeyEnum;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
+import com.gmail.litalways.toolset.util.MessageUtil;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 import org.w3c.dom.Document;
 
 import java.awt.event.ActionEvent;
@@ -33,22 +32,23 @@ public class MainFormFormatFunction {
         if (tmp.length() < 1) {
             return;
         }
-        if ("{".equals(tmp.substring(0, 1))) {
-            JSONObject jsonObject = JSONUtil.parseObj(text);
-            text = jsonObject.toJSONString(4);
-            this.mainForm.textareaFormat.setText(text);
-        } else if ("[".equals(tmp.substring(0, 1))) {
-            JSONArray jsonArray = JSONUtil.parseArray(text);
-            text = jsonArray.toJSONString(4);
-            this.mainForm.textareaFormat.setText(text);
-        } else if ("<".equals(tmp.substring(0, 1))) {
-            Document document = XmlUtil.parseXml(text);
-            text = XmlUtil.toStr(document, true);
-            this.mainForm.textareaFormat.setText(text);
-        } else {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Only support JSON and XML now!", null, null, NotificationType.ERROR)
-                    .notify(null);
+        switch (tmp.substring(0, 1)) {
+            case "{" -> {
+                JSONObject jsonObject = JSONUtil.parseObj(text);
+                text = jsonObject.toJSONString(4);
+                this.mainForm.textareaFormat.setText(text);
+            }
+            case "[" -> {
+                JSONArray jsonArray = JSONUtil.parseArray(text);
+                text = jsonArray.toJSONString(4);
+                this.mainForm.textareaFormat.setText(text);
+            }
+            case "<" -> {
+                Document document = XmlUtil.parseXml(text);
+                text = XmlUtil.toStr(document, true);
+                this.mainForm.textareaFormat.setText(text);
+            }
+            default -> NotificationUtil.error(MessageUtil.getMessage("convert.format.only.support.lang"));
         }
     }
 
@@ -59,33 +59,30 @@ public class MainFormFormatFunction {
         for (char c : formattedJson.toCharArray()) {
             switch (c) {
                 // removed char
-                case '\r':
-                case '\n':
-                case '\t':
-                case ' ':
+                case '\r', '\n', '\t', ' ' -> {
                     if (!needUnFormat) {
                         stringBuilder.append(c);
                     }
                     needIgnoreQuote = false;
-                    break;
+                }
                 // ignore quote
-                case '\\':
+                case '\\' -> {
                     stringBuilder.append(c);
                     needIgnoreQuote = true;
-                    break;
+                }
                 // in key-value
-                case '\"':
+                case '\"' -> {
                     stringBuilder.append(c);
                     if (!needIgnoreQuote) {
                         needUnFormat = !needUnFormat;
                     }
                     needIgnoreQuote = false;
-                    break;
+                }
                 // normal char
-                default:
+                default -> {
                     stringBuilder.append(c);
                     needIgnoreQuote = false;
-                    break;
+                }
             }
         }
         return stringBuilder.toString();
@@ -117,36 +114,31 @@ public class MainFormFormatFunction {
             for (char c : s.toCharArray()) {
                 switch (c) {
                     // remove char
-                    case '\r':
-                    case '\n':
-                    case '\t':
-                    case ' ':
+                    case '\r', '\n', '\t', ' ' -> {
                         if (inTag) {
                             stringBuilder.append(c);
                         }
-                        break;
-                    case '<':
+                    }
+                    case '<' -> {
                         stringBuilder.append(c);
                         if (!inQuote) {
                             inTag = true;
                         }
-                        break;
-                    case '>':
+                    }
+                    case '>' -> {
                         stringBuilder.append(c);
                         if (!inQuote) {
                             inTag = false;
                         }
-                        break;
-                    case '\"':
+                    }
+                    case '\"' -> {
                         stringBuilder.append(c);
                         if (inTag) {
                             inQuote = !inQuote;
                         }
-                        break;
+                    }
                     // normal char
-                    default:
-                        stringBuilder.append(c);
-                        break;
+                    default -> stringBuilder.append(c);
                 }
             }
             part1.set(i, stringBuilder.toString());
@@ -164,25 +156,26 @@ public class MainFormFormatFunction {
         if (tmp.length() < 1) {
             return;
         }
-        if ("{".equals(tmp.substring(0, 1))) {
-            JSONObject jsonObject = JSONUtil.parseObj(text);
-            text = jsonObject.toJSONString(4);
-            text = unFormatJson(text);
-            this.mainForm.textareaFormat.setText(text);
-        } else if ("[".equals(tmp.substring(0, 1))) {
-            JSONArray jsonArray = JSONUtil.parseArray(text);
-            text = jsonArray.toJSONString(4);
-            text = unFormatJson(text);
-            this.mainForm.textareaFormat.setText(text);
-        } else if ("<".equals(tmp.substring(0, 1))) {
-            Document document = XmlUtil.parseXml(text);
-            text = XmlUtil.toStr(document, true);
-            text = unFormatXml(text);
-            this.mainForm.textareaFormat.setText(text);
-        } else {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Only support JSON and XML now!", null, null, NotificationType.ERROR)
-                    .notify(null);
+        switch (tmp.substring(0, 1)) {
+            case "{" -> {
+                JSONObject jsonObject = JSONUtil.parseObj(text);
+                text = jsonObject.toJSONString(4);
+                text = unFormatJson(text);
+                this.mainForm.textareaFormat.setText(text);
+            }
+            case "[" -> {
+                JSONArray jsonArray = JSONUtil.parseArray(text);
+                text = jsonArray.toJSONString(4);
+                text = unFormatJson(text);
+                this.mainForm.textareaFormat.setText(text);
+            }
+            case "<" -> {
+                Document document = XmlUtil.parseXml(text);
+                text = XmlUtil.toStr(document, true);
+                text = unFormatXml(text);
+                this.mainForm.textareaFormat.setText(text);
+            }
+            default -> NotificationUtil.error(MessageUtil.getMessage("convert.format.only.support.lang"));
         }
     }
 

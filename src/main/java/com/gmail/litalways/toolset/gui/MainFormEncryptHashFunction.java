@@ -5,10 +5,9 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.crypto.digest.Digester;
 import cn.hutool.crypto.digest.HMac;
-import com.gmail.litalways.toolset.enums.KeyEnum;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
-import com.intellij.notification.NotificationGroupManager;
-import com.intellij.notification.NotificationType;
+import com.gmail.litalways.toolset.util.MessageUtil;
+import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -46,12 +45,10 @@ public class MainFormEncryptHashFunction {
                 return;
             }
             this.mainForm.fileEncryptHashFile.setText(this.toSelects[this.toSelects.length - 1].getPresentableUrl() + (this.toSelects.length == 1 ? "" : (" ... and " + (this.toSelects.length - 1) + " files.")));
+            // Calc size and tips
             for (VirtualFile file : this.toSelects) {
                 if (file.getLength() >= 524288000) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification("This file is large than 500MB, most like to use tool from windows like this:", null, "\"certutil -hashfile src.bin MD5 >> hash.txt\"", NotificationType.WARNING)
-                            .notify(null);
-                    break;
+                    NotificationUtil.warning(MessageUtil.getMessage("convert.hash.large.file"), "\"certutil -hashfile src.bin MD5 >> hash.txt\"");
                 }
             }
             this.doHash(0);
@@ -65,9 +62,7 @@ public class MainFormEncryptHashFunction {
             }
             this.mainForm.fileEncryptHashAsserts.setText(this.toSelectAssets[this.toSelectAssets.length - 1].getPresentableUrl() + (this.toSelectAssets.length == 1 ? "" : (" ... and " + (this.toSelectAssets.length - 1) + " files.")));
             if (this.toSelectAssets.length != this.toSelects.length) {
-                NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                        .createNotification("Assert files amount not equals source files amount!", null, null, NotificationType.WARNING)
-                        .notify(null);
+                NotificationUtil.warning(MessageUtil.getMessage("convert.hash.compare.files.count.not.equal.bin.files"));
             }
             this.mainForm.textareaEncryptHashText.setText("");
             this.doHash(0);
@@ -77,18 +72,33 @@ public class MainFormEncryptHashFunction {
             public void insertUpdate(DocumentEvent e) {
                 doHash(1);
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 doHash(1);
             }
+
             @Override
-            public void changedUpdate(DocumentEvent e) {}
+            public void changedUpdate(DocumentEvent e) {
+            }
         });
         this.mainForm.buttonEncryptHashFile.addActionListener(e -> this.doHash(0));
         this.mainForm.buttonEncryptHashText.addActionListener(e -> this.doHash(1));
-        this.mainForm.selectEncryptHashEncoding.addActionListener(e -> {if (this.lastFunction != null) { this.doHash(this.lastFunction); }});
-        this.mainForm.selectEncryptHashType.addActionListener(e -> {if (this.lastFunction != null) { this.doHash(this.lastFunction); }});
-        this.mainForm.selectEncryptHashOutputType.addActionListener(e -> {if (this.lastFunction != null) { this.doHash(this.lastFunction); }});
+        this.mainForm.selectEncryptHashEncoding.addActionListener(e -> {
+            if (this.lastFunction != null) {
+                this.doHash(this.lastFunction);
+            }
+        });
+        this.mainForm.selectEncryptHashType.addActionListener(e -> {
+            if (this.lastFunction != null) {
+                this.doHash(this.lastFunction);
+            }
+        });
+        this.mainForm.selectEncryptHashOutputType.addActionListener(e -> {
+            if (this.lastFunction != null) {
+                this.doHash(this.lastFunction);
+            }
+        });
         ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollEncryptHashText, this.mainForm.scrollEncryptHashResult);
         this.mainForm.scrollEncryptHashText.getVerticalScrollBar().addAdjustmentListener(syncListener);
         this.mainForm.scrollEncryptHashText.getHorizontalScrollBar().addAdjustmentListener(syncListener);
@@ -176,9 +186,7 @@ public class MainFormEncryptHashFunction {
         this.lastFunction = sourceType;
         String type = (String) this.mainForm.selectEncryptHashType.getModel().getSelectedItem();
         if (type == null || type.trim().length() == 0) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification("Digest type cannot be null.", null, null, NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(MessageUtil.getMessage("convert.hash.digest.is.null"));
             return;
         }
         String keyStr = this.mainForm.textEncryptHashKey.getText();
@@ -190,9 +198,7 @@ public class MainFormEncryptHashFunction {
                 try {
                     key = HexUtil.decodeHex(keyStr);
                 } catch (Exception ex2) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification("Key cannot be parse with Base64 or HexString.", null, null, NotificationType.ERROR)
-                            .notify(null);
+                    NotificationUtil.error(MessageUtil.getMessage("convert.hash.hmac.key.can.not.parse"));
                     return;
                 }
             }
@@ -210,7 +216,12 @@ public class MainFormEncryptHashFunction {
                     if (assertStr != null && assertStr.getForceDigest() != null) {
                         _type = assertStr.getForceDigest();
                     }
-                    this.mainForm.textareaEncryptHashResult.append(_type + "-Digest: " + (eachResult.getIsMatch() == null ? "" : (eachResult.getIsMatch() ? "[MATCH] " : "[NOT MATCH] ")) + eachResult.getResult());
+                    this.mainForm.textareaEncryptHashResult.append(_type + "-Digest: " +
+                            (eachResult.getIsMatch() == null ? "" :
+                                    (eachResult.getIsMatch() ?
+                                            (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
+                                            (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
+                            ) + eachResult.getResult());
                     this.mainForm.textareaEncryptHashResult.append("\n");
                     this.mainForm.textareaEncryptHashResult.append("\n");
                 } catch (Exception ex) {
@@ -230,45 +241,48 @@ public class MainFormEncryptHashFunction {
                 for (String line : split) {
                     try {
                         DigestAssertResult eachResult = this.hash(type, key, line, false, this.getAssertStr(null));
-                        this.mainForm.textareaEncryptHashResult.append((eachResult.getIsMatch() == null ? "" : (eachResult.getIsMatch() ? "[MATCH] " : "[NOT MATCH] ")) + eachResult.getResult());
+                        this.mainForm.textareaEncryptHashResult.append(
+                                (eachResult.getIsMatch() == null ? "" :
+                                        (eachResult.getIsMatch() ?
+                                                (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
+                                                (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
+                                ) + eachResult.getResult());
                         this.mainForm.textareaEncryptHashResult.append("\n");
                     } catch (Exception ex) {
                         this.mainForm.textareaEncryptHashResult.append(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
                         this.mainForm.textareaEncryptHashResult.append("\n");
                     }
                 }
-                // return;
             } else {
                 String source = this.mainForm.textareaEncryptHashText.getText();
                 try {
                     DigestAssertResult eachResult = this.hash(type, key, source, false, this.getAssertStr(null));
-                    this.mainForm.textareaEncryptHashResult.setText((eachResult.getIsMatch() == null ? "" : (eachResult.getIsMatch() ? "[MATCH] " : "[NOT MATCH] ")) + eachResult.getResult());
+                    this.mainForm.textareaEncryptHashResult.setText(
+                            (eachResult.getIsMatch() == null ? "" :
+                                    (eachResult.getIsMatch() ?
+                                            (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
+                                            (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
+                            ) + eachResult.getResult());
                 } catch (Exception ex) {
-                    NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                            .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                            .notify(null);
-                    // return;
+                    NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
+                    return;
                 }
-                // return;
             }
-        } else {
-            throw new IllegalArgumentException("Wrong sourceType parameter?");
         }
     }
 
     private void generateHMacKey(ActionEvent e) {
         String type = (String) this.mainForm.selectEncryptHashType.getModel().getSelectedItem();
         if (type == null || !type.toUpperCase().startsWith("HMAC")) {
-            throw new IllegalArgumentException("This function only support when digest type is HMac.");
+            NotificationUtil.error(MessageUtil.getMessage("convert.hash.hmac.used.only"));
+            return;
         }
         byte[] key = SecureUtil.generateKey(type).getEncoded();
         key = Base64.getEncoder().encode(key);
         try {
             this.mainForm.textEncryptHashKey.setText(new String(key, getCharset()));
         } catch (UnsupportedEncodingException ex) {
-            NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey())
-                    .createNotification(ex.getClass().getName(), null, ex.getLocalizedMessage(), NotificationType.ERROR)
-                    .notify(null);
+            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 

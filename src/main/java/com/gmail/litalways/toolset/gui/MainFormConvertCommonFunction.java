@@ -2,7 +2,9 @@ package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.HexUtil;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
+import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.StrUtil;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -49,6 +51,7 @@ public class MainFormConvertCommonFunction {
             public void focusGained(FocusEvent e) {
                 flagCanDecode.set(false);
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 flagCanDecode.set(true);
@@ -62,6 +65,7 @@ public class MainFormConvertCommonFunction {
                     lastCommandIsEncode.set(true);
                 }
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 if (flagCanEncode.get()) {
@@ -69,14 +73,17 @@ public class MainFormConvertCommonFunction {
                     lastCommandIsEncode.set(true);
                 }
             }
+
             @Override
-            public void changedUpdate(DocumentEvent e) {}
+            public void changedUpdate(DocumentEvent e) {
+            }
         });
         this.mainForm.textareaConvertCommonEncoded.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 flagCanEncode.set(false);
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 flagCanEncode.set(true);
@@ -90,6 +97,7 @@ public class MainFormConvertCommonFunction {
                     lastCommandIsEncode.set(false);
                 }
             }
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 if (flagCanDecode.get()) {
@@ -97,8 +105,10 @@ public class MainFormConvertCommonFunction {
                     lastCommandIsEncode.set(false);
                 }
             }
+
             @Override
-            public void changedUpdate(DocumentEvent e) {}
+            public void changedUpdate(DocumentEvent e) {
+            }
         });
         this.mainForm.selectConvertCommonCharset.addItemListener(e -> redo());
         this.mainForm.radioConvertCommonBase64.addActionListener(this::radioChanged);
@@ -171,7 +181,7 @@ public class MainFormConvertCommonFunction {
                 try {
                     encoded = encode(eachLine);
                 } catch (Exception e) {
-                    encoded = "(Encode failed: " + e.getClass().getName() + ": " + e.getLocalizedMessage() + ")";
+                    encoded = MessageUtil.getMessage("convert.encode.fail", e.getClass().getName(), e.getLocalizedMessage());
                 }
                 sb.append(encoded).append("\n");
             }
@@ -185,7 +195,7 @@ public class MainFormConvertCommonFunction {
             try {
                 encoded = encode(decoded);
             } catch (Exception e) {
-                encoded = "(Encode failed: " + e.getClass().getName() + ": " + e.getLocalizedMessage() + ")";
+                encoded = MessageUtil.getMessage("convert.encode.fail", e.getClass().getName(), e.getLocalizedMessage());
             }
             this.mainForm.textareaConvertCommonEncoded.setText(encoded);
         }
@@ -199,27 +209,27 @@ public class MainFormConvertCommonFunction {
             return new String(Base64.getEncoder().encode(decoded.getBytes(getCharset())), getCharset());
         } else if (this.mainForm.radioConvertCommonHex.isSelected()) {
             if (decoded.startsWith("0x")) {
-                // HEX
+                // HEX 从十六进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 16);
-                return "Dec: " + l + " Oct: " + Long.toOctalString(l) + " Bin: " + Long.toBinaryString(l);
+                return MessageUtil.getMessage("convert.encode.hex", l, Long.toOctalString(l), Long.toBinaryString(l));
             } else if (decoded.startsWith("0o")) {
-                // OCT
+                // OCT 从八进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 8);
-                return "Dec: " + l + " Hex: " + Long.toHexString(l) + " Bin: " + Long.toBinaryString(l);
+                return MessageUtil.getMessage("convert.encode.oct", l, Long.toHexString(l), Long.toBinaryString(l));
             } else if (decoded.startsWith("0b")) {
-                // BIN
+                // BIN 从二进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 2);
-                return "Dec: " + l + " Hex: " + Long.toHexString(l) + " Oct: " + Long.toOctalString(l);
+                return MessageUtil.getMessage("convert.encode.bin", l, Long.toHexString(l), Long.toOctalString(l));
             } else if (decoded.startsWith("0d")) {
-                // DEC
+                // DEC 从十进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 10);
-                return "Hex: " + Long.toHexString(l) + " Oct: " + Long.toOctalString(l) + " Bin: " + Long.toBinaryString(l);
+                return MessageUtil.getMessage("convert.encode.dec", Long.toHexString(l), Long.toOctalString(l), Long.toBinaryString(l));
             } else {
-                // plain text
+                // 文本转换十六进制
                 byte[] decodedBytes = decoded.getBytes(getCharset());
                 return StrUtil.bytesToHex(decodedBytes, getCharset());
             }
@@ -238,7 +248,8 @@ public class MainFormConvertCommonFunction {
             Long unixTimestamp = null;
             try {
                 unixTimestamp = Long.parseLong(decoded);
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
             if (unixTimestamp != null) {
                 Calendar instance = Calendar.getInstance(Locale.getDefault());
                 instance.setTimeInMillis(unixTimestamp);
@@ -249,20 +260,21 @@ public class MainFormConvertCommonFunction {
                     TimeZone timeZone = null;
                     try {
                         timeZone = TimeZone.getTimeZone(s[s.length - 1]);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     if (timeZone != null) {
                         // 去空格和末尾的时区ID
                         decoded = decoded.substring(0, decoded.length() - s[s.length - 1].length() - 1);
                         DateTime dateTime = DateUtil.parse(decoded);
                         Date parse = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z").parse(dateTime.toString("yyyy-MM-dd HH:mm:ss.SSS") + " " + timeZone.getID());
-                        return "" + parse.getTime() + " (Check: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z").format(parse) + ")";
+                        return MessageUtil.getMessage("convert.encode.time", parse.getTime(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z").format(parse));
                     }
                 }
                 DateTime dateTime = DateUtil.parse(decoded);
-                return "" + dateTime.getTime() + " (Check: " + dateTime.toString("yyyy-MM-dd HH:mm:ss.SSS z") + ")";
+                return MessageUtil.getMessage("convert.encode.time", dateTime.getTime(), dateTime.toString("yyyy-MM-dd HH:mm:ss.SSS z"));
             }
         }
-        throw new IllegalArgumentException("Not choose any encode type.");
+        throw new IllegalArgumentException(MessageUtil.getMessage("convert.encode.not.select.type"));
     }
 
     private void autoDecode() {
@@ -284,7 +296,7 @@ public class MainFormConvertCommonFunction {
                 try {
                     decoded = decode(eachLine);
                 } catch (Exception e) {
-                    decoded = "(Decoded failed: " + e.getClass().getName() + ": " + e.getLocalizedMessage() + ")";
+                    decoded = MessageUtil.getMessage("convert.decode.fail", e.getClass().getName(), e.getLocalizedMessage());
                 }
                 sb.append(decoded).append("\n");
             }
@@ -298,7 +310,7 @@ public class MainFormConvertCommonFunction {
             try {
                 decoded = encode(encoded);
             } catch (Exception e) {
-                decoded = "(Decoded failed: " + e.getClass().getName() + ": " + e.getLocalizedMessage() + ")";
+                decoded = MessageUtil.getMessage("convert.decode.fail", e.getClass().getName(), e.getLocalizedMessage());
             }
             this.mainForm.textareaConvertCommonDecoded.setText(decoded);
         }
@@ -311,23 +323,24 @@ public class MainFormConvertCommonFunction {
         if (this.mainForm.radioConvertCommonBase64.isSelected()) {
             return new String(Base64.getDecoder().decode(encoded.getBytes(getCharset())), getCharset());
         } else if (this.mainForm.radioConvertCommonHex.isSelected()) {
-            throw new IllegalArgumentException("This type not support decode.");
+            // TODO test
+            return new String(HexUtil.decodeHex(encoded), getCharset());
         } else if (this.mainForm.radioConvertCommonHtml.isSelected()) {
             return StringEscapeUtils.unescapeHtml4(encoded);
         } else if (this.mainForm.radioConvertCommonUnicode.isSelected()) {
             return StringEscapeUtils.unescapeJava(encoded);
         } else if (this.mainForm.radioConvertCommonUriComponent.isSelected()) {
             return URLDecoder.decode(encoded
-                    .replace("%20", "+").replace("!", "%21")
-                    .replace("(", "%28").replace(")", "%29")
-                    .replace("~", "%7E").replace("'", "%27")
+                            .replace("%20", "+").replace("!", "%21")
+                            .replace("(", "%28").replace(")", "%29")
+                            .replace("~", "%7E").replace("'", "%27")
                     , getCharset());
         } else if (this.mainForm.radioConvertCommonJson.isSelected()) {
             return StringEscapeUtils.unescapeJson(encoded);
         } else if (this.mainForm.radioConvertCommonTime.isSelected()) {
-            throw new IllegalArgumentException("This type not support decode.");
+            throw new IllegalArgumentException(MessageUtil.getMessage("convert.decode.time.not.support"));
         }
-        throw new IllegalArgumentException("Not choose any decode type.");
+        throw new IllegalArgumentException(MessageUtil.getMessage("convert.decode.not.select.type"));
     }
 
 }

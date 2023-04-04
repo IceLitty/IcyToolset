@@ -24,19 +24,20 @@ public class FileSplitUtil {
         this.log = log;
     }
 
-    public void main() {
+    public void runProgress() {
         partNo = 1;
         String suffix = null;
         if (file.getName().lastIndexOf(".") != -1) {
             try {
                 suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             String suffixStr = suffix == null || suffix.trim().length() == 0 ? "" : "." + suffix;
-            File outFile = new File(file.getParent(), file.getName() + "." + new BigDecimal(partNo + "").toPlainString() + suffixStr);
+            File outFile = new File(file.getParent(), file.getName() + "." + new BigDecimal(String.valueOf(partNo)).toPlainString() + suffixStr);
             readPart(file, outFile, true);
             partNo++;
             while (true) {
-                outFile = new File(file.getParent(), file.getName() + "." + new BigDecimal(partNo + "").toPlainString() + suffixStr);
+                outFile = new File(file.getParent(), file.getName() + "." + new BigDecimal(String.valueOf(partNo)).toPlainString() + suffixStr);
                 if (!readPart(file, outFile, false)) {
                     break;
                 }
@@ -49,7 +50,10 @@ public class FileSplitUtil {
         long readSize = 0L;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (RandomAccessFile stream = new RandomAccessFile(file, "r")) {
-            log.accept("加载文件 " + file.getPath() + (partNo == 1 ? " （首次读取）" : " （段落：" + partNo + "）"));
+            log.accept(MessageUtil.getMessage("convert.splitter.progress.info",
+                    file.getPath(), partNo == 1 ?
+                            MessageUtil.getMessage("convert.splitter.progress.first.load") :
+                            MessageUtil.getMessage("convert.splitter.progress.paragraph", partNo)));
             if (!isFirstRead) {
                 for (long l : readBytes) {
                     if (l == Integer.MAX_VALUE) {
@@ -102,12 +106,12 @@ public class FileSplitUtil {
                 }
             }
             if (readSize == 0) {
-                log.accept("段落" + partNo + "为空，文件分割结束。");
+                log.accept(MessageUtil.getMessage("convert.splitter.progress.done", partNo));
                 return false;
             }
             readBytes.add(readSize);
         } catch (Exception e) {
-            log.accept("读取文件发生异常：" + e.getLocalizedMessage());
+            log.accept(MessageUtil.getMessage("convert.splitter.progress.read.error", e.getLocalizedMessage()));
             return false;
         }
         // out
@@ -115,62 +119,50 @@ public class FileSplitUtil {
             if (!outFile.exists()) {
                 boolean success = outFile.createNewFile();
                 if (!success) {
-                    log.accept("创建文件失败：" + outFile.getPath());
+                    log.accept(MessageUtil.getMessage("convert.splitter.progress.create.file.error", outFile.getPath()));
                     return false;
                 }
             }
         } catch (Exception e) {
-            log.accept("创建文件发生异常：" + e.getLocalizedMessage());
+            log.accept(MessageUtil.getMessage("convert.splitter.progress.create.file.error", e.getLocalizedMessage()));
             return false;
         }
         try (FileOutputStream fos = new FileOutputStream(outFile, false);
              BufferedOutputStream bos = new BufferedOutputStream(fos)) {
             bos.write(baos.toByteArray());
         } catch (Exception e) {
-            log.accept("写入文件发生异常：" + e.getLocalizedMessage());
+            log.accept(MessageUtil.getMessage("convert.splitter.progress.write.error", e.getLocalizedMessage()));
             return false;
         }
         return true;
     }
 
-    public boolean isSplitByLineBreaker() {
-        return splitByLineBreaker;
-    }
-
-    public FileSplitUtil setSplitByLineBreaker(boolean splitByLineBreaker) {
+    public void setSplitByLineBreaker(boolean splitByLineBreaker) {
         this.splitByLineBreaker = splitByLineBreaker;
-        return this;
     }
 
     public long getSplitLength() {
         return splitLength;
     }
 
-    public FileSplitUtil setSplitLength(long splitLength) {
+    public void setSplitLength(long splitLength) {
         this.splitLength = splitLength;
-        return this;
     }
 
     public File getFile() {
         return file;
     }
 
-    public FileSplitUtil setFile(File file) {
+    public void setFile(File file) {
         this.file = file;
-        return this;
     }
 
     public Integer getReadCacheSize() {
         return readCacheSize;
     }
 
-    public FileSplitUtil setReadCacheSize(Integer readCacheSize) {
+    public void setReadCacheSize(Integer readCacheSize) {
         this.readCacheSize = readCacheSize;
-        return this;
-    }
-
-    public List<Long> getReadBytes() {
-        return readBytes;
     }
 
 }
