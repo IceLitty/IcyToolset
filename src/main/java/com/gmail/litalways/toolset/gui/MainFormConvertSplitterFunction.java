@@ -18,21 +18,21 @@ import java.util.regex.Pattern;
  */
 public class MainFormConvertSplitterFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowConvert component;
     private VirtualFile toSelect = null;
 
-    public MainFormConvertSplitterFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.textConvertSplitterCacheSize.setValue(1024);
-        this.mainForm.fileConvertSplitterPath.addActionListener(this::loadFile);
-        this.mainForm.buttonConvertSplitterClear.addActionListener(e -> {
-            this.mainForm.textConvertSplitterCacheSize.setValue(1024);
+    public MainFormConvertSplitterFunction(ToolWindowConvert component) {
+        this.component = component;
+        this.component.textConvertSplitterCacheSize.setValue(1024);
+        this.component.fileConvertSplitterPath.addActionListener(this::loadFile);
+        this.component.buttonConvertSplitterClear.addActionListener(e -> {
+            this.component.textConvertSplitterCacheSize.setValue(1024);
             this.toSelect = null;
-            this.mainForm.fileConvertSplitterPath.setText("");
-            this.mainForm.textConvertSplitterCount.setValue("");
-            this.mainForm.textConvertSplitterSize.setValue("");
+            this.component.fileConvertSplitterPath.setText("");
+            this.component.textConvertSplitterCount.setValue("");
+            this.component.textConvertSplitterSize.setValue("");
         });
-        this.mainForm.buttonConvertSplitterRun.addActionListener(e -> {
+        this.component.buttonConvertSplitterRun.addActionListener(e -> {
             Thread thread = new Thread(() -> {
                 FileSplitUtil fileSplitUtil = new FileSplitUtil(new InlineLogger());
                 boolean check = check(fileSplitUtil);
@@ -53,12 +53,12 @@ public class MainFormConvertSplitterFunction {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, true, true, false, false);
         this.toSelect = FileChooser.chooseFile(descriptor, null, this.toSelect);
         if (this.toSelect != null) {
-            this.mainForm.fileConvertSplitterPath.setText(this.toSelect.getPath());
+            this.component.fileConvertSplitterPath.setText(this.toSelect.getPath());
         }
     }
 
     private boolean check(FileSplitUtil fileSplitUtil) {
-        String cacheSize = String.valueOf(this.mainForm.textConvertSplitterCacheSize.getValue());
+        String cacheSize = String.valueOf(this.component.textConvertSplitterCacheSize.getValue());
         if (Pattern.compile("^\\d+$").matcher(cacheSize).matches()) {
             try {
                 long tmp = Long.parseLong(cacheSize);
@@ -77,7 +77,7 @@ public class MainFormConvertSplitterFunction {
         }
         //
         int splitCount = 1;
-        String countText = this.mainForm.textConvertSplitterCount.getValue() == null ? null : String.valueOf(this.mainForm.textConvertSplitterCount.getValue());
+        String countText = this.component.textConvertSplitterCount.getValue() == null ? null : String.valueOf(this.component.textConvertSplitterCount.getValue());
         if (countText != null && countText.trim().length() > 0) {
             if (Pattern.compile("^\\d+$").matcher(countText).matches()) {
                 splitCount = Integer.parseInt(countText);
@@ -91,7 +91,7 @@ public class MainFormConvertSplitterFunction {
             }
         }
         //
-        String splitLength = this.mainForm.textConvertSplitterSize.getValue() == null ? null : String.valueOf(this.mainForm.textConvertSplitterSize.getValue());
+        String splitLength = this.component.textConvertSplitterSize.getValue() == null ? null : String.valueOf(this.component.textConvertSplitterSize.getValue());
         if (splitLength != null && splitLength.trim().length() > 0) {
             if (Pattern.compile("^\\d+[gGmMkK]$").matcher(splitLength).matches()) {
                 String number = splitLength.substring(0, splitLength.length() - 1);
@@ -164,7 +164,7 @@ public class MainFormConvertSplitterFunction {
             }
         }
         //
-        fileSplitUtil.setSplitByLineBreaker(this.mainForm.checkConvertSplitterLineFlag.isSelected());
+        fileSplitUtil.setSplitByLineBreaker(this.component.checkConvertSplitterLineFlag.isSelected());
         return true;
     }
 

@@ -24,34 +24,34 @@ import java.util.zip.ZipInputStream;
  */
 public class MainFormAboutFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowOther component;
     private VirtualFile generateHashToSelect = null;
 
-    public MainFormAboutFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.buttonAboutEncoding.addActionListener(e -> this.mainForm.buttonAboutEncoding.setText(System.getProperty("file.encoding")));
-        this.mainForm.buttonAboutGenHashRun.addActionListener(this::generateHash);
-        this.mainForm.fileAboutGenHashPath.addActionListener(this::selectGenerateHashPath);
-        this.mainForm.selectAboutGenHashType.addActionListener(this::autoWriteGenerateHashSuffix);
-        this.mainForm.selectAboutGenHashType.setSelectedItem("SHA-1");
-        this.mainForm.textAboutGenHashPathFilter.setText(".*");
-        this.mainForm.textAboutGenHashFileFilter.setText(".*");
-        this.mainForm.buttonAboutGC.addActionListener(this::forceGC);
+    public MainFormAboutFunction(ToolWindowOther component) {
+        this.component = component;
+        this.component.buttonAboutEncoding.addActionListener(e -> this.component.buttonAboutEncoding.setText(System.getProperty("file.encoding")));
+        this.component.buttonAboutGenHashRun.addActionListener(this::generateHash);
+        this.component.fileAboutGenHashPath.addActionListener(this::selectGenerateHashPath);
+        this.component.selectAboutGenHashType.addActionListener(this::autoWriteGenerateHashSuffix);
+        this.component.selectAboutGenHashType.setSelectedItem("SHA-1");
+        this.component.textAboutGenHashPathFilter.setText(".*");
+        this.component.textAboutGenHashFileFilter.setText(".*");
+        this.component.buttonAboutGC.addActionListener(this::forceGC);
     }
 
     private void selectGenerateHashPath(ActionEvent e) {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, true, true, true, false, true);
         this.generateHashToSelect = FileChooser.chooseFile(descriptor, null, this.generateHashToSelect);
         if (this.generateHashToSelect != null) {
-            this.mainForm.fileAboutGenHashPath.setText(this.generateHashToSelect.getPath());
+            this.component.fileAboutGenHashPath.setText(this.generateHashToSelect.getPath());
         }
     }
 
     private void autoWriteGenerateHashSuffix(ActionEvent e) {
-        if (this.mainForm.selectAboutGenHashType.getSelectedIndex() != -1) {
-            String type = String.valueOf(this.mainForm.selectAboutGenHashType.getSelectedItem());
+        if (this.component.selectAboutGenHashType.getSelectedIndex() != -1) {
+            String type = String.valueOf(this.component.selectAboutGenHashType.getSelectedItem());
             if (!"null".equalsIgnoreCase(type) && type.trim().length() != 0) {
-                this.mainForm.textAboutGenHashSuffix.setText("." + type.toLowerCase().replace("-", "").replace("_", ""));
+                this.component.textAboutGenHashSuffix.setText("." + type.toLowerCase().replace("-", "").replace("_", ""));
             }
         }
     }
@@ -67,31 +67,31 @@ public class MainFormAboutFunction {
             NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.file.not.found"));
             return;
         }
-        if (this.mainForm.selectAboutGenHashType.getSelectedIndex() == -1) {
+        if (this.component.selectAboutGenHashType.getSelectedIndex() == -1) {
             NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.no.hash.type"));
             return;
         }
-        String type = String.valueOf(this.mainForm.selectAboutGenHashType.getSelectedItem());
+        String type = String.valueOf(this.component.selectAboutGenHashType.getSelectedItem());
         if ("null".equalsIgnoreCase(type) || type.trim().length() == 0) {
             NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.no.hash.type"));
             return;
         }
-        String suffix = this.mainForm.textAboutGenHashSuffix.getText();
+        String suffix = this.component.textAboutGenHashSuffix.getText();
         if ("null".equalsIgnoreCase(suffix) || suffix.trim().length() == 0) {
             NotificationUtil.error(MessageUtil.getMessage("about.generate.hash.suffix.can.not.be.none"));
             return;
         }
-        String pathPattern = this.mainForm.textAboutGenHashPathFilter.getText();
+        String pathPattern = this.component.textAboutGenHashPathFilter.getText();
         if ("null".equalsIgnoreCase(pathPattern) || pathPattern.trim().length() == 0) {
-            this.mainForm.textAboutGenHashPathFilter.setText(".*");
+            this.component.textAboutGenHashPathFilter.setText(".*");
             pathPattern = ".*";
         }
-        String filenamePattern = this.mainForm.textAboutGenHashFileFilter.getText();
+        String filenamePattern = this.component.textAboutGenHashFileFilter.getText();
         if ("null".equalsIgnoreCase(filenamePattern) || filenamePattern.trim().length() == 0) {
-            this.mainForm.textAboutGenHashFileFilter.setText(".*");
+            this.component.textAboutGenHashFileFilter.setText(".*");
             filenamePattern = ".*";
         }
-        boolean genPom = this.mainForm.checkAboutGenHashPom.isSelected();
+        boolean genPom = this.component.checkAboutGenHashPom.isSelected();
         // run
         List<File> files = new ArrayList<>();
         if (target.isDirectory()) {

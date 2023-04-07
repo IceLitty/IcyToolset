@@ -28,25 +28,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MainFormConvertCommonFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowConvert component;
     private final AtomicBoolean flagCanEncode = new AtomicBoolean(true);
     private final AtomicBoolean flagCanDecode = new AtomicBoolean(true);
     private final AtomicBoolean lastCommandIsEncode = new AtomicBoolean(true);
 
-    public MainFormConvertCommonFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.buttonConvertCommonEncode.addActionListener(e -> {
+    public MainFormConvertCommonFunction(ToolWindowConvert component) {
+        this.component = component;
+        this.component.buttonConvertCommonEncode.addActionListener(e -> {
             flagCanDecode.set(false);
             this.encode();
             flagCanDecode.set(true);
         });
-        this.mainForm.buttonConvertCommonDecode.addActionListener(e -> {
+        this.component.buttonConvertCommonDecode.addActionListener(e -> {
             flagCanEncode.set(false);
             this.decode();
             flagCanEncode.set(true);
         });
-        this.mainForm.buttonConvertCommonClean.addActionListener(e -> this.clean());
-        this.mainForm.textareaConvertCommonDecoded.addFocusListener(new FocusListener() {
+        this.component.buttonConvertCommonClean.addActionListener(e -> this.clean());
+        this.component.textareaConvertCommonDecoded.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 flagCanDecode.set(false);
@@ -57,7 +57,7 @@ public class MainFormConvertCommonFunction {
                 flagCanDecode.set(true);
             }
         });
-        this.mainForm.textareaConvertCommonDecoded.getDocument().addDocumentListener(new DocumentListener() {
+        this.component.textareaConvertCommonDecoded.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 if (flagCanEncode.get()) {
@@ -78,7 +78,7 @@ public class MainFormConvertCommonFunction {
             public void changedUpdate(DocumentEvent e) {
             }
         });
-        this.mainForm.textareaConvertCommonEncoded.addFocusListener(new FocusListener() {
+        this.component.textareaConvertCommonEncoded.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 flagCanEncode.set(false);
@@ -89,7 +89,7 @@ public class MainFormConvertCommonFunction {
                 flagCanEncode.set(true);
             }
         });
-        this.mainForm.textareaConvertCommonEncoded.getDocument().addDocumentListener(new DocumentListener() {
+        this.component.textareaConvertCommonEncoded.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 if (flagCanDecode.get()) {
@@ -110,19 +110,19 @@ public class MainFormConvertCommonFunction {
             public void changedUpdate(DocumentEvent e) {
             }
         });
-        this.mainForm.selectConvertCommonCharset.addItemListener(e -> redo());
-        this.mainForm.radioConvertCommonBase64.addActionListener(this::radioChanged);
-        this.mainForm.radioConvertCommonHex.addActionListener(this::radioChanged);
-        this.mainForm.radioConvertCommonHtml.addActionListener(this::radioChanged);
-        this.mainForm.radioConvertCommonUnicode.addActionListener(this::radioChanged);
-        this.mainForm.radioConvertCommonUriComponent.addActionListener(this::radioChanged);
-        this.mainForm.radioConvertCommonJson.addActionListener(this::radioChanged);
-        this.mainForm.radioConvertCommonTime.addActionListener(this::radioChanged);
-        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollConvertCommonDecoded, this.mainForm.scrollConvertCommonEncoded);
-        this.mainForm.scrollConvertCommonDecoded.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollConvertCommonDecoded.getHorizontalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollConvertCommonEncoded.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollConvertCommonEncoded.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        this.component.selectConvertCommonCharset.addItemListener(e -> redo());
+        this.component.radioConvertCommonBase64.addActionListener(this::radioChanged);
+        this.component.radioConvertCommonHex.addActionListener(this::radioChanged);
+        this.component.radioConvertCommonHtml.addActionListener(this::radioChanged);
+        this.component.radioConvertCommonUnicode.addActionListener(this::radioChanged);
+        this.component.radioConvertCommonUriComponent.addActionListener(this::radioChanged);
+        this.component.radioConvertCommonJson.addActionListener(this::radioChanged);
+        this.component.radioConvertCommonTime.addActionListener(this::radioChanged);
+        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.component.scrollConvertCommonDecoded, this.component.scrollConvertCommonEncoded);
+        this.component.scrollConvertCommonDecoded.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollConvertCommonDecoded.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollConvertCommonEncoded.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollConvertCommonEncoded.getHorizontalScrollBar().addAdjustmentListener(syncListener);
     }
 
     private void radioChanged(ActionEvent e) {
@@ -142,8 +142,8 @@ public class MainFormConvertCommonFunction {
     }
 
     private String getCharset() {
-        int encodingModelIndex = this.mainForm.selectConvertCommonCharset.getSelectedIndex();
-        Object selectedObjects = this.mainForm.selectConvertCommonCharset.getModel().getSelectedItem();
+        int encodingModelIndex = this.component.selectConvertCommonCharset.getSelectedIndex();
+        Object selectedObjects = this.component.selectConvertCommonCharset.getModel().getSelectedItem();
         String charset;
         if (encodingModelIndex == 0) {
             charset = System.getProperty("file.encoding");
@@ -154,7 +154,7 @@ public class MainFormConvertCommonFunction {
     }
 
     private void autoEncode() {
-        if (this.mainForm.checkConvertCommonAuto.isSelected()) {
+        if (this.component.checkConvertCommonAuto.isSelected()) {
             encode();
         }
     }
@@ -162,18 +162,18 @@ public class MainFormConvertCommonFunction {
     private void clean() {
         flagCanEncode.set(false);
         flagCanDecode.set(false);
-        this.mainForm.textareaConvertCommonEncoded.setText("");
-        this.mainForm.textareaConvertCommonDecoded.setText("");
+        this.component.textareaConvertCommonEncoded.setText("");
+        this.component.textareaConvertCommonDecoded.setText("");
         flagCanEncode.set(true);
         flagCanDecode.set(true);
     }
 
     private void encode() {
-        String decoded = this.mainForm.textareaConvertCommonDecoded.getText();
+        String decoded = this.component.textareaConvertCommonDecoded.getText();
         if (decoded == null || decoded.trim().length() == 0) {
             return;
         }
-        if (this.mainForm.checkConvertCommonLine.isSelected()) {
+        if (this.component.checkConvertCommonLine.isSelected()) {
             String[] split = decoded.replace("\r", "").split("\n");
             StringBuilder sb = new StringBuilder();
             for (String eachLine : split) {
@@ -189,7 +189,7 @@ public class MainFormConvertCommonFunction {
             if (result.endsWith("\n")) {
                 result = result.substring(0, result.length() - 1);
             }
-            this.mainForm.textareaConvertCommonEncoded.setText(result);
+            this.component.textareaConvertCommonEncoded.setText(result);
         } else {
             String encoded;
             try {
@@ -197,7 +197,7 @@ public class MainFormConvertCommonFunction {
             } catch (Exception e) {
                 encoded = MessageUtil.getMessage("convert.encode.fail", e.getClass().getName(), e.getLocalizedMessage());
             }
-            this.mainForm.textareaConvertCommonEncoded.setText(encoded);
+            this.component.textareaConvertCommonEncoded.setText(encoded);
         }
     }
 
@@ -205,9 +205,9 @@ public class MainFormConvertCommonFunction {
         if (decoded == null || decoded.trim().length() == 0) {
             return "";
         }
-        if (this.mainForm.radioConvertCommonBase64.isSelected()) {
+        if (this.component.radioConvertCommonBase64.isSelected()) {
             return new String(Base64.getEncoder().encode(decoded.getBytes(getCharset())), getCharset());
-        } else if (this.mainForm.radioConvertCommonHex.isSelected()) {
+        } else if (this.component.radioConvertCommonHex.isSelected()) {
             if (decoded.startsWith("0x")) {
                 // HEX 从十六进制转换
                 decoded = decoded.substring(2);
@@ -233,18 +233,18 @@ public class MainFormConvertCommonFunction {
                 byte[] decodedBytes = decoded.getBytes(getCharset());
                 return StrUtil.bytesToHex(decodedBytes, getCharset());
             }
-        } else if (this.mainForm.radioConvertCommonHtml.isSelected()) {
+        } else if (this.component.radioConvertCommonHtml.isSelected()) {
             return StringEscapeUtils.escapeHtml4(decoded);
-        } else if (this.mainForm.radioConvertCommonUnicode.isSelected()) {
+        } else if (this.component.radioConvertCommonUnicode.isSelected()) {
             return StringEscapeUtils.escapeJava(decoded);
-        } else if (this.mainForm.radioConvertCommonUriComponent.isSelected()) {
+        } else if (this.component.radioConvertCommonUriComponent.isSelected()) {
             return URLEncoder.encode(decoded, getCharset())
                     .replace("+", "%20").replace("%21", "!")
                     .replace("%28", "(").replace("%29", ")")
                     .replace("%7E", "~").replace("%27", "'");
-        } else if (this.mainForm.radioConvertCommonJson.isSelected()) {
+        } else if (this.component.radioConvertCommonJson.isSelected()) {
             return StringEscapeUtils.escapeJson(decoded);
-        } else if (this.mainForm.radioConvertCommonTime.isSelected()) {
+        } else if (this.component.radioConvertCommonTime.isSelected()) {
             Long unixTimestamp = null;
             try {
                 unixTimestamp = Long.parseLong(decoded);
@@ -278,17 +278,17 @@ public class MainFormConvertCommonFunction {
     }
 
     private void autoDecode() {
-        if (this.mainForm.checkConvertCommonAuto.isSelected()) {
+        if (this.component.checkConvertCommonAuto.isSelected()) {
             decode();
         }
     }
 
     private void decode() {
-        String encoded = this.mainForm.textareaConvertCommonEncoded.getText();
+        String encoded = this.component.textareaConvertCommonEncoded.getText();
         if (encoded == null || encoded.trim().length() == 0) {
             return;
         }
-        if (this.mainForm.checkConvertCommonLine.isSelected()) {
+        if (this.component.checkConvertCommonLine.isSelected()) {
             String[] split = encoded.replace("\r", "").split("\n");
             StringBuilder sb = new StringBuilder();
             for (String eachLine : split) {
@@ -304,7 +304,7 @@ public class MainFormConvertCommonFunction {
             if (result.endsWith("\n")) {
                 result = result.substring(0, result.length() - 1);
             }
-            this.mainForm.textareaConvertCommonDecoded.setText(result);
+            this.component.textareaConvertCommonDecoded.setText(result);
         } else {
             String decoded;
             try {
@@ -312,7 +312,7 @@ public class MainFormConvertCommonFunction {
             } catch (Exception e) {
                 decoded = MessageUtil.getMessage("convert.decode.fail", e.getClass().getName(), e.getLocalizedMessage());
             }
-            this.mainForm.textareaConvertCommonDecoded.setText(decoded);
+            this.component.textareaConvertCommonDecoded.setText(decoded);
         }
     }
 
@@ -320,23 +320,23 @@ public class MainFormConvertCommonFunction {
         if (encoded == null || encoded.trim().length() == 0) {
             return "";
         }
-        if (this.mainForm.radioConvertCommonBase64.isSelected()) {
+        if (this.component.radioConvertCommonBase64.isSelected()) {
             return new String(Base64.getDecoder().decode(encoded.getBytes(getCharset())), getCharset());
-        } else if (this.mainForm.radioConvertCommonHex.isSelected()) {
+        } else if (this.component.radioConvertCommonHex.isSelected()) {
             return new String(HexUtil.decodeHex(encoded), getCharset());
-        } else if (this.mainForm.radioConvertCommonHtml.isSelected()) {
+        } else if (this.component.radioConvertCommonHtml.isSelected()) {
             return StringEscapeUtils.unescapeHtml4(encoded);
-        } else if (this.mainForm.radioConvertCommonUnicode.isSelected()) {
+        } else if (this.component.radioConvertCommonUnicode.isSelected()) {
             return StringEscapeUtils.unescapeJava(encoded);
-        } else if (this.mainForm.radioConvertCommonUriComponent.isSelected()) {
+        } else if (this.component.radioConvertCommonUriComponent.isSelected()) {
             return URLDecoder.decode(encoded
                             .replace("%20", "+").replace("!", "%21")
                             .replace("(", "%28").replace(")", "%29")
                             .replace("~", "%7E").replace("'", "%27")
                     , getCharset());
-        } else if (this.mainForm.radioConvertCommonJson.isSelected()) {
+        } else if (this.component.radioConvertCommonJson.isSelected()) {
             return StringEscapeUtils.unescapeJson(encoded);
-        } else if (this.mainForm.radioConvertCommonTime.isSelected()) {
+        } else if (this.component.radioConvertCommonTime.isSelected()) {
             throw new IllegalArgumentException(MessageUtil.getMessage("convert.decode.time.not.support"));
         }
         throw new IllegalArgumentException(MessageUtil.getMessage("convert.decode.not.select.type"));

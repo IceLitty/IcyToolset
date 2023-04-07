@@ -12,6 +12,7 @@ import java.text.NumberFormat;
  * @author IceRain
  * @since 2022/01/19
  */
+@Deprecated
 public class MainForm {
 
     JPanel panelMain;

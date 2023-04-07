@@ -19,20 +19,20 @@ import java.util.Base64;
  */
 public class MainFormConvertImgBase64Function {
 
-    private final MainForm mainForm;
+    private final ToolWindowConvert component;
     private VirtualFile toSelect = null;
 
-    public MainFormConvertImgBase64Function(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.fileConvertImgBase64Path.addActionListener(this::encodeToString);
-        this.mainForm.selectConvertImgBase64Charset.addItemListener(e -> this.encodeToString());
-        this.mainForm.buttonConvertImgBase64Encode.addActionListener(e -> this.encodeToFile(this.encodeToString()));
-        this.mainForm.buttonConvertImgBase64Decode.addActionListener(this::decodeToFile);
-        this.mainForm.buttonConvertImgBase64Clean.addActionListener(e -> this.clean());
+    public MainFormConvertImgBase64Function(ToolWindowConvert component) {
+        this.component = component;
+        this.component.fileConvertImgBase64Path.addActionListener(this::encodeToString);
+        this.component.selectConvertImgBase64Charset.addItemListener(e -> this.encodeToString());
+        this.component.buttonConvertImgBase64Encode.addActionListener(e -> this.encodeToFile(this.encodeToString()));
+        this.component.buttonConvertImgBase64Decode.addActionListener(this::decodeToFile);
+        this.component.buttonConvertImgBase64Clean.addActionListener(e -> this.clean());
     }
 
     private void clean() {
-        this.mainForm.textareaConvertImgBase64.setText("");
+        this.component.textareaConvertImgBase64.setText("");
     }
 
     /**
@@ -63,7 +63,7 @@ public class MainFormConvertImgBase64Function {
     private String encodeToString() {
         clean();
         if (this.toSelect != null) {
-            this.mainForm.fileConvertImgBase64Path.setText(this.toSelect.getPath());
+            this.component.fileConvertImgBase64Path.setText(this.toSelect.getPath());
             if (this.toSelect.isDirectory()) {
                 File srcDir = new File(this.toSelect.getPath());
                 encodeToFileMulti(srcDir);
@@ -77,8 +77,8 @@ public class MainFormConvertImgBase64Function {
                 return null;
             }
             byte[] encode = Base64.getEncoder().encode(bytes);
-            int encodingModelIndex = this.mainForm.selectConvertImgBase64Charset.getSelectedIndex();
-            Object selectedObjects = this.mainForm.selectConvertImgBase64Charset.getModel().getSelectedItem();
+            int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
+            Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
             String text;
             if (encodingModelIndex == 0) {
                 text = new String(encode);
@@ -90,7 +90,7 @@ public class MainFormConvertImgBase64Function {
                     return null;
                 }
             }
-            this.mainForm.textareaConvertImgBase64.setText(StrUtil.showMax(text, 2000));
+            this.component.textareaConvertImgBase64.setText(StrUtil.showMax(text, 2000));
             return text;
         }
         return null;
@@ -107,7 +107,7 @@ public class MainFormConvertImgBase64Function {
             return;
         }
         JFileChooser fileChooser = new JFileChooser(this.toSelect == null ? null : this.toSelect.getPath());
-        int status = fileChooser.showSaveDialog(this.mainForm.panelMain);
+        int status = fileChooser.showSaveDialog(this.component.panelMain);
         if (status == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try {
@@ -184,11 +184,11 @@ public class MainFormConvertImgBase64Function {
      */
     private void decodeToFile(ActionEvent e) {
         String destPath = null;
-        String text = this.mainForm.textareaConvertImgBase64.getText();
+        String text = this.component.textareaConvertImgBase64.getText();
         boolean needReSelectFile = text == null || text.trim().length() == 0 || StrUtil.endsWithShowMax(text);
         if (needReSelectFile) {
-            int encodingModelIndex = this.mainForm.selectConvertImgBase64Charset.getSelectedIndex();
-            Object selectedObjects = this.mainForm.selectConvertImgBase64Charset.getModel().getSelectedItem();
+            int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
+            Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
             String charset;
             if (encodingModelIndex == 0) {
                 charset = System.getProperty("file.encoding");
@@ -241,8 +241,8 @@ public class MainFormConvertImgBase64Function {
             NotificationUtil.error(MessageUtil.getMessage("convert.img.not.base64"));
             return;
         }
-        int encodingModelIndex = this.mainForm.selectConvertImgBase64Charset.getSelectedIndex();
-        Object selectedObjects = this.mainForm.selectConvertImgBase64Charset.getModel().getSelectedItem();
+        int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
+        Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
         byte[] decode;
         try {
             byte[] bytes;
@@ -257,7 +257,7 @@ public class MainFormConvertImgBase64Function {
             return;
         }
         JFileChooser fileChooser = new JFileChooser(destPath);
-        int status = fileChooser.showSaveDialog(this.mainForm.panelMain);
+        int status = fileChooser.showSaveDialog(this.component.panelMain);
         if (status == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try {
@@ -329,8 +329,8 @@ public class MainFormConvertImgBase64Function {
                     NotificationUtil.warning(MessageUtil.getMessage("convert.img.not.base64"), f.getPath());
                     continue;
                 }
-                int encodingModelIndex = this.mainForm.selectConvertImgBase64Charset.getSelectedIndex();
-                Object selectedObjects = this.mainForm.selectConvertImgBase64Charset.getModel().getSelectedItem();
+                int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
+                Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
                 byte[] decode;
                 try {
                     byte[] bytes;

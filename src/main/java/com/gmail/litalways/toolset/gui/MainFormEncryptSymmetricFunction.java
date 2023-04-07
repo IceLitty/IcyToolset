@@ -25,37 +25,37 @@ import java.util.Base64;
  */
 public class MainFormEncryptSymmetricFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowEncrypt component;
 
-    public MainFormEncryptSymmetricFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.buttonEncryptSymmetricEncrypt.addActionListener(this::encrypt);
-        this.mainForm.buttonEncryptSymmetricDecrypt.addActionListener(this::decrypt);
-        this.mainForm.buttonEncryptSymmetricClean.addActionListener(e -> this.clean());
-        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollEncryptSymmetricDecrypted, this.mainForm.scrollEncryptSymmetricEncrypted);
-        this.mainForm.scrollEncryptSymmetricDecrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptSymmetricDecrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptSymmetricEncrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptSymmetricEncrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+    public MainFormEncryptSymmetricFunction(ToolWindowEncrypt component) {
+        this.component = component;
+        this.component.buttonEncryptSymmetricEncrypt.addActionListener(this::encrypt);
+        this.component.buttonEncryptSymmetricDecrypt.addActionListener(this::decrypt);
+        this.component.buttonEncryptSymmetricClean.addActionListener(e -> this.clean());
+        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.component.scrollEncryptSymmetricDecrypted, this.component.scrollEncryptSymmetricEncrypted);
+        this.component.scrollEncryptSymmetricDecrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptSymmetricDecrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptSymmetricEncrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptSymmetricEncrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
     }
 
     private void clean() {
-        this.mainForm.textareaEncryptSymmetricEncrypted.setText("");
-        this.mainForm.textareaEncryptSymmetricDecrypted.setText("");
+        this.component.textareaEncryptSymmetricEncrypted.setText("");
+        this.component.textareaEncryptSymmetricDecrypted.setText("");
     }
 
     private void encrypt(ActionEvent e) {
         try {
-            String source = this.mainForm.textareaEncryptSymmetricDecrypted.getText();
-            String type = (String) this.mainForm.selectEncryptSymmetricType.getModel().getSelectedItem();
-            String mode = (String) this.mainForm.selectEncryptSymmetricMode.getModel().getSelectedItem();
-            int padding = this.mainForm.selectEncryptSymmetricPadding.getSelectedIndex();
-            String key = this.mainForm.textEncryptSymmetricKey.getText();
-            String iv = this.mainForm.textEncryptSymmetricIV.getText();
-            String salt = this.mainForm.textEncryptSymmetricSalt.getText();
-            String outputType = (String) this.mainForm.selectEncryptSymmetricOutputType.getModel().getSelectedItem();
+            String source = this.component.textareaEncryptSymmetricDecrypted.getText();
+            String type = (String) this.component.selectEncryptSymmetricType.getModel().getSelectedItem();
+            String mode = (String) this.component.selectEncryptSymmetricMode.getModel().getSelectedItem();
+            int padding = this.component.selectEncryptSymmetricPadding.getSelectedIndex();
+            String key = this.component.textEncryptSymmetricKey.getText();
+            String iv = this.component.textEncryptSymmetricIV.getText();
+            String salt = this.component.textEncryptSymmetricSalt.getText();
+            String outputType = (String) this.component.selectEncryptSymmetricOutputType.getModel().getSelectedItem();
             String dest = func(true, type, mode, padding, key, iv, salt, source, outputType);
-            this.mainForm.textareaEncryptSymmetricEncrypted.setText(dest);
+            this.component.textareaEncryptSymmetricEncrypted.setText(dest);
         } catch (Exception ex) {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
@@ -63,24 +63,24 @@ public class MainFormEncryptSymmetricFunction {
 
     private void decrypt(ActionEvent e) {
         try {
-            String source = this.mainForm.textareaEncryptSymmetricEncrypted.getText();
-            String type = (String) this.mainForm.selectEncryptSymmetricType.getModel().getSelectedItem();
-            String mode = (String) this.mainForm.selectEncryptSymmetricMode.getModel().getSelectedItem();
-            int padding = this.mainForm.selectEncryptSymmetricPadding.getSelectedIndex();
-            String key = this.mainForm.textEncryptSymmetricKey.getText();
-            String iv = this.mainForm.textEncryptSymmetricIV.getText();
-            String salt = this.mainForm.textEncryptSymmetricSalt.getText();
-            String outputType = (String) this.mainForm.selectEncryptSymmetricOutputType.getModel().getSelectedItem();
+            String source = this.component.textareaEncryptSymmetricEncrypted.getText();
+            String type = (String) this.component.selectEncryptSymmetricType.getModel().getSelectedItem();
+            String mode = (String) this.component.selectEncryptSymmetricMode.getModel().getSelectedItem();
+            int padding = this.component.selectEncryptSymmetricPadding.getSelectedIndex();
+            String key = this.component.textEncryptSymmetricKey.getText();
+            String iv = this.component.textEncryptSymmetricIV.getText();
+            String salt = this.component.textEncryptSymmetricSalt.getText();
+            String outputType = (String) this.component.selectEncryptSymmetricOutputType.getModel().getSelectedItem();
             String dest = func(false, type, mode, padding, key, iv, salt, source, outputType);
-            this.mainForm.textareaEncryptSymmetricDecrypted.setText(dest);
+            this.component.textareaEncryptSymmetricDecrypted.setText(dest);
         } catch (Exception ex) {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 
     private String getCharset() {
-        int encodingModelIndex = this.mainForm.selectEncryptSymmetricEncoding.getSelectedIndex();
-        Object selectedObjects = this.mainForm.selectEncryptSymmetricEncoding.getModel().getSelectedItem();
+        int encodingModelIndex = this.component.selectEncryptSymmetricEncoding.getSelectedIndex();
+        Object selectedObjects = this.component.selectEncryptSymmetricEncoding.getModel().getSelectedItem();
         String charset;
         if (encodingModelIndex == 0) {
             charset = System.getProperty("file.encoding");
@@ -119,7 +119,7 @@ public class MainFormEncryptSymmetricFunction {
             case 6 -> Padding.SSL3Padding;
             default ->
                     throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.padding.not.support",
-                            this.mainForm.selectEncryptSymmetricPadding.getModel().getSelectedItem()));
+                            this.component.selectEncryptSymmetricPadding.getModel().getSelectedItem()));
         };
         byte[] key = keyStr.getBytes(getCharset());
         byte[] iv = null;

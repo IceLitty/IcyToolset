@@ -28,35 +28,35 @@ import java.util.Map;
  */
 public class MainFormZxingFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowQRCode component;
     private VirtualFile toSelect = null;
     private String lastSaveImgPath = null;
 
-    public MainFormZxingFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.radioZxingQr.setSelected(true);
-        this.mainForm.textZxingWidth.setValue(200);
-        this.mainForm.textZxingHeight.setValue(200);
-        this.mainForm.radioZxingQr.addActionListener(e -> {
-            this.mainForm.textZxingWidth.setValue(200);
-            this.mainForm.textZxingHeight.setValue(200);
+    public MainFormZxingFunction(ToolWindowQRCode component) {
+        this.component = component;
+        this.component.radioZxingQr.setSelected(true);
+        this.component.textZxingWidth.setValue(200);
+        this.component.textZxingHeight.setValue(200);
+        this.component.radioZxingQr.addActionListener(e -> {
+            this.component.textZxingWidth.setValue(200);
+            this.component.textZxingHeight.setValue(200);
         });
-        this.mainForm.radioZxingBar.addActionListener(e -> {
-            this.mainForm.textZxingWidth.setValue(500);
-            this.mainForm.textZxingHeight.setValue(200);
+        this.component.radioZxingBar.addActionListener(e -> {
+            this.component.textZxingWidth.setValue(500);
+            this.component.textZxingHeight.setValue(200);
         });
-        this.mainForm.radioZxingMatrix.addActionListener(e -> {
-            this.mainForm.textZxingWidth.setValue(200);
-            this.mainForm.textZxingHeight.setValue(200);
+        this.component.radioZxingMatrix.addActionListener(e -> {
+            this.component.textZxingWidth.setValue(200);
+            this.component.textZxingHeight.setValue(200);
         });
-        this.mainForm.buttonZxingToFile.addActionListener(e -> {
+        this.component.buttonZxingToFile.addActionListener(e -> {
             encode();
         });
-        this.mainForm.fileZxingFromFile.addActionListener(e -> {
+        this.component.fileZxingFromFile.addActionListener(e -> {
             FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, true, false, true, false);
             this.toSelect = FileChooser.chooseFile(descriptor, null, this.toSelect);
             if (this.toSelect != null) {
-                this.mainForm.fileZxingFromFile.setText(this.toSelect.getPresentableUrl());
+                this.component.fileZxingFromFile.setText(this.toSelect.getPresentableUrl());
                 decode();
                 if (this.lastSaveImgPath == null) {
                     this.lastSaveImgPath = this.toSelect.getPath();
@@ -66,8 +66,8 @@ public class MainFormZxingFunction {
     }
 
     private String getCharset() {
-        int encodingModelIndex = this.mainForm.selectZxingEncoding.getSelectedIndex();
-        Object selectedObjects = this.mainForm.selectZxingEncoding.getModel().getSelectedItem();
+        int encodingModelIndex = this.component.selectZxingEncoding.getSelectedIndex();
+        Object selectedObjects = this.component.selectZxingEncoding.getModel().getSelectedItem();
         String charset;
         if (encodingModelIndex == 0) {
             charset = System.getProperty("file.encoding");
@@ -78,27 +78,27 @@ public class MainFormZxingFunction {
     }
 
     private void encode() {
-        String content = this.mainForm.textareaZxingText.getText();
+        String content = this.component.textareaZxingText.getText();
         BarcodeFormat barcodeFormat;
-        if (this.mainForm.radioZxingQr.isSelected()) {
+        if (this.component.radioZxingQr.isSelected()) {
             barcodeFormat = BarcodeFormat.QR_CODE;
-        } else if (this.mainForm.radioZxingBar.isSelected()) {
+        } else if (this.component.radioZxingBar.isSelected()) {
             barcodeFormat = BarcodeFormat.CODE_128;
-        } else if (this.mainForm.radioZxingMatrix.isSelected()) {
+        } else if (this.component.radioZxingMatrix.isSelected()) {
             barcodeFormat = BarcodeFormat.DATA_MATRIX;
         } else {
             NotificationUtil.error(MessageUtil.getMessage("qr.type.not.support"));
             return;
         }
-        Integer width = this.mainForm.textZxingWidth.getValue() == null ? null : Integer.parseInt(String.valueOf(this.mainForm.textZxingWidth.getValue()));
-        Integer height = this.mainForm.textZxingHeight.getValue() == null ? null : Integer.parseInt(String.valueOf(this.mainForm.textZxingHeight.getValue()));
+        Integer width = this.component.textZxingWidth.getValue() == null ? null : Integer.parseInt(String.valueOf(this.component.textZxingWidth.getValue()));
+        Integer height = this.component.textZxingHeight.getValue() == null ? null : Integer.parseInt(String.valueOf(this.component.textZxingHeight.getValue()));
         if (width == null || height == null) {
             NotificationUtil.error(MessageUtil.getMessage("qr.width.height.not.specified"));
             return;
         }
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, getCharset());
-        int errorCorrectionIndex = this.mainForm.selectZxingErrorCorrection.getSelectedIndex();
+        int errorCorrectionIndex = this.component.selectZxingErrorCorrection.getSelectedIndex();
         switch (errorCorrectionIndex) {
             case 0:
                 hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
@@ -125,7 +125,7 @@ public class MainFormZxingFunction {
         }
         JFileChooser fileChooser = new JFileChooser(this.lastSaveImgPath);
         fileChooser.setFileFilter(new PngFileFilter());
-        int status = fileChooser.showSaveDialog(this.mainForm.panelMain);
+        int status = fileChooser.showSaveDialog(this.component.panelMain);
         if (status == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fileChooser.getSelectedFile();
@@ -142,11 +142,11 @@ public class MainFormZxingFunction {
 
     private void decode() {
         BarcodeFormat barcodeFormat = null;
-        if (this.mainForm.radioZxingQr.isSelected()) {
+        if (this.component.radioZxingQr.isSelected()) {
             barcodeFormat = BarcodeFormat.QR_CODE;
-        } else if (this.mainForm.radioZxingBar.isSelected()) {
+        } else if (this.component.radioZxingBar.isSelected()) {
             barcodeFormat = BarcodeFormat.CODE_128;
-        } else if (this.mainForm.radioZxingMatrix.isSelected()) {
+        } else if (this.component.radioZxingMatrix.isSelected()) {
             barcodeFormat = BarcodeFormat.DATA_MATRIX;
         }
         try (InputStream fileIs = this.toSelect.getInputStream()) {
@@ -160,7 +160,7 @@ public class MainFormZxingFunction {
                 hints.put(DecodeHintType.POSSIBLE_FORMATS, Collections.singletonList(barcodeFormat));
             }
             Result result = new MultiFormatReader().decode(binaryBitmap, hints);
-            this.mainForm.textareaZxingText.setText(result.getText());
+            this.component.textareaZxingText.setText(result.getText());
         } catch (Exception ex) {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }

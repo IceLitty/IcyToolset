@@ -18,16 +18,16 @@ import java.util.List;
  */
 public class MainFormFormatFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowFormat component;
 
-    public MainFormFormatFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.buttonFormatDo.addActionListener(this::format);
-        this.mainForm.buttonFormatUndo.addActionListener(this::unFormat);
+    public MainFormFormatFunction(ToolWindowFormat component) {
+        this.component = component;
+        this.component.buttonFormatDo.addActionListener(this::format);
+        this.component.buttonFormatUndo.addActionListener(this::unFormat);
     }
 
     private void format(ActionEvent e) {
-        String text = this.mainForm.textareaFormat.getText();
+        String text = this.component.textareaFormat.getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
         if (tmp.length() < 1) {
             return;
@@ -36,17 +36,17 @@ public class MainFormFormatFunction {
             case "{" -> {
                 JSONObject jsonObject = JSONUtil.parseObj(text);
                 text = jsonObject.toJSONString(4);
-                this.mainForm.textareaFormat.setText(text);
+                this.component.textareaFormat.setText(text);
             }
             case "[" -> {
                 JSONArray jsonArray = JSONUtil.parseArray(text);
                 text = jsonArray.toJSONString(4);
-                this.mainForm.textareaFormat.setText(text);
+                this.component.textareaFormat.setText(text);
             }
             case "<" -> {
                 Document document = XmlUtil.parseXml(text);
                 text = XmlUtil.toStr(document, true);
-                this.mainForm.textareaFormat.setText(text);
+                this.component.textareaFormat.setText(text);
             }
             default -> NotificationUtil.error(MessageUtil.getMessage("convert.format.only.support.lang"));
         }
@@ -151,7 +151,7 @@ public class MainFormFormatFunction {
     }
 
     private void unFormat(ActionEvent e) {
-        String text = this.mainForm.textareaFormat.getText();
+        String text = this.component.textareaFormat.getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
         if (tmp.length() < 1) {
             return;
@@ -161,19 +161,19 @@ public class MainFormFormatFunction {
                 JSONObject jsonObject = JSONUtil.parseObj(text);
                 text = jsonObject.toJSONString(4);
                 text = unFormatJson(text);
-                this.mainForm.textareaFormat.setText(text);
+                this.component.textareaFormat.setText(text);
             }
             case "[" -> {
                 JSONArray jsonArray = JSONUtil.parseArray(text);
                 text = jsonArray.toJSONString(4);
                 text = unFormatJson(text);
-                this.mainForm.textareaFormat.setText(text);
+                this.component.textareaFormat.setText(text);
             }
             case "<" -> {
                 Document document = XmlUtil.parseXml(text);
                 text = XmlUtil.toStr(document, true);
                 text = unFormatXml(text);
-                this.mainForm.textareaFormat.setText(text);
+                this.component.textareaFormat.setText(text);
             }
             default -> NotificationUtil.error(MessageUtil.getMessage("convert.format.only.support.lang"));
         }

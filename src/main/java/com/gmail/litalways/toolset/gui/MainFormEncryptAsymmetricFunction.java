@@ -24,62 +24,62 @@ import java.util.Base64;
  */
 public class MainFormEncryptAsymmetricFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowEncrypt component;
     private VirtualFile toSelectPublicKey = null;
     private VirtualFile toSelectPrivateKey = null;
 
-    public MainFormEncryptAsymmetricFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.fileEncryptAsymmetricPublicKey.addActionListener(this::selectPublicKey);
-        this.mainForm.fileEncryptAsymmetricPrivateKey.addActionListener(this::selectPrivateKey);
-        this.mainForm.buttonEncryptAsymmetricGenerateKey.addActionListener(this::generateKey);
-        this.mainForm.buttonEncryptAsymmetricClean.addActionListener(e -> this.clean());
-        this.mainForm.buttonEncryptAsymmetricEncryptWithPublicKey.addActionListener(e -> {
+    public MainFormEncryptAsymmetricFunction(ToolWindowEncrypt component) {
+        this.component = component;
+        this.component.fileEncryptAsymmetricPublicKey.addActionListener(this::selectPublicKey);
+        this.component.fileEncryptAsymmetricPrivateKey.addActionListener(this::selectPrivateKey);
+        this.component.buttonEncryptAsymmetricGenerateKey.addActionListener(this::generateKey);
+        this.component.buttonEncryptAsymmetricClean.addActionListener(e -> this.clean());
+        this.component.buttonEncryptAsymmetricEncryptWithPublicKey.addActionListener(e -> {
             String result;
             try {
-                result = this.encryptWithPublicKey(this.mainForm.textareaEncryptAsymmetricDecrypted.getText());
+                result = this.encryptWithPublicKey(this.component.textareaEncryptAsymmetricDecrypted.getText());
             } catch (Exception ex) {
                 result = ex.getClass().getName() + ": " + ex.getLocalizedMessage();
             }
-            this.mainForm.textareaEncryptAsymmetricEncrypted.setText(result);
+            this.component.textareaEncryptAsymmetricEncrypted.setText(result);
         });
-        this.mainForm.buttonEncryptAsymmetricDecryptWithPrivateKey.addActionListener(e -> {
+        this.component.buttonEncryptAsymmetricDecryptWithPrivateKey.addActionListener(e -> {
             String result;
             try {
-                result = this.decryptWithPrivateKey(this.mainForm.textareaEncryptAsymmetricEncrypted.getText());
+                result = this.decryptWithPrivateKey(this.component.textareaEncryptAsymmetricEncrypted.getText());
             } catch (Exception ex) {
                 result = ex.getClass().getName() + ": " + ex.getLocalizedMessage();
             }
-            this.mainForm.textareaEncryptAsymmetricDecrypted.setText(result);
+            this.component.textareaEncryptAsymmetricDecrypted.setText(result);
         });
-        this.mainForm.buttonEncryptAsymmetricEncryptWithPrivateKey.addActionListener(e -> {
+        this.component.buttonEncryptAsymmetricEncryptWithPrivateKey.addActionListener(e -> {
             String result;
             try {
-                result = this.encryptWithPrivateKey(this.mainForm.textareaEncryptAsymmetricDecrypted.getText());
+                result = this.encryptWithPrivateKey(this.component.textareaEncryptAsymmetricDecrypted.getText());
             } catch (Exception ex) {
                 result = ex.getClass().getName() + ": " + ex.getLocalizedMessage();
             }
-            this.mainForm.textareaEncryptAsymmetricEncrypted.setText(result);
+            this.component.textareaEncryptAsymmetricEncrypted.setText(result);
         });
-        this.mainForm.buttonEncryptAsymmetricDecryptWithPublicKey.addActionListener(e -> {
+        this.component.buttonEncryptAsymmetricDecryptWithPublicKey.addActionListener(e -> {
             String result;
             try {
-                result = this.decryptWithPublicKey(this.mainForm.textareaEncryptAsymmetricEncrypted.getText());
+                result = this.decryptWithPublicKey(this.component.textareaEncryptAsymmetricEncrypted.getText());
             } catch (Exception ex) {
                 result = ex.getClass().getName() + ": " + ex.getLocalizedMessage();
             }
-            this.mainForm.textareaEncryptAsymmetricDecrypted.setText(result);
+            this.component.textareaEncryptAsymmetricDecrypted.setText(result);
         });
-        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollEncryptAsymmetricDecrypted, this.mainForm.scrollEncryptAsymmetricEncrypted);
-        this.mainForm.scrollEncryptAsymmetricDecrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptAsymmetricDecrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptAsymmetricEncrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptAsymmetricEncrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.component.scrollEncryptAsymmetricDecrypted, this.component.scrollEncryptAsymmetricEncrypted);
+        this.component.scrollEncryptAsymmetricDecrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptAsymmetricDecrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptAsymmetricEncrypted.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptAsymmetricEncrypted.getHorizontalScrollBar().addAdjustmentListener(syncListener);
     }
 
     private void clean() {
-        this.mainForm.textareaEncryptAsymmetricEncrypted.setText("");
-        this.mainForm.textareaEncryptAsymmetricDecrypted.setText("");
+        this.component.textareaEncryptAsymmetricEncrypted.setText("");
+        this.component.textareaEncryptAsymmetricDecrypted.setText("");
     }
 
     private void selectPublicKey(ActionEvent e) {
@@ -96,7 +96,7 @@ public class MainFormEncryptAsymmetricFunction {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             return;
         }
-        this.mainForm.textEncryptAsymmetricPublicKey.setText(publicKey);
+        this.component.textEncryptAsymmetricPublicKey.setText(publicKey);
     }
 
     private void selectPrivateKey(ActionEvent e) {
@@ -113,22 +113,22 @@ public class MainFormEncryptAsymmetricFunction {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             return;
         }
-        this.mainForm.textEncryptAsymmetricPrivateKey.setText(privateKey);
+        this.component.textEncryptAsymmetricPrivateKey.setText(privateKey);
     }
 
     private void generateKey(ActionEvent e) {
         try {
-            KeyPair keyPair = SecureUtil.generateKeyPair((String) this.mainForm.selectEncryptAsymmetricType.getModel().getSelectedItem());
-            this.mainForm.textEncryptAsymmetricPublicKey.setText(new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()), getCharset()));
-            this.mainForm.textEncryptAsymmetricPrivateKey.setText(new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()), getCharset()));
+            KeyPair keyPair = SecureUtil.generateKeyPair((String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem());
+            this.component.textEncryptAsymmetricPublicKey.setText(new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()), getCharset()));
+            this.component.textEncryptAsymmetricPrivateKey.setText(new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()), getCharset()));
         } catch (UnsupportedEncodingException ex) {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 
     private String getCharset() {
-        int encodingModelIndex = this.mainForm.selectEncryptAsymmetricEncoding.getSelectedIndex();
-        Object selectedObjects = this.mainForm.selectEncryptAsymmetricEncoding.getModel().getSelectedItem();
+        int encodingModelIndex = this.component.selectEncryptAsymmetricEncoding.getSelectedIndex();
+        Object selectedObjects = this.component.selectEncryptAsymmetricEncoding.getModel().getSelectedItem();
         String charset;
         if (encodingModelIndex == 0) {
             charset = System.getProperty("file.encoding");
@@ -139,11 +139,11 @@ public class MainFormEncryptAsymmetricFunction {
     }
 
     private String encryptWithPublicKey(String source) throws UnsupportedEncodingException {
-        String publicKey = this.mainForm.textEncryptAsymmetricPublicKey.getText();
+        String publicKey = this.component.textEncryptAsymmetricPublicKey.getText();
         if (publicKey == null || publicKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
             return "";
         }
-        String type = (String) this.mainForm.selectEncryptAsymmetricType.getModel().getSelectedItem();
+        String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
         AsymmetricCrypto crypto = new AsymmetricCrypto(type, null, publicKey);
         byte[] encrypt = crypto.encrypt(source.getBytes(getCharset()), KeyType.PublicKey);
         byte[] encode = Base64.getEncoder().encode(encrypt);
@@ -151,11 +151,11 @@ public class MainFormEncryptAsymmetricFunction {
     }
 
     private String decryptWithPrivateKey(String source) throws UnsupportedEncodingException {
-        String privateKey = this.mainForm.textEncryptAsymmetricPrivateKey.getText();
+        String privateKey = this.component.textEncryptAsymmetricPrivateKey.getText();
         if (privateKey == null || privateKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
             return "";
         }
-        String type = (String) this.mainForm.selectEncryptAsymmetricType.getModel().getSelectedItem();
+        String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
         AsymmetricCrypto crypto = new AsymmetricCrypto(type, privateKey, null);
         byte[] decode = Base64.getDecoder().decode(source.getBytes(getCharset()));
         byte[] decrypt = crypto.decrypt(decode, KeyType.PrivateKey);
@@ -163,11 +163,11 @@ public class MainFormEncryptAsymmetricFunction {
     }
 
     private String encryptWithPrivateKey(String source) throws UnsupportedEncodingException {
-        String privateKey = this.mainForm.textEncryptAsymmetricPrivateKey.getText();
+        String privateKey = this.component.textEncryptAsymmetricPrivateKey.getText();
         if (privateKey == null || privateKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
             return "";
         }
-        String type = (String) this.mainForm.selectEncryptAsymmetricType.getModel().getSelectedItem();
+        String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
         AsymmetricCrypto crypto = new AsymmetricCrypto(type, privateKey, null);
         byte[] encrypt = crypto.encrypt(source.getBytes(getCharset()), KeyType.PrivateKey);
         byte[] encode = Base64.getEncoder().encode(encrypt);
@@ -175,11 +175,11 @@ public class MainFormEncryptAsymmetricFunction {
     }
 
     private String decryptWithPublicKey(String source) throws UnsupportedEncodingException {
-        String publicKey = this.mainForm.textEncryptAsymmetricPublicKey.getText();
+        String publicKey = this.component.textEncryptAsymmetricPublicKey.getText();
         if (publicKey == null || publicKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
             return "";
         }
-        String type = (String) this.mainForm.selectEncryptAsymmetricType.getModel().getSelectedItem();
+        String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
         AsymmetricCrypto crypto = new AsymmetricCrypto(type, null, publicKey);
         byte[] decode = Base64.getDecoder().decode(source.getBytes(getCharset()));
         byte[] decrypt = crypto.decrypt(decode, KeyType.PublicKey);

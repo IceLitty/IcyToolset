@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.gmail.litalways.toolset.gui.ToolWindowQRCode">
+  <grid id="27dc6" binding="panelMain" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="1169" height="437"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="8bc4f" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="44477" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="ad65a" class="javax.swing.JButton" binding="buttonZxingToFile">
+                <constraints>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text resource-bundle="formTitle" key="button.zxing.toFile.title"/>
+                </properties>
+              </component>
+              <component id="cd38e" class="javax.swing.JFormattedTextField" binding="textZxingWidth" custom-create="true">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value=""/>
+                  <toolTipText resource-bundle="formTitle" key="text.zxing.width.tooltip"/>
+                </properties>
+              </component>
+              <component id="6122b" class="javax.swing.JFormattedTextField" binding="textZxingHeight" custom-create="true">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value=""/>
+                  <toolTipText resource-bundle="formTitle" key="text.zxing.height.tooltip"/>
+                </properties>
+              </component>
+              <component id="83b68" class="javax.swing.JComboBox" binding="selectZxingEncoding">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <editable value="true"/>
+                  <model>
+                    <item value="&lt;AUTO&gt;"/>
+                    <item value="UTF-8"/>
+                    <item value="GB2312"/>
+                    <item value="GBK"/>
+                    <item value="ISO-8859-1"/>
+                  </model>
+                  <toolTipText resource-bundle="formTitle" key="select.convert.imgbase64.encoding.tooltip"/>
+                </properties>
+              </component>
+              <component id="f1a4a" class="javax.swing.JComboBox" binding="selectZxingErrorCorrection">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                  <model>
+                    <item value="30%容错率(H)"/>
+                    <item value="25%容错率(Q)"/>
+                    <item value="15%容错率(M)"/>
+                    <item value="7%容错率(L)"/>
+                    <item value="无"/>
+                  </model>
+                  <toolTipText resource-bundle="formTitle" key="select.zxing.errorCorrection.tooltip"/>
+                </properties>
+              </component>
+              <component id="c8430" class="javax.swing.JButton" binding="buttonZxingClean">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text resource-bundle="formTitle" key="button.zxing.clean.title"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <scrollpane id="1643a">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="etched"/>
+            <children>
+              <component id="3714d" class="javax.swing.JTextArea" binding="textareaZxingText">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
+          </scrollpane>
+        </children>
+      </grid>
+      <grid id="83074" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="c09cb" class="javax.swing.JRadioButton" binding="radioZxingQr">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <selected value="false"/>
+              <text resource-bundle="formTitle" key="radio.zxing.qr.title"/>
+              <toolTipText resource-bundle="formTitle" key="radio.zxing.tooltip"/>
+            </properties>
+          </component>
+          <component id="45349" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileZxingFromFile">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <toolTipText resource-bundle="formTitle" key="file.zxing.fromFile.tooltip"/>
+            </properties>
+          </component>
+          <component id="b7f78" class="javax.swing.JRadioButton" binding="radioZxingBar">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text resource-bundle="formTitle" key="radio.zxing.bar.title"/>
+              <toolTipText resource-bundle="formTitle" key="radio.zxing.tooltip"/>
+            </properties>
+          </component>
+          <component id="d3c" class="javax.swing.JRadioButton" binding="radioZxingMatrix">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text resource-bundle="formTitle" key="radio.zxing.matrix.title"/>
+              <toolTipText resource-bundle="formTitle" key="radio.zxing.tooltip"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+  <buttonGroups>
+    <group name="radioGroupZxing">
+      <member id="c09cb"/>
+      <member id="b7f78"/>
+      <member id="d3c"/>
+    </group>
+  </buttonGroups>
+</form>

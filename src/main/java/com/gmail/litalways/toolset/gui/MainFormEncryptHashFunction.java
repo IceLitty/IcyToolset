@@ -28,23 +28,23 @@ import java.util.Base64;
  */
 public class MainFormEncryptHashFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowEncrypt component;
     private VirtualFile[] toSelects = new VirtualFile[0];
     private VirtualFile[] toSelectAssets = new VirtualFile[0];
     private Integer lastFunction = null;
 
-    public MainFormEncryptHashFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.buttonEncryptHashGenerateKey.addActionListener(this::generateHMacKey);
-        this.mainForm.buttonEncryptHashClean.addActionListener(e -> this.clean());
-        this.mainForm.fileEncryptHashFile.addActionListener(e -> {
+    public MainFormEncryptHashFunction(ToolWindowEncrypt component) {
+        this.component = component;
+        this.component.buttonEncryptHashGenerateKey.addActionListener(this::generateHMacKey);
+        this.component.buttonEncryptHashClean.addActionListener(e -> this.clean());
+        this.component.fileEncryptHashFile.addActionListener(e -> {
             FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, true, true, false, true);
             this.toSelects = FileChooser.chooseFiles(descriptor, null, this.toSelects.length == 0 ? null : this.toSelects[this.toSelects.length - 1]);
             if (this.toSelects.length == 0) {
-                this.mainForm.fileEncryptHashFile.setText("");
+                this.component.fileEncryptHashFile.setText("");
                 return;
             }
-            this.mainForm.fileEncryptHashFile.setText(this.toSelects[this.toSelects.length - 1].getPresentableUrl() + (this.toSelects.length == 1 ? "" : (" ... and " + (this.toSelects.length - 1) + " files.")));
+            this.component.fileEncryptHashFile.setText(this.toSelects[this.toSelects.length - 1].getPresentableUrl() + (this.toSelects.length == 1 ? "" : (" ... and " + (this.toSelects.length - 1) + " files.")));
             // Calc size and tips
             for (VirtualFile file : this.toSelects) {
                 if (file.getLength() >= 524288000) {
@@ -53,21 +53,21 @@ public class MainFormEncryptHashFunction {
             }
             this.doHash(0);
         });
-        this.mainForm.fileEncryptHashAsserts.addActionListener(e -> {
+        this.component.fileEncryptHashAsserts.addActionListener(e -> {
             FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, true, true, false, true);
             this.toSelectAssets = FileChooser.chooseFiles(descriptor, null, this.toSelectAssets.length == 0 ? null : this.toSelectAssets[this.toSelectAssets.length - 1]);
             if (this.toSelectAssets.length == 0) {
-                this.mainForm.fileEncryptHashAsserts.setText("");
+                this.component.fileEncryptHashAsserts.setText("");
                 return;
             }
-            this.mainForm.fileEncryptHashAsserts.setText(this.toSelectAssets[this.toSelectAssets.length - 1].getPresentableUrl() + (this.toSelectAssets.length == 1 ? "" : (" ... and " + (this.toSelectAssets.length - 1) + " files.")));
+            this.component.fileEncryptHashAsserts.setText(this.toSelectAssets[this.toSelectAssets.length - 1].getPresentableUrl() + (this.toSelectAssets.length == 1 ? "" : (" ... and " + (this.toSelectAssets.length - 1) + " files.")));
             if (this.toSelectAssets.length != this.toSelects.length) {
                 NotificationUtil.warning(MessageUtil.getMessage("convert.hash.compare.files.count.not.equal.bin.files"));
             }
-            this.mainForm.textareaEncryptHashText.setText("");
+            this.component.textareaEncryptHashText.setText("");
             this.doHash(0);
         });
-        this.mainForm.textareaEncryptHashText.getDocument().addDocumentListener(new DocumentListener() {
+        this.component.textareaEncryptHashText.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 doHash(1);
@@ -82,41 +82,41 @@ public class MainFormEncryptHashFunction {
             public void changedUpdate(DocumentEvent e) {
             }
         });
-        this.mainForm.buttonEncryptHashFile.addActionListener(e -> this.doHash(0));
-        this.mainForm.buttonEncryptHashText.addActionListener(e -> this.doHash(1));
-        this.mainForm.selectEncryptHashEncoding.addActionListener(e -> {
+        this.component.buttonEncryptHashFile.addActionListener(e -> this.doHash(0));
+        this.component.buttonEncryptHashText.addActionListener(e -> this.doHash(1));
+        this.component.selectEncryptHashEncoding.addActionListener(e -> {
             if (this.lastFunction != null) {
                 this.doHash(this.lastFunction);
             }
         });
-        this.mainForm.selectEncryptHashType.addActionListener(e -> {
+        this.component.selectEncryptHashType.addActionListener(e -> {
             if (this.lastFunction != null) {
                 this.doHash(this.lastFunction);
             }
         });
-        this.mainForm.selectEncryptHashOutputType.addActionListener(e -> {
+        this.component.selectEncryptHashOutputType.addActionListener(e -> {
             if (this.lastFunction != null) {
                 this.doHash(this.lastFunction);
             }
         });
-        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollEncryptHashText, this.mainForm.scrollEncryptHashResult);
-        this.mainForm.scrollEncryptHashText.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptHashText.getHorizontalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptHashResult.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollEncryptHashResult.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.component.scrollEncryptHashText, this.component.scrollEncryptHashResult);
+        this.component.scrollEncryptHashText.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptHashText.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptHashResult.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollEncryptHashResult.getHorizontalScrollBar().addAdjustmentListener(syncListener);
     }
 
     private void clean() {
-        this.mainForm.textareaEncryptHashText.setText("");
-        this.mainForm.textareaEncryptHashResult.setText("");
-        this.mainForm.fileEncryptHashAsserts.setText("");
+        this.component.textareaEncryptHashText.setText("");
+        this.component.textareaEncryptHashResult.setText("");
+        this.component.fileEncryptHashAsserts.setText("");
         this.toSelectAssets = new VirtualFile[0];
-        this.mainForm.textareaEncryptHashText.setText("");
-        this.mainForm.textEncryptHashKey.setText("");
+        this.component.textareaEncryptHashText.setText("");
+        this.component.textEncryptHashKey.setText("");
     }
 
     private DigestAssert getAssertStr(VirtualFile source) {
-        String assertStr = this.mainForm.textEncryptHashAssert.getText();
+        String assertStr = this.component.textEncryptHashAssert.getText();
         if (assertStr != null && assertStr.trim().length() > 0) {
             return new DigestAssert(assertStr, null, null);
         }
@@ -184,12 +184,12 @@ public class MainFormEncryptHashFunction {
 
     private void doHash(int sourceType) {
         this.lastFunction = sourceType;
-        String type = (String) this.mainForm.selectEncryptHashType.getModel().getSelectedItem();
+        String type = (String) this.component.selectEncryptHashType.getModel().getSelectedItem();
         if (type == null || type.trim().length() == 0) {
             NotificationUtil.error(MessageUtil.getMessage("convert.hash.digest.is.null"));
             return;
         }
-        String keyStr = this.mainForm.textEncryptHashKey.getText();
+        String keyStr = this.component.textEncryptHashKey.getText();
         byte[] key = null;
         if (keyStr != null && keyStr.trim().length() > 0) {
             try {
@@ -205,59 +205,59 @@ public class MainFormEncryptHashFunction {
         }
         if (0 == sourceType) {
             // hash file
-            this.mainForm.textareaEncryptHashResult.setText("");
+            this.component.textareaEncryptHashResult.setText("");
             for (VirtualFile file : this.toSelects) {
                 try {
                     DigestAssert assertStr = this.getAssertStr(file);
                     DigestAssertResult eachResult = this.hash(type, key, file.getPath(), true, assertStr);
-                    this.mainForm.textareaEncryptHashResult.append("Name: " + file.getPresentableUrl());
-                    this.mainForm.textareaEncryptHashResult.append("\n");
+                    this.component.textareaEncryptHashResult.append("Name: " + file.getPresentableUrl());
+                    this.component.textareaEncryptHashResult.append("\n");
                     String _type = type;
                     if (assertStr != null && assertStr.getForceDigest() != null) {
                         _type = assertStr.getForceDigest();
                     }
-                    this.mainForm.textareaEncryptHashResult.append(_type + "-Digest: " +
+                    this.component.textareaEncryptHashResult.append(_type + "-Digest: " +
                             (eachResult.getIsMatch() == null ? "" :
                                     (eachResult.getIsMatch() ?
                                             (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
                                             (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
                             ) + eachResult.getResult());
-                    this.mainForm.textareaEncryptHashResult.append("\n");
-                    this.mainForm.textareaEncryptHashResult.append("\n");
+                    this.component.textareaEncryptHashResult.append("\n");
+                    this.component.textareaEncryptHashResult.append("\n");
                 } catch (Exception ex) {
-                    this.mainForm.textareaEncryptHashResult.append("Name: " + file.getPresentableUrl());
-                    this.mainForm.textareaEncryptHashResult.append("\n");
-                    this.mainForm.textareaEncryptHashResult.append(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
-                    this.mainForm.textareaEncryptHashResult.append("\n");
-                    this.mainForm.textareaEncryptHashResult.append("\n");
+                    this.component.textareaEncryptHashResult.append("Name: " + file.getPresentableUrl());
+                    this.component.textareaEncryptHashResult.append("\n");
+                    this.component.textareaEncryptHashResult.append(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
+                    this.component.textareaEncryptHashResult.append("\n");
+                    this.component.textareaEncryptHashResult.append("\n");
                 }
             }
         } else if (1 == sourceType) {
             // hash text
-            if (this.mainForm.checkEncryptHashLine.isSelected()) {
-                String source = this.mainForm.textareaEncryptHashText.getText();
+            if (this.component.checkEncryptHashLine.isSelected()) {
+                String source = this.component.textareaEncryptHashText.getText();
                 String[] split = source.replace("\r", "").split("\n");
-                this.mainForm.textareaEncryptHashResult.setText("");
+                this.component.textareaEncryptHashResult.setText("");
                 for (String line : split) {
                     try {
                         DigestAssertResult eachResult = this.hash(type, key, line, false, this.getAssertStr(null));
-                        this.mainForm.textareaEncryptHashResult.append(
+                        this.component.textareaEncryptHashResult.append(
                                 (eachResult.getIsMatch() == null ? "" :
                                         (eachResult.getIsMatch() ?
                                                 (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
                                                 (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
                                 ) + eachResult.getResult());
-                        this.mainForm.textareaEncryptHashResult.append("\n");
+                        this.component.textareaEncryptHashResult.append("\n");
                     } catch (Exception ex) {
-                        this.mainForm.textareaEncryptHashResult.append(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
-                        this.mainForm.textareaEncryptHashResult.append("\n");
+                        this.component.textareaEncryptHashResult.append(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
+                        this.component.textareaEncryptHashResult.append("\n");
                     }
                 }
             } else {
-                String source = this.mainForm.textareaEncryptHashText.getText();
+                String source = this.component.textareaEncryptHashText.getText();
                 try {
                     DigestAssertResult eachResult = this.hash(type, key, source, false, this.getAssertStr(null));
-                    this.mainForm.textareaEncryptHashResult.setText(
+                    this.component.textareaEncryptHashResult.setText(
                             (eachResult.getIsMatch() == null ? "" :
                                     (eachResult.getIsMatch() ?
                                             (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
@@ -272,7 +272,7 @@ public class MainFormEncryptHashFunction {
     }
 
     private void generateHMacKey(ActionEvent e) {
-        String type = (String) this.mainForm.selectEncryptHashType.getModel().getSelectedItem();
+        String type = (String) this.component.selectEncryptHashType.getModel().getSelectedItem();
         if (type == null || !type.toUpperCase().startsWith("HMAC")) {
             NotificationUtil.error(MessageUtil.getMessage("convert.hash.hmac.used.only"));
             return;
@@ -280,15 +280,15 @@ public class MainFormEncryptHashFunction {
         byte[] key = SecureUtil.generateKey(type).getEncoded();
         key = Base64.getEncoder().encode(key);
         try {
-            this.mainForm.textEncryptHashKey.setText(new String(key, getCharset()));
+            this.component.textEncryptHashKey.setText(new String(key, getCharset()));
         } catch (UnsupportedEncodingException ex) {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
         }
     }
 
     private String getCharset() {
-        int encodingModelIndex = this.mainForm.selectEncryptHashEncoding.getSelectedIndex();
-        Object selectedObjects = this.mainForm.selectEncryptHashEncoding.getModel().getSelectedItem();
+        int encodingModelIndex = this.component.selectEncryptHashEncoding.getSelectedIndex();
+        Object selectedObjects = this.component.selectEncryptHashEncoding.getModel().getSelectedItem();
         String charset;
         if (encodingModelIndex == 0) {
             charset = System.getProperty("file.encoding");
@@ -302,7 +302,7 @@ public class MainFormEncryptHashFunction {
         if (assertStr != null && assertStr.getForceDigest() != null) {
             type = assertStr.getForceDigest();
         }
-        String outputType = (String) this.mainForm.selectEncryptHashOutputType.getModel().getSelectedItem();
+        String outputType = (String) this.component.selectEncryptHashOutputType.getModel().getSelectedItem();
         if (assertStr != null && assertStr.getForceOutputType() != null) {
             outputType = assertStr.getForceOutputType();
         }

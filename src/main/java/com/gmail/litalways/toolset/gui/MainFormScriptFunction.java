@@ -22,22 +22,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MainFormScriptFunction {
 
-    private final MainForm mainForm;
+    private final ToolWindowScript component;
     private final AtomicBoolean injectedNashorn = new AtomicBoolean(false);
 
-    public MainFormScriptFunction(MainForm mainForm) {
-        this.mainForm = mainForm;
-        this.mainForm.textareaScriptSource.getDocument().addDocumentListener(new DocumentListener() {
+    public MainFormScriptFunction(ToolWindowScript component) {
+        this.component = component;
+        this.component.textareaScriptSource.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                if (mainForm.checkScriptAutoRun.isSelected()) {
+                if (component.checkScriptAutoRun.isSelected()) {
                     eval();
                 }
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                if (mainForm.checkScriptAutoRun.isSelected()) {
+                if (component.checkScriptAutoRun.isSelected()) {
                     eval();
                 }
             }
@@ -46,21 +46,21 @@ public class MainFormScriptFunction {
             public void changedUpdate(DocumentEvent e) {
             }
         });
-        this.mainForm.radioScriptJavascript.addActionListener(this::radioChanged);
-        this.mainForm.radioScriptPython.addActionListener(this::radioChanged);
-        this.mainForm.radioScriptLua.addActionListener(this::radioChanged);
-        this.mainForm.radioScriptGroovy.addActionListener(this::radioChanged);
-        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.mainForm.scrollScriptSource, this.mainForm.scrollScriptResult);
-        this.mainForm.scrollScriptSource.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollScriptSource.getHorizontalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollScriptResult.getVerticalScrollBar().addAdjustmentListener(syncListener);
-        this.mainForm.scrollScriptResult.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        this.component.radioScriptJavascript.addActionListener(this::radioChanged);
+        this.component.radioScriptPython.addActionListener(this::radioChanged);
+        this.component.radioScriptLua.addActionListener(this::radioChanged);
+        this.component.radioScriptGroovy.addActionListener(this::radioChanged);
+        ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.component.scrollScriptSource, this.component.scrollScriptResult);
+        this.component.scrollScriptSource.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollScriptSource.getHorizontalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollScriptResult.getVerticalScrollBar().addAdjustmentListener(syncListener);
+        this.component.scrollScriptResult.getHorizontalScrollBar().addAdjustmentListener(syncListener);
         injectNashorn();
     }
 
     private void radioChanged(ActionEvent e) {
         if (((JRadioButton) e.getSource()).isSelected()) {
-            if (this.mainForm.checkScriptAutoRun.isSelected()) {
+            if (this.component.checkScriptAutoRun.isSelected()) {
                 eval();
             }
         }
@@ -93,20 +93,20 @@ public class MainFormScriptFunction {
 
     private void eval() {
         try {
-            String script = this.mainForm.textareaScriptSource.getText();
-            if (this.mainForm.radioScriptJavascript.isSelected()) {
-                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getJsEngine().eval(script)));
-            } else if (this.mainForm.radioScriptLua.isSelected()) {
-                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getLuaEngine().eval(script)));
-            } else if (this.mainForm.radioScriptGroovy.isSelected()) {
-                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getGroovyEngine().eval(script)));
-            } else if (this.mainForm.radioScriptPython.isSelected()) {
-                this.mainForm.textareaScriptResult.setText(String.valueOf(ScriptUtil.getPythonEngine().eval(script)));
+            String script = this.component.textareaScriptSource.getText();
+            if (this.component.radioScriptJavascript.isSelected()) {
+                this.component.textareaScriptResult.setText(String.valueOf(ScriptUtil.getJsEngine().eval(script)));
+            } else if (this.component.radioScriptLua.isSelected()) {
+                this.component.textareaScriptResult.setText(String.valueOf(ScriptUtil.getLuaEngine().eval(script)));
+            } else if (this.component.radioScriptGroovy.isSelected()) {
+                this.component.textareaScriptResult.setText(String.valueOf(ScriptUtil.getGroovyEngine().eval(script)));
+            } else if (this.component.radioScriptPython.isSelected()) {
+                this.component.textareaScriptResult.setText(String.valueOf(ScriptUtil.getPythonEngine().eval(script)));
             } else {
                 NotificationUtil.warning(MessageUtil.getMessage("script.not.select.type"));
             }
         } catch (Exception ex) {
-            this.mainForm.textareaScriptResult.setText(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
+            this.component.textareaScriptResult.setText(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
         }
     }
 
