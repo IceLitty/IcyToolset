@@ -1,6 +1,7 @@
 package com.gmail.litalways.toolset.gui;
 
 import com.gmail.litalways.toolset.filter.FileSizeTextFormat;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.wm.ToolWindow;
 
@@ -142,15 +143,26 @@ public class MainForm {
     JTextField textEncryptSymmetricSalt;
     JButton buttonConvertSplitterClear;
 
-    @SuppressWarnings("FieldCanBeLocal")
+    private final Project project;
     private final ToolWindow toolWindow;
 
-    public MainForm(ToolWindow toolWindow) {
+    public MainForm(Project project, ToolWindow toolWindow) {
+        this.project = project;
         this.toolWindow = toolWindow;
     }
 
     public JPanel getContent() {
         return this.panelMain;
+    }
+
+    @SuppressWarnings("unused")
+    public Project getCurrentProject() {
+        return this.project;
+    }
+
+    @SuppressWarnings("unused")
+    public ToolWindow getCurrentToolWindow() {
+        return this.toolWindow;
     }
 
     private void createUIComponents() {

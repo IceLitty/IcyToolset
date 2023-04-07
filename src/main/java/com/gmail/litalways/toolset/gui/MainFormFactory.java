@@ -14,10 +14,12 @@ import org.jetbrains.annotations.NotNull;
 public class MainFormFactory implements ToolWindowFactory {
 
     @Override
+    @SuppressWarnings("unused")
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        MainForm mainForm = new MainForm(toolWindow);
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(mainForm.getContent(), "", false);
+        MainForm mainForm = new MainForm(project, toolWindow);
+        // TODO 此处需要优化将各个Form拆分开来，以IDEA自带的TAB模式进行显示，少占一行空间
+        // createContent(component, displayName, isLockable) https://dploeger.github.io/intellij-api-doc/com/intellij/ui/content/ContentFactory.html
+        Content content = ContentFactory.getInstance().createContent(mainForm.getContent(), "", false);
         toolWindow.getContentManager().addContent(content);
         // 调用注册方法
         MainFormConvertCommonFunction convertCommon = new MainFormConvertCommonFunction(mainForm);

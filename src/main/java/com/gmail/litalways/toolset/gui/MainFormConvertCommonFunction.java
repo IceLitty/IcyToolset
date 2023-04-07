@@ -323,7 +323,6 @@ public class MainFormConvertCommonFunction {
         if (this.mainForm.radioConvertCommonBase64.isSelected()) {
             return new String(Base64.getDecoder().decode(encoded.getBytes(getCharset())), getCharset());
         } else if (this.mainForm.radioConvertCommonHex.isSelected()) {
-            // TODO test
             return new String(HexUtil.decodeHex(encoded), getCharset());
         } else if (this.mainForm.radioConvertCommonHtml.isSelected()) {
             return StringEscapeUtils.unescapeHtml4(encoded);

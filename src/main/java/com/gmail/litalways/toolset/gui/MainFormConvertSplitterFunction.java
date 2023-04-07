@@ -169,6 +169,7 @@ public class MainFormConvertSplitterFunction {
     }
 
     static class InlineLogger implements Consumer<String> {
+
         @Override
         public void accept(String s) {
             NotificationUtil.info(MessageUtil.getMessage("convert.splitter.progress.title"), s);

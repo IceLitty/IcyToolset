@@ -137,14 +137,33 @@
   <depends>com.intellij.modules.java</depends>
   <depends>com.intellij.java</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <notificationGroup displayType="BALLOON" id="com.gmail.litalways.toolset" />
-    <toolWindow id="Icy Toolset" anchor="bottom" icon="AllIcons.General.ExternalTools"
-                factoryClass="com.gmail.litalways.toolset.gui.MainFormFactory" />
-  </extensions>
+  <resource-bundle>message</resource-bundle>
 
   <actions>
-    <!-- Add your actions here -->
+    <!-- 用于试验菜单功能 -->
+<!--    <group id="com.gmail.litalways.toolset.actions.simple" popup="true" icon="AllIcons.General.ExternalTools">-->
+<!--      <add-to-group group-id="ToolsMenu" anchor="last" />-->
+<!--      <action id="com.gmail.litalways.toolset.actions.simple.simple" class="com.gmail.litalways.toolset.action.SimpleAction" />-->
+<!--    </group>-->
   </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <notificationGroup id="com.gmail.litalways.toolset.notifications" displayType="BALLOON" />
+    <toolWindow id="com.gmail.litalways.toolset.toolwindow.main" anchor="bottom" icon="AllIcons.General.ExternalTools"
+                factoryClass="com.gmail.litalways.toolset.gui.MainFormFactory" />
+    <!-- 用于试验配置储存（简单配置） -->
+<!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.simple" parentId="tools"-->
+<!--                             instance="com.gmail.litalways.toolset.config.MainSettingSimpleConfigurable" />-->
+    <!-- 用于试验配置储存（复杂配置） -->
+<!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.state" parentId="tools"-->
+<!--                             instance="com.gmail.litalways.toolset.config.MainSettingStateConfigurable" />-->
+  </extensions>
+
+  <application-components>
+    <!-- 用于试验配置储存（复杂配置） -->
+<!--    <component>-->
+<!--      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>-->
+<!--    </component>-->
+  </application-components>
 
 </idea-plugin>

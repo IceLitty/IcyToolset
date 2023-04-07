@@ -1,9 +1,10 @@
 package com.gmail.litalways.toolset.util;
 
-import com.gmail.litalways.toolset.enums.KeyEnum;
+import com.gmail.litalways.toolset.constant.KeyConstant;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.project.Project;
 
 /**
  * 通知类
@@ -13,30 +14,126 @@ import com.intellij.notification.NotificationType;
  */
 public class NotificationUtil {
 
-    private static final NotificationGroup group = NotificationGroupManager.getInstance().getNotificationGroup(KeyEnum.NOTIFICATION_GROUP_KEY.getKey());
+    private static final NotificationGroup group = NotificationGroupManager.getInstance().getNotificationGroup(KeyConstant.NOTIFICATION_GROUP_KEY);
 
+    /**
+     * 发送消息至指定项目
+     *
+     * @param title 标题
+     * @param content 内容
+     * @param project 项目
+     */
+    public static void info(String title, String content, Project project) {
+        group.createNotification(title, content, NotificationType.INFORMATION).notify(project);
+    }
+
+    /**
+     * 发送消息到当前项目
+     *
+     * @param title 标题
+     * @param content 内容
+     */
     public static void info(String title, String content) {
-        group.createNotification(title, content, NotificationType.INFORMATION).notify(null);
+        info(title, content, null);
     }
 
+    /**
+     * 发送消息到执行项目
+     *
+     * @param content 内容
+     * @param project 项目
+     */
+    public static void info(String content, Project project) {
+        group.createNotification(content, NotificationType.INFORMATION).notify(project);
+    }
+
+    /**
+     * 发送消息到当前项目
+     *
+     * @param content 内容
+     */
     public static void info(String content) {
-        group.createNotification(content, NotificationType.INFORMATION).notify(null);
+        info(content, (Project) null);
     }
 
+    /**
+     * 发送警告到执行项目
+     *
+     * @param title 标题
+     * @param content 内容
+     * @param project 项目
+     */
+    public static void warning(String title, String content, Project project) {
+        group.createNotification(title, content, NotificationType.WARNING).notify(project);
+    }
+
+    /**
+     * 发送警告到当前项目
+     *
+     * @param title 标题
+     * @param content 内容
+     */
     public static void warning(String title, String content) {
-        group.createNotification(title, content, NotificationType.WARNING).notify(null);
+        warning(title, content, null);
     }
 
+    /**
+     * 发送警告到执行项目
+     *
+     * @param content 内容
+     * @param project 项目
+     */
+    public static void warning(String content, Project project) {
+        group.createNotification(content, NotificationType.WARNING).notify(project);
+    }
+
+    /**
+     * 发送警告到当前项目
+     *
+     * @param content 内容
+     */
     public static void warning(String content) {
-        group.createNotification(content, NotificationType.WARNING).notify(null);
+        warning(content, (Project) null);
     }
 
+    /**
+     * 发送错误到指定项目
+     *
+     * @param title 标题
+     * @param content 内容
+     * @param project 项目
+     */
+    public static void error(String title, String content, Project project) {
+        group.createNotification(title, content, NotificationType.ERROR).notify(project);
+    }
+
+    /**
+     * 发送错误到当前项目
+     *
+     * @param title 标题
+     * @param content 内容
+     */
     public static void error(String title, String content) {
-        group.createNotification(title, content, NotificationType.ERROR).notify(null);
+        error(title, content, null);
     }
 
+    /**
+     * 发送错误到指定项目
+     *
+     * @param content 内容
+     * @param project 项目
+     */
+    public static void error(String content, Project project) {
+        group.createNotification(content, NotificationType.ERROR).notify(project);
+    }
+
+    /**
+     * 发送错误到当前项目
+     *
+     * @param content 内容
+     */
     public static void error(String content) {
-        group.createNotification(content, NotificationType.ERROR).notify(null);
+        error(content, (Project) null);
     }
 
 }
