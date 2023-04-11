@@ -50,10 +50,10 @@ public class FileSplitUtil {
         long readSize = 0L;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (RandomAccessFile stream = new RandomAccessFile(file, "r")) {
-            log.accept(MessageUtil.getMessage("convert.splitter.progress.info",
+            log.accept(MessageUtil.getMessage("convert.splitter.tip.progress.info",
                     file.getPath(), partNo == 1 ?
-                            MessageUtil.getMessage("convert.splitter.progress.first.load") :
-                            MessageUtil.getMessage("convert.splitter.progress.paragraph", partNo)));
+                            MessageUtil.getMessage("convert.splitter.tip.progress.first.load") :
+                            MessageUtil.getMessage("convert.splitter.tip.progress.paragraph", partNo)));
             if (!isFirstRead) {
                 for (long l : readBytes) {
                     if (l == Integer.MAX_VALUE) {
@@ -106,12 +106,12 @@ public class FileSplitUtil {
                 }
             }
             if (readSize == 0) {
-                log.accept(MessageUtil.getMessage("convert.splitter.progress.done", partNo));
+                log.accept(MessageUtil.getMessage("convert.splitter.tip.progress.done", partNo));
                 return false;
             }
             readBytes.add(readSize);
         } catch (Exception e) {
-            log.accept(MessageUtil.getMessage("convert.splitter.progress.read.error", e.getLocalizedMessage()));
+            log.accept(MessageUtil.getMessage("convert.splitter.tip.progress.read.error", e.getLocalizedMessage()));
             return false;
         }
         // out
@@ -119,19 +119,19 @@ public class FileSplitUtil {
             if (!outFile.exists()) {
                 boolean success = outFile.createNewFile();
                 if (!success) {
-                    log.accept(MessageUtil.getMessage("convert.splitter.progress.create.file.error", outFile.getPath()));
+                    log.accept(MessageUtil.getMessage("convert.splitter.tip.progress.create.file.error", outFile.getPath()));
                     return false;
                 }
             }
         } catch (Exception e) {
-            log.accept(MessageUtil.getMessage("convert.splitter.progress.create.file.error", e.getLocalizedMessage()));
+            log.accept(MessageUtil.getMessage("convert.splitter.tip.progress.create.file.error", e.getLocalizedMessage()));
             return false;
         }
         try (FileOutputStream fos = new FileOutputStream(outFile, false);
              BufferedOutputStream bos = new BufferedOutputStream(fos)) {
             bos.write(baos.toByteArray());
         } catch (Exception e) {
-            log.accept(MessageUtil.getMessage("convert.splitter.progress.write.error", e.getLocalizedMessage()));
+            log.accept(MessageUtil.getMessage("convert.splitter.tip.progress.write.error", e.getLocalizedMessage()));
             return false;
         }
         return true;

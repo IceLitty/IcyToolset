@@ -87,13 +87,13 @@ public class MainFormZxingFunction {
         } else if (this.component.radioZxingMatrix.isSelected()) {
             barcodeFormat = BarcodeFormat.DATA_MATRIX;
         } else {
-            NotificationUtil.error(MessageUtil.getMessage("qr.type.not.support"));
+            NotificationUtil.error(MessageUtil.getMessage("qr.tip.type.not.support"));
             return;
         }
         Integer width = this.component.textZxingWidth.getValue() == null ? null : Integer.parseInt(String.valueOf(this.component.textZxingWidth.getValue()));
         Integer height = this.component.textZxingHeight.getValue() == null ? null : Integer.parseInt(String.valueOf(this.component.textZxingHeight.getValue()));
         if (width == null || height == null) {
-            NotificationUtil.error(MessageUtil.getMessage("qr.width.height.not.specified"));
+            NotificationUtil.error(MessageUtil.getMessage("qr.tip.width.height.not.specified"));
             return;
         }
         Map<EncodeHintType, Object> hints = new HashMap<>();

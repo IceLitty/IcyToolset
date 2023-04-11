@@ -28,9 +28,9 @@ public class MainFormConvertSplitterFunction {
         this.component.buttonConvertSplitterClear.addActionListener(e -> {
             this.component.textConvertSplitterCacheSize.setValue(1024);
             this.toSelect = null;
-            this.component.fileConvertSplitterPath.setText("");
-            this.component.textConvertSplitterCount.setValue("");
-            this.component.textConvertSplitterSize.setValue("");
+            this.component.fileConvertSplitterPath.setText(null);
+            this.component.textConvertSplitterCount.setValue(null);
+            this.component.textConvertSplitterSize.setValue(null);
         });
         this.component.buttonConvertSplitterRun.addActionListener(e -> {
             Thread thread = new Thread(() -> {
@@ -63,16 +63,16 @@ public class MainFormConvertSplitterFunction {
             try {
                 long tmp = Long.parseLong(cacheSize);
                 if (tmp < 1 || tmp > Integer.MAX_VALUE) {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.cache.size", cacheSize));
+                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.cache.size", cacheSize));
                     return false;
                 }
             } catch (NumberFormatException e) {
-                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.cache.size", cacheSize));
+                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.cache.size", cacheSize));
                 return false;
             }
             fileSplitUtil.setReadCacheSize(Integer.parseInt(cacheSize));
         } else {
-            NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.cache.size", cacheSize));
+            NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.cache.size", cacheSize));
             return false;
         }
         //
@@ -82,11 +82,11 @@ public class MainFormConvertSplitterFunction {
             if (Pattern.compile("^\\d+$").matcher(countText).matches()) {
                 splitCount = Integer.parseInt(countText);
                 if (splitCount < 2) {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.count", countText));
+                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.count", countText));
                     return false;
                 }
             } else {
-                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.count", countText));
+                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.count", countText));
                 return false;
             }
         }
@@ -98,66 +98,66 @@ public class MainFormConvertSplitterFunction {
                 String suffix = splitLength.substring(splitLength.length() - 1);
                 fileSplitUtil.setSplitLength(Long.parseLong(number));
                 if (fileSplitUtil.getSplitLength() < 1) {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length.over.than", splitLength));
+                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length.over.than", splitLength));
                     return false;
                 }
                 if ("g".equalsIgnoreCase(suffix)) {
                     if (fileSplitUtil.getSplitLength() >= Long.MAX_VALUE / 1024 / 1024 / 1024 - fileSplitUtil.getReadCacheSize()) {
-                        NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length.less.than", Long.MAX_VALUE / 1024 / 1024 / 1024 - fileSplitUtil.getReadCacheSize(), splitLength));
+                        NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length.less.than", Long.MAX_VALUE / 1024 / 1024 / 1024 - fileSplitUtil.getReadCacheSize(), splitLength));
                         return false;
                     }
                     fileSplitUtil.setSplitLength(fileSplitUtil.getSplitLength() * 1024 * 1024 * 1024);
                 } else if ("m".equalsIgnoreCase(suffix)) {
                     if (fileSplitUtil.getSplitLength() >= Long.MAX_VALUE / 1024 / 1024 - fileSplitUtil.getReadCacheSize()) {
-                        NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length.less.than", Long.MAX_VALUE / 1024 / 1024 - fileSplitUtil.getReadCacheSize(), splitLength));
+                        NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length.less.than", Long.MAX_VALUE / 1024 / 1024 - fileSplitUtil.getReadCacheSize(), splitLength));
                         return false;
                     }
                     fileSplitUtil.setSplitLength(fileSplitUtil.getSplitLength() * 1024 * 1024);
                 } else if ("k".equalsIgnoreCase(suffix)) {
                     if (fileSplitUtil.getSplitLength() >= Long.MAX_VALUE / 1024 - fileSplitUtil.getReadCacheSize()) {
-                        NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length.less.than", Long.MAX_VALUE / 1024 - fileSplitUtil.getReadCacheSize(), splitLength));
+                        NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length.less.than", Long.MAX_VALUE / 1024 - fileSplitUtil.getReadCacheSize(), splitLength));
                         return false;
                     }
                     fileSplitUtil.setSplitLength(fileSplitUtil.getSplitLength() * 1024);
                 } else {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length", splitLength));
+                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length", splitLength));
                     return false;
                 }
             } else if (Pattern.compile("^\\d+$").matcher(splitLength).matches()) {
                 fileSplitUtil.setSplitLength(Long.parseLong(splitLength));
                 if (fileSplitUtil.getSplitLength() < 1) {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length.over.than", splitLength));
+                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length.over.than", splitLength));
                     return false;
                 } else if (fileSplitUtil.getSplitLength() >= Long.MAX_VALUE - fileSplitUtil.getReadCacheSize()) {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length.less.than", Long.MAX_VALUE - fileSplitUtil.getReadCacheSize(), splitLength));
+                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length.less.than", Long.MAX_VALUE - fileSplitUtil.getReadCacheSize(), splitLength));
                     return false;
                 }
             } else {
-                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.length", splitLength));
+                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.length", splitLength));
                 return false;
             }
         }
         //
         if (this.toSelect == null) {
-            NotificationUtil.error(MessageUtil.getMessage("convert.splitter.no.input.file"));
+            NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.no.input.file"));
             return false;
         } else {
             try {
                 File file = new File(this.toSelect.getPath());
                 if (!file.exists() || !file.isFile() || !file.canRead()) {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.input.file.not.exist"));
+                    NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.input.file.not.exist"));
                     return false;
                 }
                 fileSplitUtil.setFile(new File(this.toSelect.getPath()));
             } catch (Exception e) {
-                NotificationUtil.error(e.getClass().getSimpleName(), MessageUtil.getMessage("convert.splitter.input.file.load.error", e.getLocalizedMessage()));
+                NotificationUtil.error(e.getClass().getSimpleName(), MessageUtil.getMessage("convert.splitter.tip.input.file.load.error", e.getLocalizedMessage()));
                 return false;
             }
         }
         //
         if (fileSplitUtil.getSplitLength() < 1) {
             if (splitCount < 2) {
-                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.wrong.split.count", countText));
+                NotificationUtil.error(MessageUtil.getMessage("convert.splitter.tip.wrong.split.count", countText));
                 return false;
             } else {
                 fileSplitUtil.setSplitLength(fileSplitUtil.getFile().length() / splitCount);
@@ -172,7 +172,7 @@ public class MainFormConvertSplitterFunction {
 
         @Override
         public void accept(String s) {
-            NotificationUtil.info(MessageUtil.getMessage("convert.splitter.progress.title"), s);
+            NotificationUtil.info(MessageUtil.getMessage("convert.splitter.tip.progress.title"), s);
         }
     }
 

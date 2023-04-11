@@ -48,7 +48,7 @@ public class MainFormFormatFunction {
                 text = XmlUtil.toStr(document, true);
                 this.component.textareaFormat.setText(text);
             }
-            default -> NotificationUtil.error(MessageUtil.getMessage("convert.format.only.support.lang"));
+            default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
         }
     }
 
@@ -175,7 +175,7 @@ public class MainFormFormatFunction {
                 text = unFormatXml(text);
                 this.component.textareaFormat.setText(text);
             }
-            default -> NotificationUtil.error(MessageUtil.getMessage("convert.format.only.support.lang"));
+            default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
         }
     }
 

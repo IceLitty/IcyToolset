@@ -48,7 +48,7 @@ public class MainFormEncryptHashFunction {
             // Calc size and tips
             for (VirtualFile file : this.toSelects) {
                 if (file.getLength() >= 524288000) {
-                    NotificationUtil.warning(MessageUtil.getMessage("convert.hash.large.file"), "\"certutil -hashfile src.bin MD5 >> hash.txt\"");
+                    NotificationUtil.warning(MessageUtil.getMessage("encrypt.hash.tip.large.file"), "\"certutil -hashfile src.bin MD5 >> hash.txt\"");
                 }
             }
             this.doHash(0);
@@ -62,7 +62,7 @@ public class MainFormEncryptHashFunction {
             }
             this.component.fileEncryptHashAsserts.setText(this.toSelectAssets[this.toSelectAssets.length - 1].getPresentableUrl() + (this.toSelectAssets.length == 1 ? "" : (" ... and " + (this.toSelectAssets.length - 1) + " files.")));
             if (this.toSelectAssets.length != this.toSelects.length) {
-                NotificationUtil.warning(MessageUtil.getMessage("convert.hash.compare.files.count.not.equal.bin.files"));
+                NotificationUtil.warning(MessageUtil.getMessage("encrypt.hash.tip.compare.files.count.not.equal.bin.files"));
             }
             this.component.textareaEncryptHashText.setText("");
             this.doHash(0);
@@ -186,7 +186,7 @@ public class MainFormEncryptHashFunction {
         this.lastFunction = sourceType;
         String type = (String) this.component.selectEncryptHashType.getModel().getSelectedItem();
         if (type == null || type.trim().length() == 0) {
-            NotificationUtil.error(MessageUtil.getMessage("convert.hash.digest.is.null"));
+            NotificationUtil.error(MessageUtil.getMessage("encrypt.hash.tip.digest.is.null"));
             return;
         }
         String keyStr = this.component.textEncryptHashKey.getText();
@@ -198,7 +198,7 @@ public class MainFormEncryptHashFunction {
                 try {
                     key = HexUtil.decodeHex(keyStr);
                 } catch (Exception ex2) {
-                    NotificationUtil.error(MessageUtil.getMessage("convert.hash.hmac.key.can.not.parse"));
+                    NotificationUtil.error(MessageUtil.getMessage("encrypt.hash.tip.hmac.key.can.not.parse"));
                     return;
                 }
             }
@@ -219,8 +219,8 @@ public class MainFormEncryptHashFunction {
                     this.component.textareaEncryptHashResult.append(_type + "-Digest: " +
                             (eachResult.getIsMatch() == null ? "" :
                                     (eachResult.getIsMatch() ?
-                                            (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
-                                            (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
+                                            (MessageUtil.getMessage("encrypt.hash.tip.compare.match") + " ") :
+                                            (MessageUtil.getMessage("encrypt.hash.tip.compare.not.match") + " "))
                             ) + eachResult.getResult());
                     this.component.textareaEncryptHashResult.append("\n");
                     this.component.textareaEncryptHashResult.append("\n");
@@ -244,8 +244,8 @@ public class MainFormEncryptHashFunction {
                         this.component.textareaEncryptHashResult.append(
                                 (eachResult.getIsMatch() == null ? "" :
                                         (eachResult.getIsMatch() ?
-                                                (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
-                                                (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
+                                                (MessageUtil.getMessage("encrypt.hash.tip.compare.match") + " ") :
+                                                (MessageUtil.getMessage("encrypt.hash.tip.compare.not.match") + " "))
                                 ) + eachResult.getResult());
                         this.component.textareaEncryptHashResult.append("\n");
                     } catch (Exception ex) {
@@ -260,8 +260,8 @@ public class MainFormEncryptHashFunction {
                     this.component.textareaEncryptHashResult.setText(
                             (eachResult.getIsMatch() == null ? "" :
                                     (eachResult.getIsMatch() ?
-                                            (MessageUtil.getMessage("convert.hash.compare.match") + " ") :
-                                            (MessageUtil.getMessage("convert.hash.compare.not.match") + " "))
+                                            (MessageUtil.getMessage("encrypt.hash.tip.compare.match") + " ") :
+                                            (MessageUtil.getMessage("encrypt.hash.tip.compare.not.match") + " "))
                             ) + eachResult.getResult());
                 } catch (Exception ex) {
                     NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
@@ -274,7 +274,7 @@ public class MainFormEncryptHashFunction {
     private void generateHMacKey(ActionEvent e) {
         String type = (String) this.component.selectEncryptHashType.getModel().getSelectedItem();
         if (type == null || !type.toUpperCase().startsWith("HMAC")) {
-            NotificationUtil.error(MessageUtil.getMessage("convert.hash.hmac.used.only"));
+            NotificationUtil.error(MessageUtil.getMessage("encrypt.hash.tip.hmac.used.only"));
             return;
         }
         byte[] key = SecureUtil.generateKey(type).getEncoded();

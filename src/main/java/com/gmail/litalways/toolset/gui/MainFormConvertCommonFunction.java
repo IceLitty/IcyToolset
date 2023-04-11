@@ -181,7 +181,7 @@ public class MainFormConvertCommonFunction {
                 try {
                     encoded = encode(eachLine);
                 } catch (Exception e) {
-                    encoded = MessageUtil.getMessage("convert.encode.fail", e.getClass().getName(), e.getLocalizedMessage());
+                    encoded = MessageUtil.getMessage("convert.common.encode.tip.fail", e.getClass().getName(), e.getLocalizedMessage());
                 }
                 sb.append(encoded).append("\n");
             }
@@ -195,7 +195,7 @@ public class MainFormConvertCommonFunction {
             try {
                 encoded = encode(decoded);
             } catch (Exception e) {
-                encoded = MessageUtil.getMessage("convert.encode.fail", e.getClass().getName(), e.getLocalizedMessage());
+                encoded = MessageUtil.getMessage("convert.common.encode.tip.fail", e.getClass().getName(), e.getLocalizedMessage());
             }
             this.component.textareaConvertCommonEncoded.setText(encoded);
         }
@@ -212,22 +212,22 @@ public class MainFormConvertCommonFunction {
                 // HEX 从十六进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 16);
-                return MessageUtil.getMessage("convert.encode.hex", l, Long.toOctalString(l), Long.toBinaryString(l));
+                return MessageUtil.getMessage("convert.common.encode.tip.hex", l, Long.toOctalString(l), Long.toBinaryString(l));
             } else if (decoded.startsWith("0o")) {
                 // OCT 从八进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 8);
-                return MessageUtil.getMessage("convert.encode.oct", l, Long.toHexString(l), Long.toBinaryString(l));
+                return MessageUtil.getMessage("convert.common.encode.tip.oct", l, Long.toHexString(l), Long.toBinaryString(l));
             } else if (decoded.startsWith("0b")) {
                 // BIN 从二进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 2);
-                return MessageUtil.getMessage("convert.encode.bin", l, Long.toHexString(l), Long.toOctalString(l));
+                return MessageUtil.getMessage("convert.common.encode.tip.bin", l, Long.toHexString(l), Long.toOctalString(l));
             } else if (decoded.startsWith("0d")) {
                 // DEC 从十进制转换
                 decoded = decoded.substring(2);
                 long l = Long.parseLong(decoded, 10);
-                return MessageUtil.getMessage("convert.encode.dec", Long.toHexString(l), Long.toOctalString(l), Long.toBinaryString(l));
+                return MessageUtil.getMessage("convert.common.encode.tip.dec", Long.toHexString(l), Long.toOctalString(l), Long.toBinaryString(l));
             } else {
                 // 文本转换十六进制
                 byte[] decodedBytes = decoded.getBytes(getCharset());
@@ -267,14 +267,14 @@ public class MainFormConvertCommonFunction {
                         decoded = decoded.substring(0, decoded.length() - s[s.length - 1].length() - 1);
                         DateTime dateTime = DateUtil.parse(decoded);
                         Date parse = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z").parse(dateTime.toString("yyyy-MM-dd HH:mm:ss.SSS") + " " + timeZone.getID());
-                        return MessageUtil.getMessage("convert.encode.time", parse.getTime(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z").format(parse));
+                        return MessageUtil.getMessage("convert.common.encode.tip.time", parse.getTime(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS z").format(parse));
                     }
                 }
                 DateTime dateTime = DateUtil.parse(decoded);
-                return MessageUtil.getMessage("convert.encode.time", dateTime.getTime(), dateTime.toString("yyyy-MM-dd HH:mm:ss.SSS z"));
+                return MessageUtil.getMessage("convert.common.encode.tip.time", dateTime.getTime(), dateTime.toString("yyyy-MM-dd HH:mm:ss.SSS z"));
             }
         }
-        throw new IllegalArgumentException(MessageUtil.getMessage("convert.encode.not.select.type"));
+        throw new IllegalArgumentException(MessageUtil.getMessage("convert.common.encode.tip.not.select.type"));
     }
 
     private void autoDecode() {
@@ -296,7 +296,7 @@ public class MainFormConvertCommonFunction {
                 try {
                     decoded = decode(eachLine);
                 } catch (Exception e) {
-                    decoded = MessageUtil.getMessage("convert.decode.fail", e.getClass().getName(), e.getLocalizedMessage());
+                    decoded = MessageUtil.getMessage("convert.common.decode.tip.fail", e.getClass().getName(), e.getLocalizedMessage());
                 }
                 sb.append(decoded).append("\n");
             }
@@ -310,7 +310,7 @@ public class MainFormConvertCommonFunction {
             try {
                 decoded = encode(encoded);
             } catch (Exception e) {
-                decoded = MessageUtil.getMessage("convert.decode.fail", e.getClass().getName(), e.getLocalizedMessage());
+                decoded = MessageUtil.getMessage("convert.common.decode.tip.fail", e.getClass().getName(), e.getLocalizedMessage());
             }
             this.component.textareaConvertCommonDecoded.setText(decoded);
         }
@@ -337,9 +337,9 @@ public class MainFormConvertCommonFunction {
         } else if (this.component.radioConvertCommonJson.isSelected()) {
             return StringEscapeUtils.unescapeJson(encoded);
         } else if (this.component.radioConvertCommonTime.isSelected()) {
-            throw new IllegalArgumentException(MessageUtil.getMessage("convert.decode.time.not.support"));
+            throw new IllegalArgumentException(MessageUtil.getMessage("convert.common.decode.tip.time.not.support"));
         }
-        throw new IllegalArgumentException(MessageUtil.getMessage("convert.decode.not.select.type"));
+        throw new IllegalArgumentException(MessageUtil.getMessage("convert.common.decode.tip.not.select.type"));
     }
 
 }

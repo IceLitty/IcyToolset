@@ -107,7 +107,7 @@ public class MainFormEncryptSymmetricFunction {
         } else if ("PCBC".equalsIgnoreCase(modeStr)) {
             mode = Mode.PCBC;
         } else {
-            throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.mode.not.support", modeStr));
+            throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.mode.not.support", modeStr));
         }
         Padding padding = switch (paddingIndex) {
             case 0 -> Padding.NoPadding;
@@ -118,7 +118,7 @@ public class MainFormEncryptSymmetricFunction {
             case 5 -> Padding.PKCS5Padding;
             case 6 -> Padding.SSL3Padding;
             default ->
-                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.padding.not.support",
+                    throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.padding.not.support",
                             this.component.selectEncryptSymmetricPadding.getModel().getSelectedItem()));
         };
         byte[] key = keyStr.getBytes(getCharset());
@@ -155,7 +155,7 @@ public class MainFormEncryptSymmetricFunction {
                     try {
                         random = SecureRandom.getInstance("SHA1PRNG");
                     } catch (NoSuchAlgorithmException e) {
-                        throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.jasypt.secure.random.lose.sha1prng"));
+                        throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.jasypt.secure.random.lose.sha1prng"));
                     }
                     byte[] salt = new byte[saltSizeBytes];
                     random.nextBytes(salt);
@@ -173,7 +173,7 @@ public class MainFormEncryptSymmetricFunction {
                     } else if ("HEX".equalsIgnoreCase(outputType)) {
                         return HexUtil.encodeHexStr(encryptedBytes2);
                     } else {
-                        throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
+                        throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.output.type.not.support", outputType));
                     }
                 } else {
                     byte[] salt = saltStr.getBytes();
@@ -184,7 +184,7 @@ public class MainFormEncryptSymmetricFunction {
                     } else if ("HEX".equalsIgnoreCase(outputType)) {
                         return crypto.encryptHex(source);
                     } else {
-                        throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
+                        throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.output.type.not.support", outputType));
                     }
                 }
             } else {
@@ -193,7 +193,7 @@ public class MainFormEncryptSymmetricFunction {
                 } else if ("HEX".equalsIgnoreCase(outputType)) {
                     return crypto.encryptHex(source);
                 } else {
-                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
+                    throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.output.type.not.support", outputType));
                 }
             }
         } else {
@@ -204,7 +204,7 @@ public class MainFormEncryptSymmetricFunction {
                 } else if ("HEX".equalsIgnoreCase(outputType)) {
                     decode = HexUtil.decodeHex(sourceStr);
                 } else {
-                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
+                    throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.output.type.not.support", outputType));
                 }
             } else {
                 if ("BASE64".equalsIgnoreCase(outputType)) {
@@ -212,7 +212,7 @@ public class MainFormEncryptSymmetricFunction {
                 } else if ("HEX".equalsIgnoreCase(outputType)) {
                     decode = HexUtil.decodeHex(sourceStr);
                 } else {
-                    throw new IllegalArgumentException(MessageUtil.getMessage("convert.symmetric.output.type.not.support", outputType));
+                    throw new IllegalArgumentException(MessageUtil.getMessage("encrypt.symmetric.tip.output.type.not.support", outputType));
                 }
             }
             if (pbe) {

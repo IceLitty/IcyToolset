@@ -136,6 +136,10 @@
   <depends>com.intellij.modules.lang</depends>
   <depends>com.intellij.modules.java</depends>
   <depends>com.intellij.java</depends>
+<!--  <depends optional="true" config-file="icyToolset-withJavaScript.xml">JavaScript</depends>-->
+<!--  <depends optional="true" config-file="icyToolset-withPython.xml">com.intellij.modules.python</depends>-->
+<!--  <depends optional="true" config-file="icyToolset-withLua.xml">com.tang</depends>-->
+<!--  <depends optional="true" config-file="icyToolset-withGroovy.xml">org.intellij.groovy</depends>-->
 
   <resource-bundle>message</resource-bundle>
 
@@ -165,5 +169,9 @@
 <!--      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>-->
 <!--    </component>-->
   </application-components>
+
+  <projectListeners>
+    <listener class="com.gmail.litalways.toolset.listener.EditorDisposeListener" topic="com.intellij.openapi.project.ProjectManagerListener" />
+  </projectListeners>
 
 </idea-plugin>

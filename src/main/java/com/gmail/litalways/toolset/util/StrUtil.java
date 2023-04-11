@@ -17,14 +17,14 @@ public class StrUtil {
             return "";
         }
         if (src.length() > length) {
-            return src.substring(0, length) + MessageUtil.getMessage("str.char.limit.tip", src.length() - length);
+            return src.substring(0, length) + MessageUtil.getMessage("util.str.char.limit.tip", src.length() - length);
         }
         return src;
     }
 
     public static boolean endsWithShowMax(String src) {
         // Not use regex because it will cause StackOverflowException
-        String[] s = MessageUtil.getBundleString("str.char.limit.tip").split("\\{0}");
+        String[] s = MessageUtil.getBundleString("util.str.char.limit.tip").split("\\{0}");
         return src.endsWith(s[s.length == 0 ? 0 : s.length - 1]);
     }
 
