@@ -20,7 +20,7 @@
         <clientProperties>
           <BorderFactoryClass class="java.lang.String" value="com.intellij.ui.IdeBorderFactory$PlainSmallWithIndent"/>
         </clientProperties>
-        <border type="none" title-resource-bundle="formTitle" title-key="setting.main.frame.title"/>
+        <border type="none" title-resource-bundle="applicationMessage" title-key="setting.main.frame.title"/>
         <children>
           <component id="3c0b8" class="javax.swing.JLabel">
             <constraints>
@@ -28,7 +28,7 @@
             </constraints>
             <properties>
               <labelFor value="3f7bb"/>
-              <text resource-bundle="formTitle" key="setting.main.input.language.label"/>
+              <text resource-bundle="applicationMessage" key="setting.main.input.language.label"/>
             </properties>
           </component>
           <component id="3f7bb" class="javax.swing.JComboBox" binding="selectLanguage">

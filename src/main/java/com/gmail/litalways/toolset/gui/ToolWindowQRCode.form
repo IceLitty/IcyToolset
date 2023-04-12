@@ -29,7 +29,7 @@
                   <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="formTitle" key="qr.to.file.title"/>
+                  <text resource-bundle="applicationMessage" key="qr.to.file.title"/>
                 </properties>
               </component>
               <component id="cd38e" class="javax.swing.JFormattedTextField" binding="textZxingWidth" custom-create="true">
@@ -40,7 +40,7 @@
                 </constraints>
                 <properties>
                   <text value=""/>
-                  <toolTipText resource-bundle="formTitle" key="qr.input.width.tooltip"/>
+                  <toolTipText resource-bundle="applicationMessage" key="qr.input.width.tooltip"/>
                 </properties>
               </component>
               <component id="6122b" class="javax.swing.JFormattedTextField" binding="textZxingHeight" custom-create="true">
@@ -51,7 +51,7 @@
                 </constraints>
                 <properties>
                   <text value=""/>
-                  <toolTipText resource-bundle="formTitle" key="qr.input.height.tooltip"/>
+                  <toolTipText resource-bundle="applicationMessage" key="qr.input.height.tooltip"/>
                 </properties>
               </component>
               <component id="83b68" class="javax.swing.JComboBox" binding="selectZxingEncoding">
@@ -67,7 +67,7 @@
                     <item value="GBK"/>
                     <item value="ISO-8859-1"/>
                   </model>
-                  <toolTipText resource-bundle="formTitle" key="convert.base64.select.encoding.tooltip"/>
+                  <toolTipText resource-bundle="applicationMessage" key="convert.base64.select.encoding.tooltip"/>
                 </properties>
               </component>
               <component id="f1a4a" class="javax.swing.JComboBox" binding="selectZxingErrorCorrection">
@@ -83,7 +83,7 @@
                     <item value="7%容错率(L)"/>
                     <item value="无"/>
                   </model>
-                  <toolTipText resource-bundle="formTitle" key="qr.select.qr.fault.tolerance.tooltip"/>
+                  <toolTipText resource-bundle="applicationMessage" key="qr.select.qr.fault.tolerance.tooltip"/>
                 </properties>
               </component>
               <component id="c8430" class="javax.swing.JButton" binding="buttonZxingClean">
@@ -91,7 +91,7 @@
                   <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="formTitle" key="qr.button.clean.title"/>
+                  <text resource-bundle="applicationMessage" key="qr.button.clean.title"/>
                 </properties>
               </component>
             </children>
@@ -125,8 +125,8 @@
             </constraints>
             <properties>
               <selected value="false"/>
-              <text resource-bundle="formTitle" key="qr.radio.type.qr.title"/>
-              <toolTipText resource-bundle="formTitle" key="qr.radio.type.tooltip"/>
+              <text resource-bundle="applicationMessage" key="qr.radio.type.qr.title"/>
+              <toolTipText resource-bundle="applicationMessage" key="qr.radio.type.tooltip"/>
             </properties>
           </component>
           <component id="45349" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileZxingFromFile">
@@ -136,7 +136,7 @@
               </grid>
             </constraints>
             <properties>
-              <toolTipText resource-bundle="formTitle" key="qr.file.from.file.tooltip"/>
+              <toolTipText resource-bundle="applicationMessage" key="qr.file.from.file.tooltip"/>
             </properties>
           </component>
           <component id="b7f78" class="javax.swing.JRadioButton" binding="radioZxingBar">
@@ -144,8 +144,8 @@
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="formTitle" key="qr.radio.type.bar128.title"/>
-              <toolTipText resource-bundle="formTitle" key="qr.radio.type.tooltip"/>
+              <text resource-bundle="applicationMessage" key="qr.radio.type.bar128.title"/>
+              <toolTipText resource-bundle="applicationMessage" key="qr.radio.type.tooltip"/>
             </properties>
           </component>
           <component id="d3c" class="javax.swing.JRadioButton" binding="radioZxingMatrix">
@@ -153,8 +153,8 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text resource-bundle="formTitle" key="qr.radio.type.matrix.title"/>
-              <toolTipText resource-bundle="formTitle" key="qr.radio.type.tooltip"/>
+              <text resource-bundle="applicationMessage" key="qr.radio.type.matrix.title"/>
+              <toolTipText resource-bundle="applicationMessage" key="qr.radio.type.tooltip"/>
             </properties>
           </component>
         </children>
