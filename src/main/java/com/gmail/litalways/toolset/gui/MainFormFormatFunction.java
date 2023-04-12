@@ -27,7 +27,7 @@ public class MainFormFormatFunction {
     }
 
     private void format(ActionEvent e) {
-        String text = this.component.textareaFormat.getText();
+        String text = this.component.editor.getDocument().getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
         if (tmp.length() < 1) {
             return;
@@ -36,17 +36,17 @@ public class MainFormFormatFunction {
             case "{" -> {
                 JSONObject jsonObject = JSONUtil.parseObj(text);
                 text = jsonObject.toJSONString(4);
-                this.component.textareaFormat.setText(text);
+                this.component.editor.getDocument().setText(text);
             }
             case "[" -> {
                 JSONArray jsonArray = JSONUtil.parseArray(text);
                 text = jsonArray.toJSONString(4);
-                this.component.textareaFormat.setText(text);
+                this.component.editor.getDocument().setText(text);
             }
             case "<" -> {
                 Document document = XmlUtil.parseXml(text);
                 text = XmlUtil.toStr(document, true);
-                this.component.textareaFormat.setText(text);
+                this.component.editor.getDocument().setText(text);
             }
             default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
         }
@@ -151,7 +151,7 @@ public class MainFormFormatFunction {
     }
 
     private void unFormat(ActionEvent e) {
-        String text = this.component.textareaFormat.getText();
+        String text = this.component.editor.getDocument().getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
         if (tmp.length() < 1) {
             return;
@@ -161,19 +161,19 @@ public class MainFormFormatFunction {
                 JSONObject jsonObject = JSONUtil.parseObj(text);
                 text = jsonObject.toJSONString(4);
                 text = unFormatJson(text);
-                this.component.textareaFormat.setText(text);
+                this.component.editor.getDocument().setText(text);
             }
             case "[" -> {
                 JSONArray jsonArray = JSONUtil.parseArray(text);
                 text = jsonArray.toJSONString(4);
                 text = unFormatJson(text);
-                this.component.textareaFormat.setText(text);
+                this.component.editor.getDocument().setText(text);
             }
             case "<" -> {
                 Document document = XmlUtil.parseXml(text);
                 text = XmlUtil.toStr(document, true);
                 text = unFormatXml(text);
-                this.component.textareaFormat.setText(text);
+                this.component.editor.getDocument().setText(text);
             }
             default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
         }

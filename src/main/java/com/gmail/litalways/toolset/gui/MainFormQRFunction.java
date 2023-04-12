@@ -26,13 +26,13 @@ import java.util.Map;
  * @author IceRain
  * @since 2022/01/28
  */
-public class MainFormZxingFunction {
+public class MainFormQRFunction {
 
     private final ToolWindowQRCode component;
     private VirtualFile toSelect = null;
     private String lastSaveImgPath = null;
 
-    public MainFormZxingFunction(ToolWindowQRCode component) {
+    public MainFormQRFunction(ToolWindowQRCode component) {
         this.component = component;
         this.component.radioZxingQr.setSelected(true);
         this.component.textZxingWidth.setValue(200);
@@ -100,20 +100,12 @@ public class MainFormZxingFunction {
         hints.put(EncodeHintType.CHARACTER_SET, getCharset());
         int errorCorrectionIndex = this.component.selectZxingErrorCorrection.getSelectedIndex();
         switch (errorCorrectionIndex) {
-            case 0:
-                hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
-                break;
-            case 1:
-                hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.Q);
-                break;
-            case 2:
-                hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-                break;
-            case 3:
-                hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-                break;
-            default:
-                break;
+            case 0 -> hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+            case 1 -> hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.Q);
+            case 2 -> hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+            case 3 -> hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+            default -> {
+            }
         }
         hints.put(EncodeHintType.MARGIN, "1");
         BitMatrix bitMatrix = null;

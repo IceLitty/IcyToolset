@@ -8,8 +8,6 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ResourceBundle;
-
 /**
  * @author IceRain
  * @since 2022/01/19
@@ -40,7 +38,7 @@ public class MainFormFactory implements ToolWindowFactory {
         ToolWindowQRCode toolWindowQRCode = new ToolWindowQRCode(project, toolWindow);
         Content toolWindowQRCodeContent = contentFactory.createContent(toolWindowQRCode.getContent(), MessageUtil.getMessage("qr.tab.title"), false);
         toolWindow.getContentManager().addContent(toolWindowQRCodeContent);
-        MainFormZxingFunction zxing = new MainFormZxingFunction(toolWindowQRCode);
+        MainFormQRFunction zxing = new MainFormQRFunction(toolWindowQRCode);
         //
         ToolWindowFormat toolWindowFormat = new ToolWindowFormat(project, toolWindow);
         Content toolWindowFormatContent = contentFactory.createContent(toolWindowFormat.getContent(), MessageUtil.getMessage("format.tab.title"), false);
