@@ -1,11 +1,9 @@
 package com.gmail.litalways.toolset.service;
 
-import com.intellij.ide.fileTemplates.FileTemplate;
-import com.intellij.ide.fileTemplates.FileTemplateManager;
+import com.gmail.litalways.toolset.state.ScriptFile;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
 import com.intellij.openapi.fileTypes.FileType;
@@ -13,8 +11,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
-
-import java.util.Properties;
 
 /**
  * @author IceRain
@@ -25,19 +21,16 @@ public final class ToolWindowScriptEditorService {
 
     private final Project project;
     private EditorEx editor;
-    private String lastFileType = "TXT";
+    private ScriptFile lastScriptFile = null;
 
     public ToolWindowScriptEditorService(Project project) {
         this.project = project;
     }
 
     public EditorEx newEditor(String fileName, FileType fileType, String content) {
+        lastScriptFile = null;
         EditorFactory editorFactory = EditorFactory.getInstance();
         PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText(fileName, fileType, content, 0, true);
-//        Properties properties = new Properties();
-//        properties.putAll(FileTemplateManager.getInstance(this.project).getDefaultProperties());
-//        properties.setProperty(FileTemplate.ATTRIBUTE_NAME, "File name entered in dialog");
-//        file.getViewProvider().putUserData(FileTemplateManager.DEFAULT_TEMPLATE_PROPERTIES, properties);
         Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
         if (document == null) {
             document = EditorFactory.getInstance().createDocument(content);
@@ -62,12 +55,12 @@ public final class ToolWindowScriptEditorService {
         }
     }
 
-    public String getLastFileType() {
-        return lastFileType;
+    public ScriptFile getLastScriptFile() {
+        return lastScriptFile;
     }
 
-    public void setLastFileType(String lastFileType) {
-        this.lastFileType = lastFileType;
+    public void setLastScriptFile(ScriptFile lastScriptFile) {
+        this.lastScriptFile = lastScriptFile;
     }
 
 }

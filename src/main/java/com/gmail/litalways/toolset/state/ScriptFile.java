@@ -2,9 +2,12 @@ package com.gmail.litalways.toolset.state;
 
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.util.xmlb.annotations.Transient;
 import lombok.Data;
 
 /**
+ * 单个脚本文件
+ *
  * @author IceRain
  * @since 2023/04/11
  */

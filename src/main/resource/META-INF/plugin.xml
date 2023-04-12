@@ -164,6 +164,9 @@
   </extensions>
 
   <application-components>
+      <component>
+        <implementation-class>com.gmail.litalways.toolset.state.ToolWindowScriptState</implementation-class>
+      </component>
     <!-- 用于试验配置储存（复杂配置） -->
 <!--    <component>-->
 <!--      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>-->

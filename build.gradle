@@ -81,6 +81,8 @@ dependencies {
     implementation 'org.luaj:luaj-jse:3.0.1'
     // https://mvnrepository.com/artifact/org.apache.groovy/groovy-all
     implementation 'org.apache.groovy:groovy-all:4.0.11'
+//    // https://mvnrepository.com/artifact/ch.obermuhlner/jshell-scriptengine
+//    implementation 'ch.obermuhlner:jshell-scriptengine:1.1.0'
     // 解决 gradle 使用 lombok 的问题
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"

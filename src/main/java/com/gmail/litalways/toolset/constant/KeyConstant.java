@@ -20,5 +20,8 @@ public class KeyConstant {
     public static final String CONFIG_STATE_FILENAME = "IcyToolset.xml";
     public static final String CONFIG_STATE_TITLE = "Icy Toolset 2";
     public static final String CONFIG_STATE_MAIN_KEY = "com.gmail.litalways.toolset.setting.main";
+    // 实际使用了的
+    public static final String TOOL_WINDOW_STATE_FILENAME = "IcyToolset.xml";
+    public static final String TOOL_WINDOW_SCRIPT_SAVE = "com.gmail.litalways.toolset.script";
 
 }
