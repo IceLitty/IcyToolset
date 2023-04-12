@@ -193,11 +193,9 @@ public class ToolWindowScript {
         if (event != null && event.getValueIsAdjusting()) {
             return;
         }
-        System.out.println("script selected " + selectedValue + " " + event);
         ToolWindowScriptEditorService toolWindowScriptEditorService = this.project.getService(ToolWindowScriptEditorService.class);
         // cmp address
         if (selectedValue == toolWindowScriptEditorService.getLastScriptFile()) {
-            System.out.println("select same object");
             return;
         }
         toolWindowScriptEditorService.setLastScriptFile(selectedValue);

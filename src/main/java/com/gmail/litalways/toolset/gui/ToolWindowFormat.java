@@ -1,6 +1,7 @@
 package com.gmail.litalways.toolset.gui;
 
 import com.gmail.litalways.toolset.service.ToolWindowFormatEditorService;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -11,6 +12,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
@@ -78,46 +80,54 @@ public class ToolWindowFormat {
     private void useFormatToCreateEditor(String fileSuffix) {
         ToolWindowFormatEditorService toolWindowFormatEditorService = this.project.getService(ToolWindowFormatEditorService.class);
         toolWindowFormatEditorService.setEditor(null);
+        String text = this.editor.getDocument().getText();
         this.panelTextareaFormat.remove(this.textareaFormat);
-        EditorFactory.getInstance().releaseEditor(this.editor);
+        if (this.editor != null && !this.editor.isDisposed()) {
+            EditorFactory.getInstance().releaseEditor(this.editor);
+        }
         FileType fileType = FileTypeManager.getInstance().getFileTypeByExtension(fileSuffix);
-        PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("format." + fileSuffix, fileType, "", 0, true);
+        PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("format." + fileSuffix, fileType, text, 0, true);
         Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
         if (document == null) {
             document = EditorFactory.getInstance().createDocument("");
         }
         this.editor = (EditorEx) EditorFactory.getInstance().createEditor(document, this.project);
         this.editor.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(this.project, file.getVirtualFile()));
+        this.editor.getDocument().addDocumentListener(this.aDocumentListener);
         this.textareaFormat = this.editor.getComponent();
         this.panelTextareaFormat.add(this.textareaFormat, new GridConstraints(0, 0, 1, 1, 0, 3, 3, 3, new Dimension(-1, -1), new Dimension(-1, -1), new Dimension(-1, -1), 0, true));
         this.panelTextareaFormat.validate();
         this.panelTextareaFormat.repaint();
         toolWindowFormatEditorService.setEditor(this.editor);
+        IdeFocusManager.getGlobalInstance().doWhenFocusSettlesDown(() -> IdeFocusManager.getGlobalInstance().requestFocus(this.textareaFormat, true));
     }
 
     class ADocumentListener implements DocumentListener {
         private String lastFormat = "null";
         @Override
         public void documentChanged(@NotNull DocumentEvent event) {
-            if (editor.isDisposed()) {
-                return;
-            }
-            String text = editor.getDocument().getText();
-            String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
-            if (tmp.length() != 1) {
-                return;
-            }
-            if ("{".equals(tmp) || "[".equals(tmp)) {
-                if (!"json".equals(lastFormat)) {
-                    useFormatToCreateEditor("json");
-                    lastFormat = "json";
+            ApplicationManager.getApplication().invokeLater(() -> {
+                if (editor.isDisposed()) {
+                    return;
                 }
-            } else if ("<".equals(tmp)) {
-                if (!"xml".equals(lastFormat)) {
-                    useFormatToCreateEditor("xml");
-                    lastFormat = "xml";
+                String text = editor.getDocument().getText();
+                String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
+                if (tmp.length() < 1) {
+                    return;
                 }
-            }
+                tmp = tmp.substring(0, 1);
+                if ("{".equals(tmp) || "[".equals(tmp)) {
+                    if (!"json".equals(lastFormat)) {
+                        useFormatToCreateEditor("json");
+                        lastFormat = "json";
+                    }
+                } else if ("<".equals(tmp)) {
+                    if (!"xml".equals(lastFormat)) {
+                        useFormatToCreateEditor("xml");
+                        lastFormat = "xml";
+                    }
+                }
+            });
         }
     }
 
