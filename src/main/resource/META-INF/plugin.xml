@@ -9,7 +9,8 @@
       <hr/>
       <div>TODO LIST:</div>
       <ul>
-        <li>暂无</li>
+        <li>将错误提示的持久化气泡通知改为控件上的Popups。</li>
+        <li>Python脚本引擎实际使用时会储存上下文，但不会将单行具有返回的脚本进行输出，需要做额外处理。</li>
       </ul>
     ]]></description>
 
