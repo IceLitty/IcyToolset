@@ -1,6 +1,5 @@
 package com.gmail.litalways.toolset.gui;
 
-import ch.obermuhlner.scriptengine.jshell.JShellScriptEngineFactory;
 import cn.hutool.script.ScriptUtil;
 import com.gmail.litalways.toolset.service.ToolWindowScriptEditorService;
 import com.gmail.litalways.toolset.state.ScriptFile;
