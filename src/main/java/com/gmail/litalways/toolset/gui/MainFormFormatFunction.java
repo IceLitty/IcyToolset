@@ -1,11 +1,13 @@
 package com.gmail.litalways.toolset.gui;
 
+import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.XmlUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
+import com.intellij.openapi.application.ApplicationManager;
 import org.w3c.dom.Document;
 
 import java.awt.event.ActionEvent;
@@ -34,19 +36,43 @@ public class MainFormFormatFunction {
         }
         switch (tmp.substring(0, 1)) {
             case "{" -> {
-                JSONObject jsonObject = JSONUtil.parseObj(text);
-                text = jsonObject.toJSONString(4);
-                this.component.editor.getDocument().setText(text);
+                try {
+                    JSONObject jsonObject = JSONUtil.parseObj(text);
+                    text = jsonObject.toJSONString(4);
+                    text = text.replace("\r\n", "\n");
+                    final String _text = text;
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                        this.component.editor.getDocument().setText(_text);
+                    });
+                } catch (UtilException e1) {
+                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                }
             }
             case "[" -> {
-                JSONArray jsonArray = JSONUtil.parseArray(text);
-                text = jsonArray.toJSONString(4);
-                this.component.editor.getDocument().setText(text);
+                try {
+                    JSONArray jsonArray = JSONUtil.parseArray(text);
+                    text = jsonArray.toJSONString(4);
+                    text = text.replace("\r\n", "\n");
+                    final String _text = text;
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                        this.component.editor.getDocument().setText(_text);
+                    });
+                } catch (UtilException e1) {
+                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                }
             }
             case "<" -> {
-                Document document = XmlUtil.parseXml(text);
-                text = XmlUtil.toStr(document, true);
-                this.component.editor.getDocument().setText(text);
+                try {
+                    Document document = XmlUtil.parseXml(text);
+                    text = XmlUtil.toStr(document, true);
+                    text = text.replace("\r\n", "\n");
+                    final String _text = text;
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                        this.component.editor.getDocument().setText(_text);
+                    });
+                } catch (UtilException e1) {
+                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                }
             }
             default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
         }
@@ -158,22 +184,46 @@ public class MainFormFormatFunction {
         }
         switch (tmp.substring(0, 1)) {
             case "{" -> {
-                JSONObject jsonObject = JSONUtil.parseObj(text);
-                text = jsonObject.toJSONString(4);
-                text = unFormatJson(text);
-                this.component.editor.getDocument().setText(text);
+                try {
+                    JSONObject jsonObject = JSONUtil.parseObj(text);
+                    text = jsonObject.toJSONString(4);
+                    text = unFormatJson(text);
+                    text = text.replace("\r\n", "\n");
+                    final String _text = text;
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                        this.component.editor.getDocument().setText(_text);
+                    });
+                } catch (UtilException e1) {
+                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                }
             }
             case "[" -> {
-                JSONArray jsonArray = JSONUtil.parseArray(text);
-                text = jsonArray.toJSONString(4);
-                text = unFormatJson(text);
-                this.component.editor.getDocument().setText(text);
+                try {
+                    JSONArray jsonArray = JSONUtil.parseArray(text);
+                    text = jsonArray.toJSONString(4);
+                    text = unFormatJson(text);
+                    text = text.replace("\r\n", "\n");
+                    final String _text = text;
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                        this.component.editor.getDocument().setText(_text);
+                    });
+                } catch (UtilException e1) {
+                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                }
             }
             case "<" -> {
-                Document document = XmlUtil.parseXml(text);
-                text = XmlUtil.toStr(document, true);
-                text = unFormatXml(text);
-                this.component.editor.getDocument().setText(text);
+                try {
+                    Document document = XmlUtil.parseXml(text);
+                    text = XmlUtil.toStr(document, true);
+                    text = unFormatXml(text);
+                    text = text.replace("\r\n", "\n");
+                    final String _text = text;
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                        this.component.editor.getDocument().setText(_text);
+                    });
+                } catch (UtilException e1) {
+                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                }
             }
             default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
         }

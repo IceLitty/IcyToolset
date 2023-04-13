@@ -4,6 +4,7 @@ import com.gmail.litalways.toolset.service.ToolWindowFormatEditorService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -99,7 +100,10 @@ public class ToolWindowFormat {
         this.panelTextareaFormat.validate();
         this.panelTextareaFormat.repaint();
         toolWindowFormatEditorService.setEditor(this.editor);
-        IdeFocusManager.getGlobalInstance().doWhenFocusSettlesDown(() -> IdeFocusManager.getGlobalInstance().requestFocus(this.textareaFormat, true));
+        IdeFocusManager.getInstance(this.project).requestFocus(this.editor.getContentComponent(), true);
+        try {
+            this.editor.getCaretModel().moveToLogicalPosition(new LogicalPosition(0, 1));
+        } catch (Exception ignored) {}
     }
 
     class ADocumentListener implements DocumentListener {

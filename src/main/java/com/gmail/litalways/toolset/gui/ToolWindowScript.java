@@ -1,5 +1,6 @@
 package com.gmail.litalways.toolset.gui;
 
+import ch.obermuhlner.scriptengine.jshell.JShellScriptEngineFactory;
 import cn.hutool.script.ScriptUtil;
 import com.gmail.litalways.toolset.service.ToolWindowScriptEditorService;
 import com.gmail.litalways.toolset.state.ScriptFile;
@@ -97,7 +98,7 @@ public class ToolWindowScript {
                 ToolWindowScriptState.getInstance().scriptFiles.add(scriptFile);
                 scriptModel.addElement(scriptFile);
                 scriptModel.fireListDataChanged();
-                IdeFocusManager.getGlobalInstance().doWhenFocusSettlesDown(() -> IdeFocusManager.getGlobalInstance().requestFocus(textareaScriptSource, true));
+                IdeFocusManager.getInstance(project).requestFocus(textareaScriptSourceEditor.getContentComponent(), true);
             }
             @Override
             public void update(@NotNull AnActionEvent e) {
@@ -147,7 +148,7 @@ public class ToolWindowScript {
                 ToolWindowScriptState.getInstance().scriptFiles.add(clone);
                 scriptModel.addElement(clone);
                 scriptModel.fireListDataChanged();
-                IdeFocusManager.getGlobalInstance().doWhenFocusSettlesDown(() -> IdeFocusManager.getGlobalInstance().requestFocus(textareaScriptSource, true));
+                IdeFocusManager.getInstance(project).requestFocus(textareaScriptSourceEditor.getContentComponent(), true);
             }
             @Override
             public void update(@NotNull AnActionEvent e) {
