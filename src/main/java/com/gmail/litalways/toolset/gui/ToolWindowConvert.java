@@ -25,6 +25,7 @@ public class ToolWindowConvert {
     JRadioButton radioConvertCommonUriComponent;
     JComboBox<String> selectConvertCommonCharset;
     JRadioButton radioConvertCommonJson;
+    JRadioButton radioConvertCommonJsonToXml;
     JRadioButton radioConvertCommonTime;
     JScrollPane scrollConvertCommonDecoded;
     JTextArea textareaConvertCommonDecoded;

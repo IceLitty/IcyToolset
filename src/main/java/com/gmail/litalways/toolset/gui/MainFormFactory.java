@@ -28,7 +28,7 @@ public class MainFormFactory implements ToolWindowFactory {
         MainFormConvertSplitterFunction convertSplitter = new MainFormConvertSplitterFunction(toolWindowConvert);
         //
         ToolWindowEncrypt toolWindowEncrypt = new ToolWindowEncrypt(project, toolWindow);
-        Content toolWindowEncryptContent = contentFactory.createContent(toolWindowEncrypt.getContent(), MessageUtil.getMessage("encrypt.tab.title"), false);
+        Content toolWindowEncryptContent = contentFactory.createContent(toolWindowEncrypt.getContent(), MessageUtil.getMessage("encrypt.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowEncryptContent);
         MainFormEncryptHashFunction encryptHash = new MainFormEncryptHashFunction(toolWindowEncrypt);
         MainFormEncryptAsymmetricFunction encryptAsymmetric = new MainFormEncryptAsymmetricFunction(toolWindowEncrypt);
@@ -36,26 +36,26 @@ public class MainFormFactory implements ToolWindowFactory {
         toolWindowEncryptContent.setCloseable(true);
         //
         ToolWindowQRCode toolWindowQRCode = new ToolWindowQRCode(project, toolWindow);
-        Content toolWindowQRCodeContent = contentFactory.createContent(toolWindowQRCode.getContent(), MessageUtil.getMessage("qr.tab.title"), false);
+        Content toolWindowQRCodeContent = contentFactory.createContent(toolWindowQRCode.getContent(), MessageUtil.getMessage("qr.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowQRCodeContent);
         MainFormQRFunction zxing = new MainFormQRFunction(toolWindowQRCode);
         //
         ToolWindowFormat toolWindowFormat = new ToolWindowFormat(project, toolWindow);
-        Content toolWindowFormatContent = contentFactory.createContent(toolWindowFormat.getContent(), MessageUtil.getMessage("format.tab.title"), false);
+        Content toolWindowFormatContent = contentFactory.createContent(toolWindowFormat.getContent(), MessageUtil.getMessage("format.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowFormatContent);
         MainFormFormatFunction format = new MainFormFormatFunction(toolWindowFormat);
         //
         ToolWindowScript toolWindowScript = new ToolWindowScript(project, toolWindow);
-        Content toolWindowScriptContent = contentFactory.createContent(toolWindowScript.getContent(), MessageUtil.getMessage("script.tab.title"), false);
+        Content toolWindowScriptContent = contentFactory.createContent(toolWindowScript.getContent(), MessageUtil.getMessage("script.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowScriptContent);
         MainFormScriptFunction script = new MainFormScriptFunction(toolWindowScript);
         //
         ToolWindowSymbol toolWindowSymbol = new ToolWindowSymbol(project, toolWindow);
-        Content toolWindowSymbolContent = contentFactory.createContent(toolWindowSymbol.getContent(), MessageUtil.getMessage("symbol.tab.title"), false);
+        Content toolWindowSymbolContent = contentFactory.createContent(toolWindowSymbol.getContent(), MessageUtil.getMessage("symbol.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowSymbolContent);
         //
         ToolWindowOther toolWindowOther = new ToolWindowOther(project, toolWindow);
-        Content toolWindowOtherContent = contentFactory.createContent(toolWindowOther.getContent(), MessageUtil.getMessage("other.tab.title"), false);
+        Content toolWindowOtherContent = contentFactory.createContent(toolWindowOther.getContent(), MessageUtil.getMessage("other.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowOtherContent);
         MainFormAboutFunction about = new MainFormAboutFunction(toolWindowOther);
     }

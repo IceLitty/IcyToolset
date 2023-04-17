@@ -28,6 +28,9 @@ public class MainFormFormatFunction {
         this.component.buttonFormatUndo.addActionListener(this::unFormat);
     }
 
+    /**
+     * 缩进格式化
+     */
     private void format(ActionEvent e) {
         String text = this.component.editor.getDocument().getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
@@ -78,7 +81,7 @@ public class MainFormFormatFunction {
         }
     }
 
-    private static String unFormatJson(String formattedJson) {
+    public static String unFormatJson(String formattedJson) {
         StringBuilder stringBuilder = new StringBuilder();
         boolean needIgnoreQuote = false;
         boolean needUnFormat = true;
@@ -114,7 +117,7 @@ public class MainFormFormatFunction {
         return stringBuilder.toString();
     }
 
-    private static String unFormatXml(String formattedXml) {
+    public static String unFormatXml(String formattedXml) {
         List<String> part1;
         String part2;
         if (formattedXml.contains("<![CDATA[") && formattedXml.contains("]]>")) {
@@ -176,7 +179,10 @@ public class MainFormFormatFunction {
         }
     }
 
-    private void unFormat(ActionEvent e) {
+    /**
+     * 平铺格式化
+     */
+    public void unFormat(ActionEvent e) {
         String text = this.component.editor.getDocument().getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
         if (tmp.length() < 1) {

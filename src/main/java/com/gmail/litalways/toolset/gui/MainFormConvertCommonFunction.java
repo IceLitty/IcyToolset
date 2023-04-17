@@ -3,6 +3,10 @@ package com.gmail.litalways.toolset.gui;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.XmlUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.StrUtil;
@@ -117,6 +121,7 @@ public class MainFormConvertCommonFunction {
         this.component.radioConvertCommonUnicode.addActionListener(this::radioChanged);
         this.component.radioConvertCommonUriComponent.addActionListener(this::radioChanged);
         this.component.radioConvertCommonJson.addActionListener(this::radioChanged);
+        this.component.radioConvertCommonJsonToXml.addActionListener(this::radioChanged);
         this.component.radioConvertCommonTime.addActionListener(this::radioChanged);
         ScrollbarSyncListener syncListener = new ScrollbarSyncListener(this.component.scrollConvertCommonDecoded, this.component.scrollConvertCommonEncoded);
         this.component.scrollConvertCommonDecoded.getVerticalScrollBar().addAdjustmentListener(syncListener);
@@ -244,6 +249,17 @@ public class MainFormConvertCommonFunction {
                     .replace("%7E", "~").replace("%27", "'");
         } else if (this.component.radioConvertCommonJson.isSelected()) {
             return StringEscapeUtils.escapeJson(decoded);
+        } else if (this.component.radioConvertCommonJsonToXml.isSelected()) {
+            JSON json = JSONUtil.parse(decoded);
+            String xml = JSONUtil.toXmlStr(json);
+            // 默认的是平铺格式
+            if (!this.component.checkConvertCommonLine.isSelected()) {
+                try {
+                    xml = XmlUtil.toStr(XmlUtil.parseXml(xml));
+                    xml = xml.replace("\r\n", "\n");
+                } catch (Exception ignored) {}
+            }
+            return xml;
         } else if (this.component.radioConvertCommonTime.isSelected()) {
             Long unixTimestamp = null;
             try {
@@ -308,7 +324,7 @@ public class MainFormConvertCommonFunction {
         } else {
             String decoded;
             try {
-                decoded = encode(encoded);
+                decoded = decode(encoded);
             } catch (Exception e) {
                 decoded = MessageUtil.getMessage("convert.common.decode.tip.fail", e.getClass().getName(), e.getLocalizedMessage());
             }
@@ -336,6 +352,15 @@ public class MainFormConvertCommonFunction {
                     , getCharset());
         } else if (this.component.radioConvertCommonJson.isSelected()) {
             return StringEscapeUtils.unescapeJson(encoded);
+        } else if (this.component.radioConvertCommonJsonToXml.isSelected()) {
+            JSONObject json = JSONUtil.parseFromXml(encoded);
+            String jsonString = json.toJSONString(4);
+            // 默认的是缩进格式
+            if (this.component.checkConvertCommonLine.isSelected()) {
+                jsonString = MainFormFormatFunction.unFormatJson(jsonString);
+                jsonString = jsonString.replace("\r\n", "\n");
+            }
+            return jsonString;
         } else if (this.component.radioConvertCommonTime.isSelected()) {
             throw new IllegalArgumentException(MessageUtil.getMessage("convert.common.decode.tip.time.not.support"));
         }
