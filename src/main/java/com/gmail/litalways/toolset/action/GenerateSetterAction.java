@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 生成Setter方法
@@ -50,35 +51,33 @@ public class GenerateSetterAction extends AnAction {
         if (!(psiElement instanceof PsiIdentifier)) {
             return;
         }
-        // 获取叶子的上级元素
-        PsiElement psiTargetElementParent = psiElement.getParent();
-        PsiType psiTargetType;
-        if (psiTargetElementParent instanceof PsiLocalVariable p) {
-            psiTargetType = p.getType();
-        } else if (psiTargetElementParent instanceof PsiReferenceExpression p) {
-            psiTargetType = p.getType();
-        } else if (psiTargetElementParent instanceof PsiParameter p) {
-            psiTargetType = p.getType();
-        } else {
+        // 获取表达式操作的实例类型
+        PsiType psiTargetType = getPsiType(psiElement.getParent());
+        if (psiTargetType == null) {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.unexpected.element.type"));
             return;
         }
-        // 获取插入点
-        PsiElement lastLeaf = getLastLeafFromElement(psiElement);
+        // 获取表达式末尾的插入点
+        PsiElement lastLeaf = getInsertPointOfStatement(psiElement);
         if (lastLeaf == null) {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.locate.code.error"));
             return;
         }
         // 获取该变量的引用类型
         PsiClass psiTargetClass;
-        if (psiTargetType instanceof PsiClassType) {
-            psiTargetClass = ((PsiClassType) psiTargetType).resolve();
+        if (psiTargetType instanceof PsiClassType pct) {
+            psiTargetClass = pct.resolve();
         } else {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.cannot.get.class.type"));
             return;
         }
         if (psiTargetClass == null) {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.cannot.get.class.type"));
+            return;
+        }
+        // 不处理Map类型
+        if (Map.class.getName().equals(psiTargetClass.getQualifiedName())) {
+            NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.not.support.map"));
             return;
         }
         PsiMethod[] psiTargetClassAllMethods = psiTargetClass.getAllMethods();
@@ -98,7 +97,7 @@ public class GenerateSetterAction extends AnAction {
         MemberChooser<PsiMethodMember> chooser = new MemberChooser<>(psiTargetMethods, false, true, project);
         //noinspection DialogTitleCapitalization
         chooser.setTitle(MessageUtil.getMessage("action.generate.setter.choose.methods.copied.by"));
-        chooser.setCopyJavadocVisible(true);
+//        chooser.setCopyJavadocVisible(true);
 //        FileDocumentManager.getInstance().saveAllDocuments();
         chooser.show();
         if (chooser.getExitCode() != DialogWrapper.OK_EXIT_CODE) {
@@ -118,40 +117,25 @@ public class GenerateSetterAction extends AnAction {
         // 获取需要生成Setter的变量名
         String targetElementName = psiElement.getText().trim();
         // 获取缩进
-        String indent = "";
-        PsiElement firstLeaf = getFirstLeafFromElement(psiElement);
-        if (firstLeaf != null) {
-            for (;;) {
-                if (firstLeaf == null || firstLeaf.getParent() == null) {
-                    // 获取失败
-                    indent = "";
-                    break;
-                } if (firstLeaf.getParent().getPrevSibling() instanceof PsiWhiteSpace p && p.getText().startsWith("\n") && p.getText().length() > 1) {
-                    // 获取到最左侧叶子带换行的空格Psi，获取缩进格数
-                    indent = p.getText().substring(1);
-                    break;
-                } else {
-                    // 该层非最外层，继续向上查询
-                    firstLeaf = getFirstLeafFromElement(firstLeaf.getParent());
-                    continue;
-                }
-            }
+        String indentWhitespace = getIndentWhitespace(psiElement);
+        if (indentWhitespace == null) {
+            indentWhitespace = "";
         }
         // 生成代码
         StringBuilder builder = new StringBuilder("\n");
         for (PsiMethodMember psiMethodMember : selectedElements) {
             PsiMethod psiMethod = psiMethodMember.getElement();
-            if (chooser.isCopyJavadoc() && psiMethod.getDocComment() != null) {
-                String comment = psiMethod.getDocComment().toString()
-                        .replaceAll("/", "")
-                        .replaceAll("\\*", "")
-                        .replaceAll("\\n", "")
-                        .trim();
-                builder.append(indent).append("// ").append(comment).append("\n");
-            }
+//            if (chooser.isCopyJavadoc() && psiMethod.getDocComment() != null) {
+//                String comment = psiMethod.getDocComment().toString()
+//                        .replaceAll("/", "")
+//                        .replaceAll("\\*", "")
+//                        .replaceAll("\\n", "")
+//                        .trim();
+//                builder.append(indentWhitespace).append("// ").append(comment).append("\n");
+//            }
             String setMethodName = psiMethod.getName();
             String getMethodName = "g" + setMethodName.substring(1);
-            builder.append(indent).append(targetElementName).append(".").append(setMethodName).append("(")
+            builder.append(indentWhitespace).append(targetElementName).append(".").append(setMethodName).append("(")
                     .append(sourceVarName).append(".").append(getMethodName).append("());\n");
         }
         String builderString = builder.toString();
@@ -170,11 +154,11 @@ public class GenerateSetterAction extends AnAction {
     }
 
     /**
-     * 选择事件驱动or后台线程
+     * 选择Event-Dispatching-Thread或Background-Thread，事件驱动线程的update不能访问psi等文件系统，后台线程的update不能直接访问UI控件，使用`AnActionEvent.getUpdateSession().compute()`在BGT中进行EDT的操作
      */
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return ActionUpdateThread.EDT;
+        return ActionUpdateThread.BGT;
     }
 
     @Override
@@ -195,62 +179,135 @@ public class GenerateSetterAction extends AnAction {
             return;
         }
         int offset = editor.getCaretModel().getOffset();
-        PsiElement ele = psiFile.findElementAt(offset);
-        if (!(ele instanceof PsiIdentifierImpl)) {
+        PsiElement psiElement = psiFile.findElementAt(offset);
+        // 单字符变量优化
+        if (psiElement instanceof PsiWhiteSpace && offset != 0) {
+            offset--;
+            psiElement = psiFile.findElementAt(offset);
+        }
+        // 屏蔽TOKEN
+        if (!(psiElement instanceof PsiIdentifierImpl)) {
             e.getPresentation().setEnabledAndVisible(false);
         }
     }
 
     /**
-     * 获取该语法树第一个节点
+     * 查找该语句的换行标识符
+     *
+     * @param psiElement PsiIdentifier
+     * @return IndentSpace
      */
-    private static @Nullable PsiElement getFirstLeafFromElement(@Nullable PsiElement psiElement) {
+    private static @Nullable String getIndentWhitespace(@Nullable PsiElement psiElement) {
         if (psiElement == null) {
             return null;
         }
         PsiElement parent = psiElement.getParent();
         if (parent instanceof PsiLocalVariable) {
-            return parent.getFirstChild();
+            // 声明实例对象
+            return getIndentWhitespace(parent);
         } else if (parent instanceof PsiParameter) {
-            if (parent.getParent() instanceof PsiParameterList && parent.getParent().getParent() instanceof PsiMethod method) {
-                return method.getBody();
+            // 方法参数
+            if (parent.getParent() instanceof PsiParameterList ppl
+                    && ppl.getParent() instanceof PsiMethod pm
+                    && pm.getBody().getFirstChild().getNextSibling() instanceof PsiWhiteSpace p
+                    && p.getText().startsWith("\n") && p.getText().length() > 1) {
+                return p.getText().substring(1) + "    ";
             }
-            return null;
-        } else if (parent instanceof PsiReferenceExpression) {
-            if (parent.getParent().getParent().getParent() instanceof PsiExpressionStatement) {
-                return parent.getParent().getParent().getParent().getFirstChild();
-            }
-            return null;
-        } else if (parent instanceof PsiStatement) {
-            return parent;
+        } else if (parent instanceof PsiMethod pm
+                && pm.getPrevSibling() instanceof PsiWhiteSpace p
+                && p.getText().startsWith("\n") && p.getText().length() > 1) {
+            // 方法签名
+            return p.getText().substring(1);
+        } else if (parent instanceof PsiExpression) {
+            // 引用对象
+            return getIndentWhitespace(parent);
+        } else if (parent instanceof PsiStatement ps
+                && ps.getPrevSibling() instanceof PsiWhiteSpace p
+                && p.getText().startsWith("\n") && p.getText().length() > 1) {
+            // 块
+            return p.getText().substring(1);
+        } else if (parent instanceof PsiCodeBlock pcb
+                && pcb.getPrevSibling() instanceof PsiWhiteSpace p
+                && p.getText().startsWith("\n") && p.getText().length() > 1) {
+            // 代码块
+            return p.getText().substring(1);
+        } else if (parent instanceof PsiWhiteSpace p
+                && p.getText().startsWith("\n") && p.getText().length() > 1) {
+            return p.getText().substring(1);
         }
-        return getFirstLeafFromElement(parent.getParent());
+        return getIndentWhitespace(parent);
     }
 
     /**
-     * 获取该语法树最后一个节点
+     * 获取插入点
+     *
+     * @param psiElement PsiIdentifier
+     * @return PsiElement
      */
-    private static @Nullable PsiElement getLastLeafFromElement(@Nullable PsiElement psiElement) {
+    private static @Nullable PsiElement getInsertPointOfStatement(@Nullable PsiElement psiElement) {
         if (psiElement == null) {
             return null;
         }
         PsiElement parent = psiElement.getParent();
         if (parent instanceof PsiLocalVariable) {
+            // 声明实例对象，获取行结尾分号
             return parent.getLastChild();
         } else if (parent instanceof PsiParameter) {
-            if (parent.getParent() instanceof PsiParameterList && parent.getParent().getParent() instanceof PsiMethod method) {
-                return method.getBody();
+            // 方法参数，获取代码块
+            if (parent.getParent() instanceof PsiParameterList ppl && ppl.getParent() instanceof PsiMethod pm) {
+                return pm.getBody();
             }
-            return null;
-        } else if (parent instanceof PsiReferenceExpression) {
-            if (parent.getParent().getParent().getParent() instanceof PsiExpressionStatement) {
-                return parent.getParent().getParent().getParent().getLastChild();
+        } else if (parent instanceof PsiMethod pm) {
+            return pm.getBody();
+        } else if (parent instanceof PsiExpression pe) {
+            // 表达式，取最外层表达式的最后元素
+            if (pe.getParent() instanceof PsiExpression) {
+                return getInsertPointOfStatement(parent);
+            } else {
+                return pe.getNextSibling();
             }
-            return null;
         } else if (parent instanceof PsiStatement) {
+            return parent.getLastChild();
+        } else if (parent instanceof PsiCodeBlock) {
             return parent;
         }
-        return getLastLeafFromElement(parent.getParent());
+        return getInsertPointOfStatement(parent.getParent());
+    }
+
+    /**
+     * 获取类型
+     *
+     * @param psiElement PsiIdentifier
+     * @return PsiType
+     */
+    private static @Nullable PsiType getPsiType(@Nullable PsiElement psiElement) {
+        if (psiElement == null) {
+            return null;
+        }
+        if (psiElement instanceof PsiLocalVariable p) {
+            return p.getType();
+        } else if (psiElement instanceof PsiReferenceExpression && psiElement.getFirstChild() instanceof PsiReferenceExpression p) {
+            // 引用表达式取头部引用对象的Type
+            return p.getType();
+        } else if (psiElement instanceof PsiJavaCodeReferenceElement pre) {
+            if (pre.getParent() instanceof PsiTypeElement pte) {
+                // 赋值表达式左侧类型对象
+                return pte.getType();
+            } else if (pre.getParent() instanceof PsiNewExpression pne) {
+                // 赋值表达式左侧变量+右侧
+                if (pne.getParent() instanceof PsiLocalVariable p) {
+                    return p.getType();
+                } else if (pne.getParent() instanceof PsiAssignmentExpression pae) {
+                    return pae.getType();
+                } else {
+                    // 非赋值表达式则不获取类型，否则直接对PsiNewExpression获取类型即可
+                    return null;
+                }
+            }
+        } else if (psiElement instanceof PsiParameter p) {
+            return p.getType();
+        }
+        return null;
     }
 
 }

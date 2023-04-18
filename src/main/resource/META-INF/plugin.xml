@@ -165,7 +165,8 @@
 <!--      <add-to-group group-id="EditorPopupMenu1" anchor="first"/>-->
 <!--    </action>-->
     <!-- TODO 找到Alt+Enter对应的group，替换掉test2 -->
-        <action id="test3" class="com.gmail.litalways.toolset.action.GenerateSetterAction" text="test3">
+        <action id="com.gmail.litalways.toolset.editor.generate.setter" icon="AllIcons.Duplicates.SendToTheLeft"
+                class="com.gmail.litalways.toolset.action.GenerateSetterAction">
           <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
   </actions>
