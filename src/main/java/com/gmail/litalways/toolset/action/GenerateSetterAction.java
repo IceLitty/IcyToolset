@@ -188,7 +188,9 @@ public class GenerateSetterAction extends AnAction {
         // 屏蔽TOKEN
         if (!(psiElement instanceof PsiIdentifierImpl)) {
             e.getPresentation().setEnabledAndVisible(false);
+            return;
         }
+        e.getPresentation().setEnabledAndVisible(true);
     }
 
     /**

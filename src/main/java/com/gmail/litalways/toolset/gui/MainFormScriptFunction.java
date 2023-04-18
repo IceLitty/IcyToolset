@@ -1,6 +1,7 @@
 package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.script.ScriptUtil;
+import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
 import com.gmail.litalways.toolset.state.ScriptFile;
 import com.gmail.litalways.toolset.state.ToolWindowScriptState;
 import com.gmail.litalways.toolset.util.MessageUtil;
@@ -54,6 +55,9 @@ public class MainFormScriptFunction {
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
             }
         });
+        this.component.syncListener = new ScrollbarSyncListener(this.component.textareaScriptSourceEditor.getScrollPane(), this.component.scrollScriptResult);
+        this.component.textareaScriptSourceEditor.getScrollPane().getVerticalScrollBar().addAdjustmentListener(this.component.syncListener);
+        this.component.textareaScriptSourceEditor.getScrollPane().getHorizontalScrollBar().addAdjustmentListener(this.component.syncListener);
         injectNashorn();
     }
 

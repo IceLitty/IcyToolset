@@ -9,12 +9,18 @@
       <hr/>
       <div>TODO LIST:</div>
       <ul>
-        <li>将错误提示的持久化气泡通知改为控件上的Popups。</li>
-        <li>Python脚本引擎实际使用时会储存上下文，但不会将单行具有返回的脚本进行输出，需要做额外处理。</li>
+        <li>暂无。</li>
       </ul>
     ]]></description>
 
   <change-notes><![CDATA[
+      <b>1.9</b>
+      <ul>
+        <li>生成菜单中增加了Setter生成功能，对实例对象打开生成菜单即可调用。</li>
+        <li>Python脚本引擎执行时按连续两行分隔符进行分割脚本并批量执行，因脚本引擎仅支持单句输出并支持上下文。</li>
+        <li>脚本执行窗口恢复编辑器->结果窗口的滚动条同步功能。</li>
+      </ul>
+      <hr/>
       <b>1.8</b>
       <ul>
         <li>2023.1兼容性更新。</li>
@@ -142,11 +148,13 @@
   <depends>com.intellij.modules.lang</depends>
   <depends>com.intellij.modules.java</depends>
   <depends>com.intellij.java</depends>
+  <!-- 仅用到FileType未用到高级功能所以无需依赖 -->
 <!--  <depends optional="true" config-file="icyToolset-withJavaScript.xml">JavaScript</depends>-->
 <!--  <depends optional="true" config-file="icyToolset-withPython.xml">com.intellij.modules.python</depends>-->
 <!--  <depends optional="true" config-file="icyToolset-withLua.xml">com.tang</depends>-->
 <!--  <depends optional="true" config-file="icyToolset-withGroovy.xml">org.intellij.groovy</depends>-->
 
+  <!-- 默认控件资源包 -->
   <resource-bundle>message</resource-bundle>
 
   <actions>
@@ -155,26 +163,25 @@
 <!--      <add-to-group group-id="ToolsMenu" anchor="last" />-->
 <!--      <action id="com.gmail.litalways.toolset.actions.simple.simple" class="com.gmail.litalways.toolset.action.SimpleAction" />-->
 <!--    </group>-->
-<!--    <action id="test3" class="com.gmail.litalways.toolset.action.test3" text="test3">-->
-<!--      <add-to-group group-id="GenerateGroup" anchor="first"/>-->
-<!--    </action>-->
-<!--    <action id="test5" class="com.gmail.litalways.toolset.action.test5" text="test5">-->
+    <!-- Alt+Insert 生成菜单添加Setter生成功能 -->
+    <action id="com.gmail.litalways.toolset.editor.generate.setter" icon="AllIcons.Duplicates.SendToTheLeft"
+            class="com.gmail.litalways.toolset.action.GenerateSetterAction">
+      <add-to-group group-id="GenerateGroup" anchor="last"/>
+    </action>
+    <!-- 右键项目管理的类文件寻找被BeanUtil拷贝的地方 -->
+<!--    <action id="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanAction"-->
+<!--            class="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanActionctViewFindByUsedForCopyBeanAction">-->
 <!--      <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>-->
 <!--    </action>-->
-<!--    <action id="test2" class="com.gmail.litalways.toolset.action.test2" text="test2">-->
-<!--      <add-to-group group-id="EditorPopupMenu1" anchor="first"/>-->
-<!--    </action>-->
-    <!-- TODO 找到Alt+Enter对应的group，替换掉test2 -->
-        <action id="com.gmail.litalways.toolset.editor.generate.setter" icon="AllIcons.Duplicates.SendToTheLeft"
-                class="com.gmail.litalways.toolset.action.GenerateSetterAction">
-          <add-to-group group-id="GenerateGroup" anchor="last"/>
-        </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
+    <!-- 声明顶级通知组 -->
     <notificationGroup id="com.gmail.litalways.toolset.notifications" displayType="BALLOON" />
+    <!-- 工具菜单组 -->
     <toolWindow id="com.gmail.litalways.toolset.toolwindow.main" anchor="bottom" icon="AllIcons.General.ExternalTools"
                 factoryClass="com.gmail.litalways.toolset.gui.MainFormFactory" />
+    <!-- Alt+Enter 用于寻找实例或类被BeanUtil拷贝的地方 -->
 <!--    <intentionAction id="com.gmail.litalways.toolset.editor.find.by.copy.bean">-->
 <!--      <className>com.gmail.litalways.toolset.action.EditorFindByUsedForCopyBeanAction</className>-->
 <!--      <language>JAVA</language>-->
@@ -188,9 +195,10 @@
   </extensions>
 
   <application-components>
-      <component>
-        <implementation-class>com.gmail.litalways.toolset.state.ToolWindowScriptState</implementation-class>
-      </component>
+    <!-- 持久化 -->
+    <component>
+      <implementation-class>com.gmail.litalways.toolset.state.ToolWindowScriptState</implementation-class>
+    </component>
     <!-- 用于试验配置储存（复杂配置） -->
 <!--    <component>-->
 <!--      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>-->
@@ -198,6 +206,7 @@
   </application-components>
 
   <projectListeners>
+    <!-- 防止Editor在退出时没有被回收 -->
     <listener class="com.gmail.litalways.toolset.listener.EditorDisposeListener" topic="com.intellij.openapi.project.ProjectManagerListener" />
   </projectListeners>
 

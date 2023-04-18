@@ -1,6 +1,7 @@
 package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.script.ScriptUtil;
+import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
 import com.gmail.litalways.toolset.service.ToolWindowScriptEditorService;
 import com.gmail.litalways.toolset.state.ScriptFile;
 import com.gmail.litalways.toolset.state.ToolWindowScriptState;
@@ -26,6 +27,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.util.PlatformIcons;
 import org.jetbrains.annotations.NotNull;
 
+import javax.script.ScriptEngine;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
@@ -49,6 +51,7 @@ public class ToolWindowScript {
     JPanel scrollScriptSource;
     EditorEx textareaScriptSourceEditor;
     JComponent textareaScriptSource;
+    ScrollbarSyncListener syncListener;
     JScrollPane scrollScriptResult;
     JTextArea textareaScriptResult;
     JList<ScriptFile> scriptList;
@@ -251,6 +254,8 @@ public class ToolWindowScript {
     private void useCurrentStateToCreateEditor() {
         ScriptFile selectedValue = this.scriptList.getSelectedValue();
         ToolWindowScriptEditorService toolWindowScriptEditorService = this.getCurrentProject().getService(ToolWindowScriptEditorService.class);
+        this.scrollScriptResult.getVerticalScrollBar().removeAdjustmentListener(this.syncListener);
+        this.scrollScriptResult.getHorizontalScrollBar().removeAdjustmentListener(this.syncListener);
         this.scrollScriptSource.remove(this.textareaScriptSource);
         toolWindowScriptEditorService.disposed();
         if (selectedValue == null) {
@@ -277,6 +282,9 @@ public class ToolWindowScript {
         this.scrollScriptSource.add(this.textareaScriptSource, new GridConstraints(0, 0, 1, 1, 0, 3, 3, 3, new Dimension(-1, -1), new Dimension(-1, -1), new Dimension(-1, -1), 0, true));
         this.scrollScriptSource.validate();
         this.scrollScriptSource.repaint();
+        this.syncListener = new ScrollbarSyncListener(this.textareaScriptSourceEditor.getScrollPane(), this.scrollScriptResult);
+        this.textareaScriptSourceEditor.getScrollPane().getVerticalScrollBar().addAdjustmentListener(this.syncListener);
+        this.textareaScriptSourceEditor.getScrollPane().getHorizontalScrollBar().addAdjustmentListener(this.syncListener);
     }
 
     void eval() {
@@ -289,7 +297,13 @@ public class ToolWindowScript {
             } else if (this.radioScriptGroovy.isSelected()) {
                 this.textareaScriptResult.setText(String.valueOf(ScriptUtil.getGroovyEngine().eval(script)));
             } else if (this.radioScriptPython.isSelected()) {
-                this.textareaScriptResult.setText(String.valueOf(ScriptUtil.getPythonEngine().eval(script)));
+                String[] scripts = script.split("\n\n");
+                ScriptEngine pythonEngine = ScriptUtil.getPythonEngine();
+                StringBuilder builder = new StringBuilder();
+                for (String s : scripts) {
+                    builder.append(pythonEngine.eval(s)).append("\n\n");
+                }
+                this.textareaScriptResult.setText(builder.toString());
             } else {
                 NotificationUtil.warning(MessageUtil.getMessage("script.tip.not.select.type"));
             }
