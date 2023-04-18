@@ -169,10 +169,10 @@
       <add-to-group group-id="GenerateGroup" anchor="last"/>
     </action>
     <!-- 右键项目管理的类文件寻找被BeanUtil拷贝的地方 -->
-<!--    <action id="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanAction"-->
-<!--            class="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanActionctViewFindByUsedForCopyBeanAction">-->
-<!--      <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>-->
-<!--    </action>-->
+    <action id="com.gmail.litalways.toolset.action.find.by.bean.copy"
+            class="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanAction">
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>
+    </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
