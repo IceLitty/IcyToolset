@@ -34,6 +34,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
@@ -58,6 +59,7 @@ public class ToolWindowScript {
     JComponent scriptToolbar;
     JTextField textScriptFilename;
     ScriptModel scriptModel;
+    AtomicInteger injectedNashorn;
 
     private final Project project;
     private final ToolWindow toolWindow;
@@ -67,6 +69,7 @@ public class ToolWindowScript {
     public ToolWindowScript(Project project, ToolWindow toolWindow) {
         this.project = project;
         this.toolWindow = toolWindow;
+        this.injectedNashorn = new AtomicInteger(0);
     }
 
     public JPanel getContent() {
@@ -289,6 +292,9 @@ public class ToolWindowScript {
 
     void eval() {
         try {
+            if (this.injectedNashorn.get() != 2) {
+                return;
+            }
             String script = this.textareaScriptSourceEditor.getDocument().getText();
             if (this.radioScriptJavascript.isSelected()) {
                 this.textareaScriptResult.setText(String.valueOf(ScriptUtil.getJsEngine().eval(script)));

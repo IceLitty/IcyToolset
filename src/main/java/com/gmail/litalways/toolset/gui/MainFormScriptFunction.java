@@ -6,13 +6,17 @@ import com.gmail.litalways.toolset.state.ScriptFile;
 import com.gmail.litalways.toolset.state.ToolWindowScriptState;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.script.LuaScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.python.jsr223.PyScriptEngineFactory;
 
 import javax.script.ScriptEngineManager;
 import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author IceRain
@@ -22,7 +26,6 @@ public class MainFormScriptFunction {
 
     @SuppressWarnings("FieldCanBeLocal")
     private final ToolWindowScript component;
-    private final AtomicBoolean injectedNashorn = new AtomicBoolean(false);
 
     public MainFormScriptFunction(ToolWindowScript component) {
         this.component = component;
@@ -58,11 +61,16 @@ public class MainFormScriptFunction {
         this.component.syncListener = new ScrollbarSyncListener(this.component.textareaScriptSourceEditor.getScrollPane(), this.component.scrollScriptResult);
         this.component.textareaScriptSourceEditor.getScrollPane().getVerticalScrollBar().addAdjustmentListener(this.component.syncListener);
         this.component.textareaScriptSourceEditor.getScrollPane().getHorizontalScrollBar().addAdjustmentListener(this.component.syncListener);
-        injectNashorn();
+        ProgressManager.getInstance().run(new Task.Backgroundable(this.component.getCurrentProject(), MessageUtil.getMessage("script.tip.nashorn.injecting")) {
+            @Override
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+                injectNashorn();
+            }
+        });
     }
 
     private void injectNashorn() {
-        if (injectedNashorn.compareAndSet(false, true)) {
+        if (this.component.injectedNashorn.compareAndSet(0, 1)) {
             try {
                 Field[] declaredFields = ScriptUtil.class.getDeclaredFields();
                 ScriptEngineManager manager = null;
@@ -79,9 +87,13 @@ public class MainFormScriptFunction {
                     manager.registerEngineName("lua", luaScriptEngineFactory);
                     PyScriptEngineFactory pyScriptEngineFactory = new PyScriptEngineFactory();
                     manager.registerEngineName("python", pyScriptEngineFactory);
+                    this.component.injectedNashorn.set(2);
+                    return;
                 }
+                this.component.injectedNashorn.set(3);
             } catch (Exception e) {
                 NotificationUtil.warning(MessageUtil.getMessage("script.tip.nashorn.inject.fail"), e.getClass().getSimpleName() + ": " + e.getLocalizedMessage());
+                this.component.injectedNashorn.set(3);
             }
         }
     }
