@@ -1,5 +1,6 @@
 package com.gmail.litalways.toolset.action;
 
+import com.gmail.litalways.toolset.util.MessageUtil;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -90,7 +91,7 @@ public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
             usages.add(usage);
         }
         UsageViewPresentation presentation = new UsageViewPresentation();
-        presentation.setTabText("Searched For BeanUtils");
+        presentation.setTabText(MessageUtil.getMessage("action.find.usage.by.bean.utils.title"));
         UsageViewManager.getInstance(project).showUsages(UsageTarget.EMPTY_ARRAY, usages.toArray(new Usage[0]), presentation);
     }
 
