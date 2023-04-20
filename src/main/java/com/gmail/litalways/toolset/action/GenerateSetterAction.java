@@ -42,8 +42,8 @@ public class GenerateSetterAction extends AnAction {
         // 获取光标坐标（光标右侧字符）
         int offset = editor.getCaretModel().getOffset();
         PsiElement psiElement = file.findElementAt(offset);
-        // 单字符变量优化
-        if (psiElement instanceof PsiWhiteSpace && offset != 0) {
+        // 选择在标识符末尾的优化
+        if (psiElement != null && !(psiElement instanceof PsiIdentifier) && psiElement.getPrevSibling() instanceof PsiIdentifier && offset != 0) {
             offset--;
             psiElement = file.findElementAt(offset);
         }
@@ -95,7 +95,6 @@ public class GenerateSetterAction extends AnAction {
         }
         // 提示用户选择哪些字段需要生成Setter
         MemberChooser<PsiMethodMember> chooser = new MemberChooser<>(psiTargetMethods, false, true, project);
-        //noinspection DialogTitleCapitalization
         chooser.setTitle(MessageUtil.getMessage("action.generate.setter.choose.methods.copied.by"));
 //        chooser.setCopyJavadocVisible(true);
 //        FileDocumentManager.getInstance().saveAllDocuments();
@@ -180,8 +179,8 @@ public class GenerateSetterAction extends AnAction {
         }
         int offset = editor.getCaretModel().getOffset();
         PsiElement psiElement = psiFile.findElementAt(offset);
-        // 单字符变量优化
-        if (psiElement instanceof PsiWhiteSpace && offset != 0) {
+        // 选择在标识符末尾的优化
+        if (psiElement != null && !(psiElement instanceof PsiIdentifier) && psiElement.getPrevSibling() instanceof PsiIdentifier && offset != 0) {
             offset--;
             psiElement = psiFile.findElementAt(offset);
         }

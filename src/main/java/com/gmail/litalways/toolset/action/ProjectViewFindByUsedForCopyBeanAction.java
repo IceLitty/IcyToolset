@@ -58,7 +58,8 @@ public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
                     PsiElement pre = (PsiReferenceExpression) ref;
                     PsiMethodCallExpression pmce = null;
                     while (true) {
-                        if (pre == null) {
+                        // 向上查找到最外层/方法体则中止，表明该表达式不是方法调用
+                        if (pre == null || pre instanceof PsiMethod) {
                             break;
                         }
                         if (pre instanceof PsiMethodCallExpression) {

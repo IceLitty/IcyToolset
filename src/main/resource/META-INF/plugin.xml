@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.8</version>
+  <version>1.9</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -16,9 +16,10 @@
   <change-notes><![CDATA[
       <b>1.9</b>
       <ul>
-        <li>生成菜单中增加了Setter生成功能，对实例对象打开生成菜单即可调用。</li>
+        <li>生成菜单中增加了Setter生成功能，对实例对象打开生成菜单（默认Alt+Insert）即可调用。</li>
         <li>Python脚本引擎执行时按连续两行分隔符进行分割脚本并批量执行，因脚本引擎仅支持单句输出并支持上下文。</li>
         <li>脚本执行窗口恢复编辑器->结果窗口的滚动条同步功能。</li>
+        <li>项目菜单中对java文件右键及编辑器内对实例/类型打开意图菜单（默认Alt+Enter）可以调用“寻找引用自BeanUtils…”功能，目前可以寻找该实例/类型被类名含有BeanUtil或TypeUtil的类静态方法调用的位置。</li>
       </ul>
       <hr/>
       <b>1.8</b>
@@ -182,10 +183,10 @@
     <toolWindow id="com.gmail.litalways.toolset.toolwindow.main" anchor="bottom" icon="AllIcons.General.ExternalTools"
                 factoryClass="com.gmail.litalways.toolset.gui.MainFormFactory" />
     <!-- Alt+Enter 用于寻找实例或类被BeanUtil拷贝的地方 -->
-<!--    <intentionAction id="com.gmail.litalways.toolset.editor.find.by.copy.bean">-->
-<!--      <className>com.gmail.litalways.toolset.action.EditorFindByUsedForCopyBeanAction</className>-->
-<!--      <language>JAVA</language>-->
-<!--    </intentionAction>-->
+    <intentionAction id="com.gmail.litalways.toolset.editor.find.by.copy.bean">
+      <className>com.gmail.litalways.toolset.action.EditorFindByUsedForCopyBeanAction</className>
+      <language>JAVA</language>
+    </intentionAction>
     <!-- 用于试验配置储存（简单配置） -->
 <!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.simple" parentId="tools"-->
 <!--                             instance="com.gmail.litalways.toolset.config.MainSettingSimpleConfigurable" />-->
