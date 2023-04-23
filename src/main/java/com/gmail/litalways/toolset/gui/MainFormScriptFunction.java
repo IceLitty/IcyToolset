@@ -6,7 +6,6 @@ import com.gmail.litalways.toolset.state.ScriptFile;
 import com.gmail.litalways.toolset.state.ToolWindowScriptState;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;

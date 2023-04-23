@@ -78,6 +78,11 @@ public class ToolWindowFormat {
         toolWindowFormatEditorService.setEditor(this.editor);
     }
 
+    /**
+     * 使用指定格式重新创建Editor控件
+     *
+     * @param fileSuffix 文件后缀
+     */
     private void useFormatToCreateEditor(String fileSuffix) {
         ToolWindowFormatEditorService toolWindowFormatEditorService = this.project.getService(ToolWindowFormatEditorService.class);
         toolWindowFormatEditorService.setEditor(null);

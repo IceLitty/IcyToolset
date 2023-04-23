@@ -9,11 +9,13 @@ import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.IdeFocusManager;
@@ -64,6 +66,7 @@ public class ToolWindowScript {
     private final Project project;
     private final ToolWindow toolWindow;
 
+    @SuppressWarnings("unused")
     private final Color MODIFIED_FOREGROUND = JBColor.BLUE;
 
     public ToolWindowScript(Project project, ToolWindow toolWindow) {
@@ -86,6 +89,7 @@ public class ToolWindowScript {
         return this.toolWindow;
     }
 
+    @SuppressWarnings("CommentedOutCode")
     private void createUIComponents() {
         ToolWindowScriptEditorService toolWindowScriptEditorService = this.project.getService(ToolWindowScriptEditorService.class);
         // 生成空文本默认编辑器
@@ -177,7 +181,7 @@ public class ToolWindowScript {
         this.scriptList.setCellRenderer(SimpleListCellRenderer.create((label, value, index) -> {
             label.setIcon(value.getFileType().getIcon());
             label.setText(value.getFileName());
-            // TODO 校验是否被修改
+            // （不实现该功能）校验是否被修改
 //            if (!value.isDefault() && myList.getSelectedIndex() != index) {
 //                label.setForeground(MODIFIED_FOREGROUND);
 //            }
@@ -249,7 +253,12 @@ public class ToolWindowScript {
                 this.scriptModel.fireListDataChanged();
             }
             if (this.checkScriptAutoRun.isSelected()) {
-                ApplicationManager.getApplication().invokeLater(this::eval);
+                ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("script.tip.running")) {
+                    @Override
+                    public void run(@NotNull ProgressIndicator progressIndicator) {
+                        eval();
+                    }
+                });
             }
         }
     }
@@ -276,7 +285,12 @@ public class ToolWindowScript {
                         scriptModel.fireListDataChanged();
                     }
                     if (checkScriptAutoRun.isSelected()) {
-                        ApplicationManager.getApplication().invokeLater(() -> eval());
+                        ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("script.tip.running")) {
+                            @Override
+                            public void run(@NotNull ProgressIndicator progressIndicator) {
+                                eval();
+                            }
+                        });
                     }
                 }
             });
@@ -314,7 +328,7 @@ public class ToolWindowScript {
                 NotificationUtil.warning(MessageUtil.getMessage("script.tip.not.select.type"));
             }
         } catch (Exception ex) {
-            this.textareaScriptResult.setText(ex.getClass().getName() + ": " + ex.getLocalizedMessage());
+            this.textareaScriptResult.setText(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
         }
     }
 

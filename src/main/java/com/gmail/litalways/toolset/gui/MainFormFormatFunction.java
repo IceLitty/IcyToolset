@@ -3,10 +3,11 @@ package com.gmail.litalways.toolset.gui;
 import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.XmlUtil;
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.gmail.litalways.toolset.util.MessageUtil;
-import com.gmail.litalways.toolset.util.NotificationUtil;
+import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.openapi.application.ApplicationManager;
 import org.w3c.dom.Document;
 
@@ -47,8 +48,8 @@ public class MainFormFormatFunction {
                     ApplicationManager.getApplication().runWriteAction(() -> {
                         this.component.editor.getDocument().setText(_text);
                     });
-                } catch (UtilException e1) {
-                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                } catch (JSONException e1) {
+                    showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
             }
             case "[" -> {
@@ -60,8 +61,8 @@ public class MainFormFormatFunction {
                     ApplicationManager.getApplication().runWriteAction(() -> {
                         this.component.editor.getDocument().setText(_text);
                     });
-                } catch (UtilException e1) {
-                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                } catch (JSONException e1) {
+                    showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
             }
             case "<" -> {
@@ -74,10 +75,10 @@ public class MainFormFormatFunction {
                         this.component.editor.getDocument().setText(_text);
                     });
                 } catch (UtilException e1) {
-                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                    showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
             }
-            default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
+            default -> showErrorHint(MessageUtil.getMessage("format.tip.only.support.lang"));
         }
     }
 
@@ -199,8 +200,8 @@ public class MainFormFormatFunction {
                     ApplicationManager.getApplication().runWriteAction(() -> {
                         this.component.editor.getDocument().setText(_text);
                     });
-                } catch (UtilException e1) {
-                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                } catch (JSONException e1) {
+                    showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
             }
             case "[" -> {
@@ -213,8 +214,8 @@ public class MainFormFormatFunction {
                     ApplicationManager.getApplication().runWriteAction(() -> {
                         this.component.editor.getDocument().setText(_text);
                     });
-                } catch (UtilException e1) {
-                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                } catch (JSONException e1) {
+                    showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
             }
             case "<" -> {
@@ -228,11 +229,15 @@ public class MainFormFormatFunction {
                         this.component.editor.getDocument().setText(_text);
                     });
                 } catch (UtilException e1) {
-                    NotificationUtil.error(MessageUtil.getMessage("format.tip.wrong.document"));
+                    showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
             }
-            default -> NotificationUtil.error(MessageUtil.getMessage("format.tip.only.support.lang"));
+            default -> showErrorHint(MessageUtil.getMessage("format.tip.only.support.lang"));
         }
+    }
+
+    void showErrorHint(String message) {
+        HintManager.getInstance().showErrorHint(component.editor, message);
     }
 
 }
