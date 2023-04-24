@@ -2,6 +2,7 @@ package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.crypto.digest.Digester;
+import com.gmail.litalways.toolset.state.MainSettingState;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -22,12 +23,12 @@ import java.util.zip.ZipInputStream;
  * @author IceRain
  * @since 2022/01/29
  */
-public class MainFormAboutFunction {
+public class MainFormOtherFunction {
 
     private final ToolWindowOther component;
     private VirtualFile generateHashToSelect = null;
 
-    public MainFormAboutFunction(ToolWindowOther component) {
+    public MainFormOtherFunction(ToolWindowOther component) {
         this.component = component;
         this.component.buttonAboutEncoding.addActionListener(e -> this.component.buttonAboutEncoding.setText(System.getProperty("file.encoding")));
         this.component.buttonAboutGenHashRun.addActionListener(this::generateHash);

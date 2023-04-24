@@ -57,7 +57,7 @@ public class MainFormFactory implements ToolWindowFactory {
         ToolWindowOther toolWindowOther = new ToolWindowOther(project, toolWindow);
         Content toolWindowOtherContent = contentFactory.createContent(toolWindowOther.getContent(), MessageUtil.getMessage("other.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowOtherContent);
-        MainFormAboutFunction about = new MainFormAboutFunction(toolWindowOther);
+        MainFormOtherFunction about = new MainFormOtherFunction(toolWindowOther);
     }
 
 }

@@ -51,7 +51,7 @@ public class MainSettingSimpleConfigurable implements SearchableConfigurable {
      */
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
-        return mainSetting.getSelectLanguage();
+        return mainSetting.getBeanUtilsClassTable();
     }
 
     /**
@@ -61,10 +61,10 @@ public class MainSettingSimpleConfigurable implements SearchableConfigurable {
      */
     @Override
     public @Nullable JComponent createComponent() {
-        mainSetting = new MainSetting();
+        mainSetting = new MainSetting(null);
         settingSimple = new MainSettingSimple();
         // 初始化配置到UI
-        mainSetting.getSelectLanguage().setSelectedIndex(settingSimple.getLanguage());
+//        mainSetting.getBeanUtilsClassTable().setSelectedIndex(settingSimple.getLanguage());
         return mainSetting.getPanelMain();
     }
 
@@ -75,9 +75,10 @@ public class MainSettingSimpleConfigurable implements SearchableConfigurable {
      */
     @Override
     public boolean isModified() {
-        boolean modified = mainSetting.getSelectLanguage().getSelectedIndex() != settingSimple.getLanguage();
-        modified |= !String.valueOf(mainSetting.getSelectLanguage().getSelectedIndex()).equals(String.valueOf(settingSimple.getLanguage()));
-        return modified;
+//        boolean modified = mainSetting.getBeanUtilsClassTable().getSelectedIndex() != settingSimple.getLanguage();
+//        modified |= !String.valueOf(mainSetting.getBeanUtilsClassTable().getSelectedIndex()).equals(String.valueOf(settingSimple.getLanguage()));
+//        return modified;
+        return false;
     }
 
     /**
@@ -88,7 +89,7 @@ public class MainSettingSimpleConfigurable implements SearchableConfigurable {
     @Override
     public void apply() throws ConfigurationException {
         // 储存UI配置项
-        settingSimple.setLanguage(mainSetting.getSelectLanguage().getSelectedIndex());
+//        settingSimple.setLanguage(mainSetting.getBeanUtilsClassTable().getSelectedIndex());
         // 应用更改到程序
     }
 
@@ -97,7 +98,7 @@ public class MainSettingSimpleConfigurable implements SearchableConfigurable {
      */
     @Override
     public void reset() {
-        mainSetting.getSelectLanguage().setSelectedIndex(settingSimple.getLanguage());
+//        mainSetting.getBeanUtilsClassTable().setSelectedIndex(settingSimple.getLanguage());
     }
 
     /**

@@ -10,6 +10,9 @@ import com.intellij.util.xmlb.annotations.Transient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 复杂配置对象
  *
@@ -17,16 +20,18 @@ import org.jetbrains.annotations.Nullable;
  * @since 2023/04/06
  */
 @State(
-        name = KeyConstant.CONFIG_STATE_MAIN_KEY,
+        name = KeyConstant.CONFIG_STATE_KEY_SETTINGS,
         storages = @Storage(KeyConstant.CONFIG_STATE_FILENAME)
 )
 public class MainSettingState implements PersistentStateComponent<MainSettingState> {
 
-    public int language = 0;
+    public List<MainSettingsClassName> beanUtilsClassName = getDefaultBeanUtilsClassName();
+
     /**
      * 公开属性会保存，私有属性只会储存有getter setter的，加上此注解可以排除
      */
     @Transient
+    @SuppressWarnings("unused")
     public String notSave = "defaultValue";
 
     /**
@@ -56,6 +61,13 @@ public class MainSettingState implements PersistentStateComponent<MainSettingSta
     @Override
     public void loadState(@NotNull MainSettingState mainSettingState) {
         XmlSerializerUtil.copyBean(mainSettingState, this);
+    }
+
+    private static List<MainSettingsClassName> getDefaultBeanUtilsClassName() {
+        List<MainSettingsClassName> list = new ArrayList<>();
+        list.add(new MainSettingsClassName("", "org.springframework.beans.BeanUtils", ""));
+        list.add(new MainSettingsClassName("", "org.apache.commons.beanutils.BeanUtils", ""));
+        return list;
     }
 
 }

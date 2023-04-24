@@ -1,6 +1,9 @@
 package com.gmail.litalways.toolset.action;
 
+import com.gmail.litalways.toolset.state.MainSettingState;
+import com.gmail.litalways.toolset.state.MainSettingsClassName;
 import com.gmail.litalways.toolset.util.MessageUtil;
+import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
@@ -24,7 +27,6 @@ import java.util.*;
 
 /**
  * 在Editor控件显示编辑提示，用以寻找该类/实例是否被各类BeanUtil进行拷贝
- * TODO 对两处搜索功能做UI配置项，提供类名、完整包名甚至是方法名的配置，进行针对性搜索
  *
  * @author IceRain
  * @since 2023/04/17
@@ -84,26 +86,26 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
         }
         if (psiElement.getParent() instanceof PsiLocalVariable plv) {
             // 实例
-            doFindWithInstance(project, plv);
+            doFindWithInstance(project, editor, plv);
         } else if (psiElement.getParent() instanceof PsiReferenceExpression pre) {
             // 表达式内参数实例
-            doFindWithInstance(project, pre);
+            doFindWithInstance(project, editor, pre);
         } else if (psiElement.getParent() instanceof PsiParameter pp) {
             // 方法参数实例
-            doFindWithInstance(project, pp);
+            doFindWithInstance(project, editor, pp);
         } else if (psiElement.getParent() instanceof PsiJavaCodeReferenceElement pjcre) {
             // 类
             if (pjcre.getParent() instanceof PsiTypeElement pte) {
                 PsiType psiType = pte.getType();
-                doFindWithType(project, psiType);
+                doFindWithType(project, editor, psiType);
             } else if (pjcre.getParent() instanceof PsiNewExpression pne) {
                 PsiType psiType = pne.getType();
-                doFindWithType(project, psiType);
+                doFindWithType(project, editor, psiType);
             }
         }
     }
 
-    void doFindWithInstance(Project project, PsiElement psiElement) {
+    void doFindWithInstance(Project project, Editor editor, PsiElement psiElement) {
         ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("action.find.usage.by.bean.utils.searching")) {
             @Override
             public void run(@NotNull ProgressIndicator progressIndicator) {
@@ -136,38 +138,94 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                                     if (qualifierExpression.getNextSibling() instanceof PsiJavaToken pt
                                             && pt.getNextSibling() instanceof PsiReferenceParameterList ppl
                                             && ppl.getNextSibling() instanceof PsiIdentifier p) {
-                                        psiMethod = p; // TODO use getText() to get method name
+                                        psiMethod = p;
                                     }
-                                    PsiType psiType = qualifierExpression.getType(); // TODO null if expression is static call
-                                    PsiElement qualifier = pmce.getMethodExpression().getQualifier(); // TODO if psiType is not null, this is instance call, if not, use getText() and find class to get qualifier name
-                                    String className = qualifierExpression.getText();
-                                    if (className.contains("BeanUtil") || className.contains("TypeUtil")) {
-                                        // 查询到了被BeanUtil调用的该类型
-                                        filteredReference.add(ref);
+                                    PsiType psiType = qualifierExpression.getType(); // null if expression is static call
+                                    PsiElement qualifier = pmce.getMethodExpression().getQualifier(); // if psiType is not null, this is instance call, if not, use getText() and find class to get qualifier name
+                                    String methodName = psiMethod == null ? null : psiMethod.getText();
+                                    if (psiType == null) {
+                                        // static call
+                                        String simpleClassName = qualifier != null ? qualifier.getText() : qualifierExpression.getText();
+                                        @NotNull PsiClass[] classesByName = PsiShortNamesCache.getInstance(project).getClassesByName(simpleClassName, GlobalSearchScope.allScope(project));
+                                        for (PsiClass pc : classesByName) {
+                                            boolean find = false;
+                                            String qualifierClassname = pc.getQualifiedName();
+                                            for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
+                                                if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0 && !conf.getSimpleClassName().equals(simpleClassName)) {
+                                                    continue;
+                                                }
+                                                if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0 && !conf.getQualifierClassName().equals(qualifierClassname)) {
+                                                    continue;
+                                                }
+                                                if (conf.getMethodName() != null && conf.getMethodName().trim().length() > 0 && !conf.getMethodName().equals(methodName)) {
+                                                    continue;
+                                                }
+                                                // 查询到了被BeanUtil调用的该类型
+                                                filteredReference.add(ref);
+                                                find = true;
+                                                break;
+                                            }
+                                            if (find) {
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        // instance call
+                                        String simpleClassName;
+                                        String qualifierClassname;
+                                        PsiClass psiClass = ((PsiClassType) psiType).resolve();
+                                        if (psiClass == null) {
+                                            simpleClassName = null;
+                                            qualifierClassname = null;
+                                        } else {
+                                            simpleClassName = psiClass.getName();
+                                            qualifierClassname = psiClass.getQualifiedName();
+                                        }
+                                        for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
+                                            if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0 && !conf.getSimpleClassName().equals(simpleClassName)) {
+                                                continue;
+                                            }
+                                            if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0 && !conf.getQualifierClassName().equals(qualifierClassname)) {
+                                                continue;
+                                            }
+                                            if (conf.getMethodName() != null && conf.getMethodName().trim().length() > 0 && !conf.getMethodName().equals(methodName)) {
+                                                continue;
+                                            }
+                                            // 查询到了被BeanUtil调用的该类型
+                                            filteredReference.add(ref);
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                     // 收集结果集并显示
-                    List<Usage> usages = new ArrayList<>();
-                    for (PsiReference reference : filteredReference) {
-                        UsageInfo usageInfo = new UsageInfo(reference);
-                        Usage usage = new UsageInfo2UsageAdapter(usageInfo);
-                        usages.add(usage);
+                    if (filteredReference.size() == 0) {
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            // EDT
+                            HintManager.getInstance().showInformationHint(editor, MessageUtil.getMessage("action.find.usage.by.bean.utils.not.found"));
+                        });
+                    } else {
+                        List<Usage> usages = new ArrayList<>();
+                        for (PsiReference reference : filteredReference) {
+                            UsageInfo usageInfo = new UsageInfo(reference);
+                            Usage usage = new UsageInfo2UsageAdapter(usageInfo);
+                            usages.add(usage);
+                        }
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            // EDT
+                            UsageViewPresentation presentation = new UsageViewPresentation();
+                            presentation.setTabText(MessageUtil.getMessage("action.find.usage.by.bean.utils.title"));
+                            UsageViewManager.getInstance(project).showUsages(UsageTarget.EMPTY_ARRAY, usages.toArray(new Usage[0]), presentation);
+                        });
                     }
-                    ApplicationManager.getApplication().invokeLater(() -> {
-                        // EDT
-                        UsageViewPresentation presentation = new UsageViewPresentation();
-                        presentation.setTabText(MessageUtil.getMessage("action.find.usage.by.bean.utils.title"));
-                        UsageViewManager.getInstance(project).showUsages(UsageTarget.EMPTY_ARRAY, usages.toArray(new Usage[0]), presentation);
-                    });
                 });
             }
         });
     }
 
-    void doFindWithType(Project project, PsiType psiType) {
+    void doFindWithType(Project project, Editor editor, PsiType psiType) {
         PsiClass psiClass = ((PsiClassType) psiType).resolve();
         ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("action.find.usage.by.bean.utils.searching")) {
             @Override
@@ -175,18 +233,16 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                 // BGT
                 ApplicationManager.getApplication().runReadAction(() -> {
                     // BGT with read access
-                    // 获取全部疑似BeanUtil的类
+                    // 获取全部BeanUtil类
                     PsiShortNamesCache allClassCache = PsiShortNamesCache.getInstance(project);
-                    @NotNull String[] allClassNames = allClassCache.getAllClassNames();
                     Set<PsiClass> beanUtilClasses = new HashSet<>();
-                    for (String className : allClassNames) {
-                        @NotNull PsiClass[] classesByName = allClassCache.getClassesByName(className, GlobalSearchScope.allScope(project));
-                        for (PsiClass psiClass1 : classesByName) {
-                            String qualifiedName = psiClass1.getQualifiedName();
-                            String simpleClassName = psiClass1.getName();
-                            if (simpleClassName != null && (simpleClassName.contains("BeanUtil") || simpleClassName.contains("TypeUtil"))) {
-                                beanUtilClasses.add(psiClass1);
-                            }
+                    for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
+                        if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0) {
+                            @NotNull PsiClass[] classesByName = allClassCache.getClassesByName(conf.getQualifierClassName(), GlobalSearchScope.allScope(project));
+                            Collections.addAll(beanUtilClasses, classesByName);
+                        } else if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0) {
+                            @NotNull PsiClass[] classesByName = allClassCache.getClassesByName(conf.getSimpleClassName(), GlobalSearchScope.allScope(project));
+                            Collections.addAll(beanUtilClasses, classesByName);
                         }
                     }
                     Map<PsiClass, Collection<PsiReference>> beanUtilClassesRef = new HashMap<>();
@@ -199,6 +255,8 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                     Collection<PsiReference> filteredReference = new ArrayList<>();
                     for (Map.Entry<PsiClass, Collection<PsiReference>> entry : beanUtilClassesRef.entrySet()) {
                         PsiClass beanUtilClass = entry.getKey();
+                        String qualifierClassname = beanUtilClass.getQualifiedName();
+                        String simpleClassName = beanUtilClass.getName();
                         Collection<PsiReference> classReferenceAll = entry.getValue();
                         for (PsiReference ref : classReferenceAll) {
                             if (ref instanceof PsiReferenceExpression) {
@@ -217,6 +275,37 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                                     }
                                 }
                                 if (pmce != null) {
+                                    // 方法名匹配
+                                    @NotNull PsiElement[] expChildren = pmce.getMethodExpression().getChildren();
+                                    PsiIdentifier psiMethodExp = null;
+                                    for (int i = expChildren.length - 1; i >= 0; i--) {
+                                        if (expChildren[i] instanceof PsiIdentifier pi) {
+                                            psiMethodExp = pi;
+                                            break;
+                                        }
+                                    }
+                                    String methodName = psiMethodExp == null ? null : psiMethodExp.getText();
+                                    boolean methodMatch = true;
+                                    if (methodName != null) {
+                                        methodMatch = false;
+                                        for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
+                                            if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0 && !conf.getSimpleClassName().equals(simpleClassName)) {
+                                                continue;
+                                            }
+                                            if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0 && !conf.getQualifierClassName().equals(qualifierClassname)) {
+                                                continue;
+                                            }
+                                            if (conf.getMethodName() != null && conf.getMethodName().trim().length() > 0 && !conf.getMethodName().equals(methodName)) {
+                                                continue;
+                                            }
+                                            methodMatch = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!methodMatch) {
+                                        continue;
+                                    }
+                                    // 该方法参数是否是当前选中的类型
                                     PsiExpression[] psiExpressions = pmce.getArgumentList().getExpressions();
                                     for (PsiExpression pe : psiExpressions) {
                                         if (pe.getType() instanceof PsiClassType pct) {
@@ -232,18 +321,25 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                         }
                     }
                     // 收集结果集并显示
-                    List<Usage> usages = new ArrayList<>();
-                    for (PsiReference reference : filteredReference) {
-                        UsageInfo usageInfo = new UsageInfo(reference);
-                        Usage usage = new UsageInfo2UsageAdapter(usageInfo);
-                        usages.add(usage);
+                    if (filteredReference.size() == 0) {
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            // EDT
+                            HintManager.getInstance().showInformationHint(editor, MessageUtil.getMessage("action.find.usage.by.bean.utils.not.found"));
+                        });
+                    } else {
+                        List<Usage> usages = new ArrayList<>();
+                        for (PsiReference reference : filteredReference) {
+                            UsageInfo usageInfo = new UsageInfo(reference);
+                            Usage usage = new UsageInfo2UsageAdapter(usageInfo);
+                            usages.add(usage);
+                        }
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            // EDT
+                            UsageViewPresentation presentation = new UsageViewPresentation();
+                            presentation.setTabText(MessageUtil.getMessage("action.find.usage.by.bean.utils.title"));
+                            UsageViewManager.getInstance(project).showUsages(UsageTarget.EMPTY_ARRAY, usages.toArray(new Usage[0]), presentation);
+                        });
                     }
-                    ApplicationManager.getApplication().invokeLater(() -> {
-                        // EDT
-                        UsageViewPresentation presentation = new UsageViewPresentation();
-                        presentation.setTabText(MessageUtil.getMessage("action.find.usage.by.bean.utils.title"));
-                        UsageViewManager.getInstance(project).showUsages(UsageTarget.EMPTY_ARRAY, usages.toArray(new Usage[0]), presentation);
-                    });
                 });
             }
         });

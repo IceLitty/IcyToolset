@@ -19,7 +19,7 @@ import java.util.List;
  * @since 2023/04/12
  */
 @State(
-        name = KeyConstant.TOOL_WINDOW_SCRIPT_SAVE,
+        name = KeyConstant.TOOL_WINDOW_KEY_SCRIPT,
         storages = @Storage(KeyConstant.CONFIG_STATE_FILENAME)
 )
 public class ToolWindowScriptState implements PersistentStateComponent<ToolWindowScriptState> {

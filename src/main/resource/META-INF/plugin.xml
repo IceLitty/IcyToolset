@@ -18,7 +18,8 @@
       <ul>
         <li>格式化功能改用编辑器气泡的方式提示错误信息。</li>
         <li>脚本功能改为异步执行。</li>
-        <li>编辑器BeanUtils引用查询改为异步执行。</li>
+        <li>BeanUtils引用查询改为异步执行。</li>
+        <li>BeanUtils引用查询提供配置功能（位于设置->工具->Icy Toolset）。</li>
       </ul>
       <hr/>
       <b>1.9</b>
@@ -197,9 +198,9 @@
     <!-- 用于试验配置储存（简单配置） -->
 <!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.simple" parentId="tools"-->
 <!--                             instance="com.gmail.litalways.toolset.config.MainSettingSimpleConfigurable" />-->
-    <!-- 用于试验配置储存（复杂配置） -->
-<!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.state" parentId="tools"-->
-<!--                             instance="com.gmail.litalways.toolset.config.MainSettingStateConfigurable" />-->
+    <!-- 插件配置菜单（复杂配置） -->
+    <applicationConfigurable id="com.gmail.litalways.toolset.settings.state" parentId="tools"
+                             instance="com.gmail.litalways.toolset.config.MainSettingStateConfigurable" />
   </extensions>
 
   <application-components>
@@ -208,9 +209,9 @@
       <implementation-class>com.gmail.litalways.toolset.state.ToolWindowScriptState</implementation-class>
     </component>
     <!-- 用于试验配置储存（复杂配置） -->
-<!--    <component>-->
-<!--      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>-->
-<!--    </component>-->
+    <component>
+      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>
+    </component>
   </application-components>
 
   <projectListeners>
