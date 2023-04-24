@@ -199,7 +199,7 @@
 <!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.simple" parentId="tools"-->
 <!--                             instance="com.gmail.litalways.toolset.config.MainSettingSimpleConfigurable" />-->
     <!-- 插件配置菜单（复杂配置） -->
-    <applicationConfigurable id="com.gmail.litalways.toolset.settings.state" parentId="tools"
+    <applicationConfigurable id="com.gmail.litalways.toolset.settings" parentId="tools"
                              instance="com.gmail.litalways.toolset.config.MainSettingStateConfigurable" />
   </extensions>
 
@@ -208,7 +208,7 @@
     <component>
       <implementation-class>com.gmail.litalways.toolset.state.ToolWindowScriptState</implementation-class>
     </component>
-    <!-- 用于试验配置储存（复杂配置） -->
+    <!-- 插件配置菜单储存（复杂配置） -->
     <component>
       <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>
     </component>

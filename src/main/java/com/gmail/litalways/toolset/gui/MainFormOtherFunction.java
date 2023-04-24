@@ -2,7 +2,6 @@ package com.gmail.litalways.toolset.gui;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.crypto.digest.Digester;
-import com.gmail.litalways.toolset.state.MainSettingState;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.openapi.fileChooser.FileChooser;

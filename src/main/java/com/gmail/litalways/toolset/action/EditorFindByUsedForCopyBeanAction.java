@@ -87,9 +87,9 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
         if (psiElement.getParent() instanceof PsiLocalVariable plv) {
             // 实例
             doFindWithInstance(project, editor, plv);
-        } else if (psiElement.getParent() instanceof PsiReferenceExpression pre) {
-            // 表达式内参数实例
-            doFindWithInstance(project, editor, pre);
+//        } else if (psiElement.getParent() instanceof PsiReferenceExpression pre) {
+//            // 表达式内参数实例（无法使用ReferencesSearch找到引用）
+//            doFindWithInstance(project, editor, pre);
         } else if (psiElement.getParent() instanceof PsiParameter pp) {
             // 方法参数实例
             doFindWithInstance(project, editor, pp);
@@ -102,6 +102,8 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                 PsiType psiType = pne.getType();
                 doFindWithType(project, editor, psiType);
             }
+        } else {
+            HintManager.getInstance().showInformationHint(editor, MessageUtil.getMessage("action.find.usage.by.bean.utils.psi.type.can.not.find"));
         }
     }
 
