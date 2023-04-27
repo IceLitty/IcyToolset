@@ -24,12 +24,14 @@ public class ToolWindowEncrypt {
     JScrollPane scrollEncryptHashText;
     JTextArea textareaEncryptHashText;
     TextFieldWithBrowseButton fileEncryptHashFile;
+    JButton buttonEncryptHashOpenDirectory;
     JTextField textEncryptHashKey;
     JButton buttonEncryptHashGenerateKey;
     JScrollPane scrollEncryptHashResult;
     JTextArea textareaEncryptHashResult;
     JTextField textEncryptHashAssert;
     TextFieldWithBrowseButton fileEncryptHashAsserts;
+    JButton buttonEncryptHashAssertsOpenDirectory;
     JTextField textEncryptAsymmetricPublicKey;
     TextFieldWithBrowseButton fileEncryptAsymmetricPublicKey;
     JTextField textEncryptAsymmetricPrivateKey;

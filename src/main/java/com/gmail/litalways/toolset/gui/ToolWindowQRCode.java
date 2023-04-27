@@ -25,6 +25,7 @@ public class ToolWindowQRCode {
     TextFieldWithBrowseButton fileZxingFromFile;
     JRadioButton radioZxingBar;
     JRadioButton radioZxingMatrix;
+    JCheckBox checkZxingOpenDirectory;
 
     private final Project project;
     private final ToolWindow toolWindow;

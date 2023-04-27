@@ -6,8 +6,10 @@ import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.crypto.digest.Digester;
 import cn.hutool.crypto.digest.HMac;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
+import com.gmail.litalways.toolset.util.ExplorerUtil;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -18,6 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -35,6 +38,30 @@ public class MainFormEncryptHashFunction {
 
     public MainFormEncryptHashFunction(ToolWindowEncrypt component) {
         this.component = component;
+        this.component.buttonEncryptHashOpenDirectory.setIcon(AllIcons.Nodes.Folder);
+        this.component.buttonEncryptHashOpenDirectory.addActionListener(e -> {
+            try {
+                if (this.toSelects.length == 1) {
+                    ExplorerUtil.openExplorerAndHighlightFile(this.toSelects[0]);
+                } else if (this.toSelects.length > 1) {
+                    ExplorerUtil.openExplorer(this.toSelects[0]);
+                }
+            } catch (IOException ex) {
+                NotificationUtil.error(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+            }
+        });
+        this.component.buttonEncryptHashAssertsOpenDirectory.setIcon(AllIcons.Nodes.Folder);
+        this.component.buttonEncryptHashAssertsOpenDirectory.addActionListener(e -> {
+            try {
+                if (this.toSelectAssets.length == 1) {
+                    ExplorerUtil.openExplorerAndHighlightFile(this.toSelectAssets[0]);
+                } else if (this.toSelectAssets.length > 1) {
+                    ExplorerUtil.openExplorer(this.toSelectAssets[0]);
+                }
+            } catch (IOException ex) {
+                NotificationUtil.error(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+            }
+        });
         this.component.buttonEncryptHashGenerateKey.addActionListener(this::generateHMacKey);
         this.component.buttonEncryptHashClean.addActionListener(e -> this.clean());
         this.component.fileEncryptHashFile.addActionListener(e -> {

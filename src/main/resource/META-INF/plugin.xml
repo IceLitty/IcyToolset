@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.10</version>
+  <version>1.11</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -9,11 +9,17 @@
       <hr/>
       <div>TODO LIST:</div>
       <ul>
-        <li>暂无。</li>
+        <li>暂无</li>
       </ul>
     ]]></description>
 
   <change-notes><![CDATA[
+      <b>1.11</b>
+      <ul>
+        <li>重构Base64转换单/多文件逻辑，不再需要按住CTRL键。</li>
+        <li>为几个功能增加执行后打开操作文件的路径功能（仅限Windows）。</li>
+      </ul>
+      <hr/>
       <b>1.10</b>
       <ul>
         <li>格式化功能改用编辑器气泡的方式提示错误信息。</li>

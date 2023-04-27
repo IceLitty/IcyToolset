@@ -1,5 +1,6 @@
 package com.gmail.litalways.toolset.gui;
 
+import com.gmail.litalways.toolset.util.ExplorerUtil;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.gmail.litalways.toolset.util.StrUtil;
@@ -12,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author IceRain
@@ -24,10 +27,9 @@ public class MainFormConvertImgBase64Function {
 
     public MainFormConvertImgBase64Function(ToolWindowConvert component) {
         this.component = component;
-        this.component.fileConvertImgBase64Path.addActionListener(this::encodeToString);
-        this.component.selectConvertImgBase64Charset.addItemListener(e -> this.encodeToString());
-        this.component.buttonConvertImgBase64Encode.addActionListener(e -> this.encodeToFile(this.encodeToString()));
-        this.component.buttonConvertImgBase64Decode.addActionListener(this::decodeToFile);
+        this.component.fileConvertImgBase64Path.addActionListener(this::encodeToStringByFileComponent);
+        this.component.buttonConvertImgBase64Encode.addActionListener(e -> this.encodeToStringByOtherComponent());
+        this.component.buttonConvertImgBase64Decode.addActionListener(this::decodeToFileByOtherComponent);
         this.component.buttonConvertImgBase64Clean.addActionListener(e -> this.clean());
     }
 
@@ -40,19 +42,46 @@ public class MainFormConvertImgBase64Function {
      *
      * @param e 事件
      */
-    private void encodeToString(ActionEvent e) {
-        FileChooserDescriptor descriptor;
-        if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
-            // 选择文件夹批量模式
-            descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
-            descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.bin.dir"));
-        } else {
-            // 选择单个文件
-            descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
-            descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.bin.file"));
-        }
+    private void encodeToStringByFileComponent(ActionEvent e) {
+        FileChooserDescriptor descriptor = new FileChooserDescriptor(true, true, false, false, false, false);
+        descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.bin"));
         this.toSelect = FileChooser.chooseFile(descriptor, null, this.toSelect);
-        encodeToString();
+        if (this.toSelect != null) {
+            this.component.fileConvertImgBase64Path.setText(this.toSelect.getPath());
+            if (this.toSelect.isDirectory()) {
+                File srcDir = new File(this.toSelect.getPath());
+                encodeToFileMulti(srcDir);
+                if (this.component.checkConvertImgBase64OpenDirectory.isSelected()) {
+                    try {
+                        ExplorerUtil.openExplorer(srcDir.getPath());
+                    } catch (IOException ex) {
+                        NotificationUtil.error(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), srcDir.getPath());
+                    }
+                }
+            } else {
+                encodeToString();
+            }
+        } else {
+            this.component.fileConvertImgBase64Path.setText("");
+        }
+    }
+
+    private void encodeToStringByOtherComponent() {
+        if (this.toSelect != null) {
+            if (this.toSelect.isDirectory()) {
+                File srcDir = new File(this.toSelect.getPath());
+                encodeToFileMulti(srcDir);
+                if (this.component.checkConvertImgBase64OpenDirectory.isSelected()) {
+                    try {
+                        ExplorerUtil.openExplorer(srcDir.getPath());
+                    } catch (IOException ex) {
+                        NotificationUtil.error(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), srcDir.getPath());
+                    }
+                }
+            } else {
+                encodeToFile(encodeToString());
+            }
+        }
     }
 
     /**
@@ -64,11 +93,6 @@ public class MainFormConvertImgBase64Function {
         clean();
         if (this.toSelect != null) {
             this.component.fileConvertImgBase64Path.setText(this.toSelect.getPath());
-            if (this.toSelect.isDirectory()) {
-                File srcDir = new File(this.toSelect.getPath());
-                encodeToFileMulti(srcDir);
-                return null;
-            }
             byte[] bytes;
             try (InputStream fileIs = this.toSelect.getInputStream()) {
                 bytes = fileIs.readAllBytes();
@@ -118,9 +142,11 @@ public class MainFormConvertImgBase64Function {
                 try (FileWriter fw = new FileWriter(file, false)) {
                     fw.write(base64);
                 }
+                if (this.component.checkConvertImgBase64OpenDirectory.isSelected()) {
+                    ExplorerUtil.openExplorerAndHighlightFile(file);
+                }
             } catch (Exception ex) {
                 NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
-                return;
             }
         }
     }
@@ -135,6 +161,19 @@ public class MainFormConvertImgBase64Function {
         if (dir == null || !dir.isDirectory() || !dir.exists() || !dir.canRead() || !dir.canWrite() || (dirListFiles = dir.listFiles()) == null || dirListFiles.length == 0) {
             NotificationUtil.warning(MessageUtil.getMessage("convert.base64.tip.not.select.bin.dir"), dir == null ? null : dir.getPath());
             return;
+        }
+        // 检查是否具有重名文件
+        boolean lessSuffix = true;
+        Set<String> fileNameWithoutSuffix = new HashSet<>();
+        for (File f : dirListFiles) {
+            String fileName = f.getName();
+            if (fileName.contains(".")) {
+                fileName = fileName.substring(0, fileName.lastIndexOf("."));
+            }
+            fileNameWithoutSuffix.add(fileName);
+        }
+        if (fileNameWithoutSuffix.size() != dirListFiles.length) {
+            lessSuffix = false;
         }
         for (File f : dirListFiles) {
             if (f.isFile()) {
@@ -152,9 +191,16 @@ public class MainFormConvertImgBase64Function {
                 byte[] encode = Base64.getEncoder().encode(bytes);
                 String base64 = new String(encode);
                 String destPath;
-                if (f.getName().contains(".")) {
-                    String path = f.getPath();
-                    destPath = path.substring(0, path.lastIndexOf(".")) + ".txt";
+                if (lessSuffix) {
+                    if (f.getName().contains(".")) {
+                        String path = f.getPath();
+                        destPath = path.substring(0, path.lastIndexOf(".")) + ".txt";
+                        if (new File(destPath).exists()) {
+                            destPath = path + ".txt";
+                        }
+                    } else {
+                        destPath = f.getPath() + ".txt";
+                    }
                 } else {
                     destPath = f.getPath() + ".txt";
                 }
@@ -177,34 +223,31 @@ public class MainFormConvertImgBase64Function {
         }
     }
 
-    /**
-     * 解码BASE64至文件
-     *
-     * @param e 事件
-     */
-    private void decodeToFile(ActionEvent e) {
-        String destPath = null;
+    private void decodeToFileByOtherComponent(ActionEvent e) {
         String text = this.component.textareaConvertImgBase64.getText();
+        int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
+        Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
+        String charset;
+        if (encodingModelIndex == 0) {
+            charset = System.getProperty("file.encoding");
+        } else {
+            charset = (String) selectedObjects;
+        }
         boolean needReSelectFile = text == null || text.trim().length() == 0 || StrUtil.endsWithShowMax(text);
         if (needReSelectFile) {
-            int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
-            Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
-            String charset;
-            if (encodingModelIndex == 0) {
-                charset = System.getProperty("file.encoding");
-            } else {
-                charset = (String) selectedObjects;
-            }
-            FileChooserDescriptor descriptor;
-            if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
-                // 选择文件夹批量模式
-                descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
-                descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.base64.dir"));
-            } else {
-                // 选择单个文件
-                descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
-                descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.base64.file"));
-            }
+//            // 由于文件选择控件不支持该识别，所以按钮这边也同步放弃该方案
+//            FileChooserDescriptor descriptor;
+//            if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
+//                // 选择文件夹批量模式
+//                descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
+//                descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.base64.dir"));
+//            } else {
+//                // 选择单个文件
+//                descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
+//                descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.base64.file"));
+//            }
+            FileChooserDescriptor descriptor = new FileChooserDescriptor(true, true, false, false, false, false);
+            descriptor.setTitle(MessageUtil.getMessage("convert.base64.tip.select.base64"));
             VirtualFile src = FileChooser.chooseFile(descriptor, null, null);
             if (src == null) {
                 NotificationUtil.error(MessageUtil.getMessage("convert.base64.tip.not.select.bin.file"));
@@ -213,7 +256,13 @@ public class MainFormConvertImgBase64Function {
             if (src.isDirectory()) {
                 // 选择文件夹批量模式
                 decodeToFileMulti(new File(src.getPath()), charset);
-                return;
+                if (this.component.checkConvertImgBase64OpenDirectory.isSelected()) {
+                    try {
+                        ExplorerUtil.openExplorer(src.getPath());
+                    } catch (IOException ex) {
+                        NotificationUtil.error(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), src.getPath());
+                    }
+                }
             } else {
                 // 选择单个文件
                 try (InputStreamReader isr = new InputStreamReader(src.getInputStream(), Charset.forName(charset));
@@ -231,26 +280,29 @@ public class MainFormConvertImgBase64Function {
                     NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
                     return;
                 }
-                destPath = src.getPath();
+                decodeToFile(text, src.getPath(), charset);
             }
+        } else {
+            // 选择单个文件
+            decodeToFile(text, null, charset);
         }
-        if (destPath == null && this.toSelect != null) {
-            destPath = this.toSelect.getPath();
-        }
-        if (text.trim().length() == 0) {
-            NotificationUtil.error(MessageUtil.getMessage("convert.base64.tip.not.base64"));
+    }
+
+    /**
+     * 解码BASE64至文件
+     *
+     * @param base64   BASE64
+     * @param destPath 目标文件夹
+     * @param charset  字符集
+     */
+    private void decodeToFile(String base64, String destPath, String charset) {
+        if (base64.trim().length() == 0) {
+            NotificationUtil.error(MessageUtil.getMessage("convert.base64.tip.not.base64"), destPath);
             return;
         }
-        int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
-        Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
         byte[] decode;
         try {
-            byte[] bytes;
-            if (encodingModelIndex == 0) {
-                bytes = text.getBytes();
-            } else {
-                bytes = text.getBytes((String) selectedObjects);
-            }
+            byte[] bytes = base64.getBytes(charset);
             decode = Base64.getDecoder().decode(bytes);
         } catch (Exception ex) {
             NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
@@ -268,9 +320,11 @@ public class MainFormConvertImgBase64Function {
                 try (FileOutputStream fos = new FileOutputStream(file, false)) {
                     fos.write(decode);
                 }
+                if (this.component.checkConvertImgBase64OpenDirectory.isSelected()) {
+                    ExplorerUtil.openExplorerAndHighlightFile(file);
+                }
             } catch (Exception ex) {
                 NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
-                return;
             }
         }
     }
@@ -281,11 +335,25 @@ public class MainFormConvertImgBase64Function {
      * @param dir     BASE64根目录
      * @param charset 字符集
      */
+    @SuppressWarnings("UnnecessaryContinue")
     private void decodeToFileMulti(File dir, String charset) {
         File[] dirListFiles;
         if (dir == null || !dir.isDirectory() || !dir.exists() || !dir.canRead() || !dir.canWrite() || (dirListFiles = dir.listFiles()) == null || dirListFiles.length == 0) {
             NotificationUtil.error(MessageUtil.getMessage("convert.base64.tip.not.select.base64.dir"), dir == null ? null : dir.getPath());
             return;
+        }
+        // 检查是否具有重名文件
+        boolean lessSuffix = true;
+        Set<String> fileNameWithoutSuffix = new HashSet<>();
+        for (File f : dirListFiles) {
+            String fileName = f.getName();
+            if (fileName.contains(".")) {
+                fileName = fileName.substring(0, fileName.lastIndexOf("."));
+            }
+            fileNameWithoutSuffix.add(fileName);
+        }
+        if (fileNameWithoutSuffix.size() != dirListFiles.length) {
+            lessSuffix = false;
         }
         for (File f : dirListFiles) {
             if (f.isFile()) {
@@ -319,9 +387,16 @@ public class MainFormConvertImgBase64Function {
                     suffix = ".bin";
                 }
                 String destPath;
-                if (f.getName().contains(".")) {
-                    String path = f.getPath();
-                    destPath = path.substring(0, path.lastIndexOf(".")) + suffix;
+                if (lessSuffix) {
+                    if (f.getName().contains(".")) {
+                        String path = f.getPath();
+                        destPath = path.substring(0, path.lastIndexOf(".")) + suffix;
+                        if (new File(destPath).exists()) {
+                            destPath = path + suffix;
+                        }
+                    } else {
+                        destPath = f.getPath() + suffix;
+                    }
                 } else {
                     destPath = f.getPath() + suffix;
                 }

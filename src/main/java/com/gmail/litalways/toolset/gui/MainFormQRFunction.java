@@ -1,6 +1,7 @@
 package com.gmail.litalways.toolset.gui;
 
 import com.gmail.litalways.toolset.filter.PngFileFilter;
+import com.gmail.litalways.toolset.util.ExplorerUtil;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.google.zxing.*;
@@ -126,6 +127,9 @@ public class MainFormQRFunction {
                 }
                 MatrixToImageWriter.writeToPath(bitMatrix, "png", file.toPath());
                 this.lastSaveImgPath = file.getPath();
+                if (this.component.checkZxingOpenDirectory.isSelected()) {
+                    ExplorerUtil.openExplorerAndHighlightFile(file);
+                }
             } catch (Exception ex) {
                 NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
             }

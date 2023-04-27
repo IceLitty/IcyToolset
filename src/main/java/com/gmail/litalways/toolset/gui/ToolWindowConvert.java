@@ -38,6 +38,7 @@ public class ToolWindowConvert {
     JComboBox<String> selectConvertImgBase64Charset;
     JButton buttonConvertImgBase64Decode;
     JButton buttonConvertImgBase64Encode;
+    JCheckBox checkConvertImgBase64OpenDirectory;
     JButton buttonConvertImgBase64Clean;
     JTextArea textareaConvertImgBase64;
     TextFieldWithBrowseButton fileConvertSplitterPath;
@@ -46,6 +47,7 @@ public class ToolWindowConvert {
     JFormattedTextField textConvertSplitterSize;
     JButton buttonConvertSplitterRun;
     JCheckBox checkConvertSplitterLineFlag;
+    JCheckBox checkConvertSplitterOpenDirectory;
     JButton buttonConvertSplitterClear;
     JTextArea textAreaConvertSplitterOutput;
 

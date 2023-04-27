@@ -1,5 +1,6 @@
 package com.gmail.litalways.toolset.gui;
 
+import com.gmail.litalways.toolset.util.ExplorerUtil;
 import com.gmail.litalways.toolset.util.FileSplitUtil;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
@@ -9,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -43,6 +45,13 @@ public class MainFormConvertSplitterFunction {
                     fileSplitUtil.runProgress();
                 } finally {
                     System.gc();
+                    if (this.component.checkConvertSplitterOpenDirectory.isSelected()) {
+                        try {
+                            ExplorerUtil.openExplorer(this.toSelect);
+                        } catch (IOException ex) {
+                            NotificationUtil.error(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
+                        }
+                    }
                 }
             });
             thread.start();
@@ -169,7 +178,6 @@ public class MainFormConvertSplitterFunction {
     }
 
     static class InlineLogger implements Consumer<String> {
-
         @Override
         public void accept(String s) {
             NotificationUtil.info(MessageUtil.getMessage("convert.splitter.tip.progress.title"), s);
