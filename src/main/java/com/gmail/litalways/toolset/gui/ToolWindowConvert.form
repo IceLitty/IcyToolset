@@ -49,6 +49,7 @@
                     </constraints>
                     <properties>
                       <text resource-bundle="applicationMessage" key="convert.common.radio.type.hex.title"/>
+                      <toolTipText resource-bundle="applicationMessage" key="convert.common.radio.type.hex.tooltip"/>
                     </properties>
                   </component>
                   <component id="981dc" class="javax.swing.JRadioButton" binding="radioConvertCommonHtml">
