@@ -336,7 +336,7 @@ public class MainFormQRFunction {
         if (this.component.checkLogo.isSelected()) {
             Double logoSize = this.component.textLogoSizeFactor.getValue() == null ? null : Double.parseDouble(String.valueOf(this.component.textLogoSizeFactor.getValue()));
             if (logoSize == null) {
-                NotificationUtil.error(MessageUtil.getMessage("qr.tip.qr.error.logo.file"));
+                NotificationUtil.error(MessageUtil.getMessage("qr.tip.qr.error.logo.size.empty"));
                 return;
             }
             try (InputStream fileIs = this.toSelectLogo.getInputStream()) {
