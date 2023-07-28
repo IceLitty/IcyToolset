@@ -164,7 +164,7 @@ public class MainFormQRFunction {
             this.component.fileLogo.setEnabled(this.component.checkLogo.isSelected());
             this.component.textLogoSizeFactor.setEnabled(this.component.checkLogo.isSelected());
         });
-        this.component.textLogoSizeFactor.setValue("5.5");
+        this.component.textLogoSizeFactor.setValue(5.5d);
     }
 
     private void clean() {
@@ -177,7 +177,7 @@ public class MainFormQRFunction {
         this.component.fileMaskOn.setText("");
         this.component.fileMaskOff.setText("");
         this.component.fileLogo.setText("");
-        this.component.textLogoSizeFactor.setValue("5.5");
+        this.component.textLogoSizeFactor.setValue(5.5d);
         for (Component c : this.component.panelQrOptions.getComponents()) {
             c.setEnabled(false);
         }
