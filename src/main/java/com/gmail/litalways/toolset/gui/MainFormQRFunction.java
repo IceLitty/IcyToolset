@@ -177,6 +177,11 @@ public class MainFormQRFunction {
         this.component.fileMaskOff.setText("");
         this.component.fileLogo.setText("");
         this.component.textLogoSizeFactor.setText("5.5");
+        this.component.checkMaskOnUseFile.setSelected(false);
+        this.component.checkMaskOnUseColor.setSelected(false);
+        this.component.checkMaskOffUseFile.setSelected(false);
+        this.component.checkMaskOffUseColor.setSelected(false);
+        this.component.checkLogo.setSelected(false);
     }
 
     private String getCharset() {
@@ -331,7 +336,7 @@ public class MainFormQRFunction {
         if (this.component.checkLogo.isSelected()) {
             Double logoSize = this.component.textLogoSizeFactor.getValue() == null ? null : Double.parseDouble(String.valueOf(this.component.textLogoSizeFactor.getValue()));
             if (logoSize == null) {
-                NotificationUtil.error(MessageUtil.getMessage("qr.tip.width.height.not.specified"));
+                NotificationUtil.error(MessageUtil.getMessage("qr.tip.qr.error.logo.file"));
                 return;
             }
             try (InputStream fileIs = this.toSelectLogo.getInputStream()) {
