@@ -228,7 +228,6 @@
                     </constraints>
                     <properties>
                       <enabled value="false"/>
-                      <text value="5.5"/>
                       <toolTipText resource-bundle="applicationMessage" key="qr.input.qr.logo.size.factor"/>
                     </properties>
                   </component>
