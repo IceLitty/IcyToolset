@@ -26,6 +26,18 @@ public class ToolWindowQRCode {
     JRadioButton radioZxingBar;
     JRadioButton radioZxingMatrix;
     JCheckBox checkZxingOpenDirectory;
+    JPanel panelQrOptions;
+    JCheckBox checkMaskOnUseFile;
+    TextFieldWithBrowseButton fileMaskOn;
+    JCheckBox checkMaskOnUseColor;
+    com.intellij.ui.ColorPanel colorMaskOn;
+    JCheckBox checkMaskOffUseFile;
+    TextFieldWithBrowseButton fileMaskOff;
+    JCheckBox checkMaskOffUseColor;
+    com.intellij.ui.ColorPanel colorMaskOff;
+    JCheckBox checkLogo;
+    TextFieldWithBrowseButton fileLogo;
+    JFormattedTextField textLogoSizeFactor;
 
     private final Project project;
     private final ToolWindow toolWindow;
@@ -52,6 +64,7 @@ public class ToolWindowQRCode {
     private void createUIComponents() {
         this.textZxingWidth = new JFormattedTextField(NumberFormat.getIntegerInstance());
         this.textZxingHeight = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        this.textLogoSizeFactor = new JFormattedTextField(NumberFormat.getNumberInstance());
     }
 
 }

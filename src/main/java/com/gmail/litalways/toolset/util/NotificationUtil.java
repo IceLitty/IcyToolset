@@ -104,7 +104,7 @@ public class NotificationUtil {
      * @param project 项目
      */
     public static void error(String title, String content, Project project) {
-        group.createNotification(title, content, NotificationType.ERROR).notify(project);
+        group.createNotification(title, content == null ? "Null pointer exception" : content, NotificationType.ERROR).notify(project);
     }
 
     /**

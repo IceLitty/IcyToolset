@@ -1,10 +1,10 @@
 plugins {
     id 'java'
-    id "org.jetbrains.intellij" version "1.13.3"
+    id "org.jetbrains.intellij" version "1.15.0"
 }
 
 group 'com.gmail.litalways'
-version '1.11'
+version '1.12'
 
 repositories {
     mavenLocal()
@@ -59,15 +59,16 @@ intellij {
 }
 
 ext {
-    lombokVersion = '1.18.26'
-    junitJupiterVersion = '5.9.2'
+    lombokVersion = '1.18.28'
+    junitJupiterVersion = '5.10.0'
 }
 
 dependencies {
+//    implementation fileTree(dir: 'lib', include: '*.jar')
     // https://mvnrepository.com/artifact/org.apache.commons/commons-text
     implementation 'org.apache.commons:commons-text:1.10.0'
     // https://mvnrepository.com/artifact/cn.hutool/hutool-all
-    implementation 'cn.hutool:hutool-all:5.8.16'
+    implementation 'cn.hutool:hutool-all:5.8.20'
     // https://mvnrepository.com/artifact/com.google.zxing/core
     implementation 'com.google.zxing:core:3.5.1'
     // https://mvnrepository.com/artifact/com.google.zxing/javase
@@ -80,7 +81,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.luaj/luaj-jse
     implementation 'org.luaj:luaj-jse:3.0.1'
     // https://mvnrepository.com/artifact/org.apache.groovy/groovy-all
-    implementation 'org.apache.groovy:groovy-all:4.0.11'
+    implementation 'org.apache.groovy:groovy-all:4.0.13'
 //    // https://mvnrepository.com/artifact/ch.obermuhlner/jshell-scriptengine
 //    implementation 'ch.obermuhlner:jshell-scriptengine:1.1.0'
     // 解决 gradle 使用 lombok 的问题

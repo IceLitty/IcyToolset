@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.11</version>
+  <version>1.12</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,13 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      <b>1.12</b>
+      <ul>
+        <li>数据矩阵（DataMatrix）添加参数以支持ECI字符。</li>
+        <li>QR生成添加个性化生成如高位色/遮罩图、低位色/遮罩图、Logo。</li>
+        <li>更新依赖。</li>
+      </ul>
+      <hr/>
       <b>1.11</b>
       <ul>
         <li>重构Base64转换单/多文件逻辑，不再需要按住CTRL键。</li>

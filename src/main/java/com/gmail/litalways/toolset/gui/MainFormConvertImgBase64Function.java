@@ -34,6 +34,8 @@ public class MainFormConvertImgBase64Function {
     }
 
     private void clean() {
+        this.toSelect = null;
+        this.component.fileConvertImgBase64Path.setText("");
         this.component.textareaConvertImgBase64.setText("");
     }
 

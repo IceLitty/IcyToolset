@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="panelMain" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="1169" height="437"/>
+      <xy x="20" y="20" width="1525" height="437"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -105,19 +105,137 @@
               </component>
             </children>
           </grid>
-          <scrollpane id="1643a">
+          <grid id="8e933" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
-            <border type="etched"/>
+            <border type="none"/>
             <children>
-              <component id="3714d" class="javax.swing.JTextArea" binding="textareaZxingText">
-                <constraints/>
+              <scrollpane id="1643a">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
                 <properties/>
-              </component>
+                <border type="etched"/>
+                <children>
+                  <component id="3714d" class="javax.swing.JTextArea" binding="textareaZxingText">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
+              <grid id="e4908" binding="panelQrOptions" layout-manager="GridLayoutManager" row-count="1" column-count="11" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="c8beb" class="javax.swing.JCheckBox" binding="checkMaskOnUseFile">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="applicationMessage" key="qr.check.qr.mask.on.file"/>
+                    </properties>
+                  </component>
+                  <component id="c9e2e" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileMaskOn">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                    </properties>
+                  </component>
+                  <component id="66d83" class="javax.swing.JCheckBox" binding="checkMaskOffUseFile">
+                    <constraints>
+                      <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="applicationMessage" key="qr.check.qr.mask.off.file"/>
+                    </properties>
+                  </component>
+                  <component id="e7523" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileMaskOff">
+                    <constraints>
+                      <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                    </properties>
+                  </component>
+                  <component id="2a22f" class="javax.swing.JCheckBox" binding="checkLogo">
+                    <constraints>
+                      <grid row="0" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="applicationMessage" key="qr.check.qr.logo"/>
+                    </properties>
+                  </component>
+                  <component id="1ab7d" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileLogo">
+                    <constraints>
+                      <grid row="0" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                    </properties>
+                  </component>
+                  <component id="ef86a" class="javax.swing.JCheckBox" binding="checkMaskOnUseColor">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="applicationMessage" key="qr.check.qr.mask.on.color"/>
+                    </properties>
+                  </component>
+                  <component id="e7de6" class="javax.swing.JCheckBox" binding="checkMaskOffUseColor">
+                    <constraints>
+                      <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="applicationMessage" key="qr.check.qr.mask.off.color"/>
+                    </properties>
+                  </component>
+                  <component id="7f25e" class="com.intellij.ui.ColorPanel" binding="colorMaskOn">
+                    <constraints>
+                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                    </properties>
+                  </component>
+                  <component id="ef01a" class="com.intellij.ui.ColorPanel" binding="colorMaskOff">
+                    <constraints>
+                      <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                    </properties>
+                  </component>
+                  <component id="29d06" class="javax.swing.JFormattedTextField" binding="textLogoSizeFactor" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text value="5.5"/>
+                      <toolTipText resource-bundle="applicationMessage" key="qr.input.qr.logo.size.factor"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
-          </scrollpane>
+          </grid>
         </children>
       </grid>
       <grid id="83074" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
