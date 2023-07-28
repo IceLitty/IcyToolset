@@ -177,6 +177,9 @@ public class MainFormQRFunction {
         this.component.fileMaskOff.setText("");
         this.component.fileLogo.setText("");
         this.component.textLogoSizeFactor.setText("5.5");
+        for (Component c : this.component.panelQrOptions.getComponents()) {
+            c.setEnabled(false);
+        }
         this.component.checkMaskOnUseFile.setSelected(false);
         this.component.checkMaskOnUseColor.setSelected(false);
         this.component.checkMaskOffUseFile.setSelected(false);
