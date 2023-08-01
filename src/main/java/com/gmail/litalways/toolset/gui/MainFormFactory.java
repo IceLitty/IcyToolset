@@ -39,7 +39,7 @@ public class MainFormFactory implements ToolWindowFactory {
         Content toolWindowEncryptContent = contentFactory.createContent(toolWindowEncrypt.getContent(), MessageUtil.getMessage("encrypt.tab.title"), true);
         toolWindow.getContentManager().addContent(toolWindowEncryptContent);
         MainFormEncryptHashFunction encryptHash = new MainFormEncryptHashFunction(toolWindowEncrypt);
-        MainFormEncryptAsymmetricFunction encryptAsymmetric = new MainFormEncryptAsymmetricFunction(toolWindowEncrypt);
+        MainFormEncryptAsymmetricFunction encryptAsymmetric = new MainFormEncryptAsymmetricFunction(project, toolWindowEncrypt);
         MainFormEncryptSymmetricFunction encryptSymmetric = new MainFormEncryptSymmetricFunction(toolWindowEncrypt);
         toolWindowEncryptContent.setCloseable(true);
         // 扫码

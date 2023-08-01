@@ -6,9 +6,16 @@ import cn.hutool.crypto.asymmetric.KeyType;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.progress.ProcessCanceledException;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.event.ActionEvent;
 import java.io.InputStream;
@@ -30,7 +37,10 @@ public class MainFormEncryptAsymmetricFunction {
     private VirtualFile toSelectPrivateKey = null;
     private int nowKeyPairGenLength = -1;
 
-    public MainFormEncryptAsymmetricFunction(ToolWindowEncrypt component) {
+    private final Project project;
+
+    public MainFormEncryptAsymmetricFunction(Project project, ToolWindowEncrypt component) {
+        this.project = project;
         this.component = component;
         this.component.fileEncryptAsymmetricPublicKey.addActionListener(this::selectPublicKey);
         this.component.fileEncryptAsymmetricPrivateKey.addActionListener(this::selectPrivateKey);
@@ -119,20 +129,60 @@ public class MainFormEncryptAsymmetricFunction {
     }
 
     private void generateKey(ActionEvent e) {
-        try {
+        this.component.buttonEncryptAsymmetricGenerateKey.setEnabled(false);
+        if ((ActionEvent.SHIFT_MASK & e.getModifiers()) != 0) {
             nowKeyPairGenLength = switch (nowKeyPairGenLength) {
                 case 1024 -> 2048;
                 case 2048 -> 4096;
-                case 4096 -> 8192;
+                case 4096, 8192 -> 8192;
                 default -> 1024;
             };
-            this.component.buttonEncryptAsymmetricGenerateKey.setText(MessageUtil.getMessage("encrypt.asymmetric.button.generate.key.title") + " (" + nowKeyPairGenLength + ")");
-            KeyPair keyPair = SecureUtil.generateKeyPair((String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem(), nowKeyPairGenLength);
-            this.component.textEncryptAsymmetricPublicKey.setText(new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()), getCharset()));
-            this.component.textEncryptAsymmetricPrivateKey.setText(new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()), getCharset()));
-        } catch (UnsupportedEncodingException ex) {
-            NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
+        } else if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
+            nowKeyPairGenLength = switch (nowKeyPairGenLength) {
+                case 8192 -> 4096;
+                case 4096 -> 2048;
+                default -> 1024;
+            };
+        } else if (nowKeyPairGenLength == -1) {
+            nowKeyPairGenLength = 1024;
         }
+        this.component.buttonEncryptAsymmetricGenerateKey.setText(MessageUtil.getMessage("encrypt.asymmetric.button.generate.key.title") + " (" + nowKeyPairGenLength + ")");
+        String algorithm = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
+        ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("encrypt.asymmetric.tip.generate")) {
+            @Override
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+                KeyPair keyPair = null;
+                try {
+                    keyPair = SecureUtil.generateKeyPair(algorithm, nowKeyPairGenLength);
+                } catch (Exception ex) {
+                    NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
+                } finally {
+                    try {
+                        progressIndicator.checkCanceled();
+                    } catch (ProcessCanceledException ex) {
+                        keyPair = null;
+                    } finally {
+                        setTextAfterGenerateKeyPair(keyPair);
+                    }
+                }
+            }
+        });
+    }
+
+    private void setTextAfterGenerateKeyPair(KeyPair keyPair) {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            // EDT
+            try {
+                if (keyPair != null) {
+                    this.component.textEncryptAsymmetricPublicKey.setText(new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()), getCharset()));
+                    this.component.textEncryptAsymmetricPrivateKey.setText(new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()), getCharset()));
+                }
+            } catch (UnsupportedEncodingException ex) {
+                NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
+            } finally {
+                this.component.buttonEncryptAsymmetricGenerateKey.setEnabled(true);
+            }
+        });
     }
 
     private String getCharset() {
@@ -149,7 +199,7 @@ public class MainFormEncryptAsymmetricFunction {
 
     private String encryptWithPublicKey(String source) throws UnsupportedEncodingException {
         String publicKey = this.component.textEncryptAsymmetricPublicKey.getText();
-        if (publicKey == null || publicKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
+        if (publicKey == null || publicKey.trim().isEmpty() || source == null || source.trim().isEmpty()) {
             return "";
         }
         String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
@@ -161,7 +211,7 @@ public class MainFormEncryptAsymmetricFunction {
 
     private String decryptWithPrivateKey(String source) throws UnsupportedEncodingException {
         String privateKey = this.component.textEncryptAsymmetricPrivateKey.getText();
-        if (privateKey == null || privateKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
+        if (privateKey == null || privateKey.trim().isEmpty() || source == null || source.trim().isEmpty()) {
             return "";
         }
         String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
@@ -173,7 +223,7 @@ public class MainFormEncryptAsymmetricFunction {
 
     private String encryptWithPrivateKey(String source) throws UnsupportedEncodingException {
         String privateKey = this.component.textEncryptAsymmetricPrivateKey.getText();
-        if (privateKey == null || privateKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
+        if (privateKey == null || privateKey.trim().isEmpty() || source == null || source.trim().isEmpty()) {
             return "";
         }
         String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
@@ -185,7 +235,7 @@ public class MainFormEncryptAsymmetricFunction {
 
     private String decryptWithPublicKey(String source) throws UnsupportedEncodingException {
         String publicKey = this.component.textEncryptAsymmetricPublicKey.getText();
-        if (publicKey == null || publicKey.trim().length() == 0 || source == null || source.trim().length() == 0) {
+        if (publicKey == null || publicKey.trim().isEmpty() || source == null || source.trim().isEmpty()) {
             return "";
         }
         String type = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
