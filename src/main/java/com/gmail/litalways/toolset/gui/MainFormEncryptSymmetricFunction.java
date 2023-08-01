@@ -18,7 +18,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 /**
- * 非对称加解密
+ * 对称加解密
  *
  * @author IceRain
  * @since 2022/01/26

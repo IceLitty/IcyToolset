@@ -4,6 +4,7 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.AsymmetricCrypto;
 import cn.hutool.crypto.asymmetric.KeyType;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
+import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -17,7 +18,7 @@ import java.security.KeyPair;
 import java.util.Base64;
 
 /**
- * 对称加解密
+ * 非对称加解密
  *
  * @author IceRain
  * @since 2022/01/26
@@ -27,6 +28,7 @@ public class MainFormEncryptAsymmetricFunction {
     private final ToolWindowEncrypt component;
     private VirtualFile toSelectPublicKey = null;
     private VirtualFile toSelectPrivateKey = null;
+    private int nowKeyPairGenLength = -1;
 
     public MainFormEncryptAsymmetricFunction(ToolWindowEncrypt component) {
         this.component = component;
@@ -118,7 +120,14 @@ public class MainFormEncryptAsymmetricFunction {
 
     private void generateKey(ActionEvent e) {
         try {
-            KeyPair keyPair = SecureUtil.generateKeyPair((String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem());
+            nowKeyPairGenLength = switch (nowKeyPairGenLength) {
+                case 1024 -> 2048;
+                case 2048 -> 4096;
+                case 4096 -> 8192;
+                default -> 1024;
+            };
+            this.component.buttonEncryptAsymmetricGenerateKey.setText(MessageUtil.getMessage("encrypt.asymmetric.button.generate.key.title") + " (" + nowKeyPairGenLength + ")");
+            KeyPair keyPair = SecureUtil.generateKeyPair((String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem(), nowKeyPairGenLength);
             this.component.textEncryptAsymmetricPublicKey.setText(new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()), getCharset()));
             this.component.textEncryptAsymmetricPrivateKey.setText(new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()), getCharset()));
         } catch (UnsupportedEncodingException ex) {
