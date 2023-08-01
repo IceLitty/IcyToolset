@@ -213,7 +213,7 @@
 <!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.simple" parentId="tools"-->
 <!--                             instance="com.gmail.litalways.toolset.config.MainSettingSimpleConfigurable" />-->
     <!-- 插件配置菜单（复杂配置） -->
-    <applicationConfigurable id="com.gmail.litalways.toolset.settings" parentId="tools"
+    <applicationConfigurable id="com.gmail.litalways.toolset.settings" parentId="tools" displayName="Icy Toolset"
                              instance="com.gmail.litalways.toolset.config.MainSettingStateConfigurable" />
   </extensions>
 
