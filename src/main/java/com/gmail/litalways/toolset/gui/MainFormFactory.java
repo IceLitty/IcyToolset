@@ -41,7 +41,8 @@ public class MainFormFactory implements ToolWindowFactory {
         MainFormEncryptHashFunction encryptHash = new MainFormEncryptHashFunction(toolWindowEncrypt);
         MainFormEncryptAsymmetricFunction encryptAsymmetric = new MainFormEncryptAsymmetricFunction(project, toolWindowEncrypt);
         MainFormEncryptSymmetricFunction encryptSymmetric = new MainFormEncryptSymmetricFunction(toolWindowEncrypt);
-        toolWindowEncryptContent.setCloseable(true);
+        MainFormEncryptJWTFunction encryptJWT = new MainFormEncryptJWTFunction(toolWindowEncrypt);
+        toolWindowEncryptContent.setCloseable(false);
         // 扫码
         ToolWindowQRCode toolWindowQRCode = new ToolWindowQRCode(project, toolWindow);
         Content toolWindowQRCodeContent = contentFactory.createContent(toolWindowQRCode.getContent(), MessageUtil.getMessage("qr.tab.title"), true);

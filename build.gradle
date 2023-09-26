@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.gmail.litalways'
-version '1.12'
+version '1.13'
 
 repositories {
     mavenLocal()
@@ -59,6 +59,7 @@ intellij {
 }
 
 ext {
+    jacksonVersion = '2.15.2'
     lombokVersion = '1.18.28'
     junitJupiterVersion = '5.10.0'
 }
@@ -84,6 +85,18 @@ dependencies {
     implementation 'org.apache.groovy:groovy-all:4.0.13'
 //    // https://mvnrepository.com/artifact/ch.obermuhlner/jshell-scriptengine
 //    implementation 'ch.obermuhlner:jshell-scriptengine:1.1.0'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    // https://mvnrepository.com/artifact/com.auth0/java-jwt
+    implementation 'com.auth0:java-jwt:4.4.0'
+//    // https://mvnrepository.com/artifact/com.auth0/jwks-rsa
+//    implementation 'com.auth0:jwks-rsa:0.22.1'
+    // https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.34'
     // 解决 gradle 使用 lombok 的问题
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"

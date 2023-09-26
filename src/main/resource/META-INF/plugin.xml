@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.12</version>
+  <version>1.13</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,11 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      <b>1.13</b>
+      <ul>
+        <li>JWT编解码功能（不支持PS算法的编码）</li>
+      </ul>
+      <hr/>
       <b>1.12</b>
       <ul>
         <li>数据矩阵（DataMatrix）添加参数以支持ECI字符。</li>

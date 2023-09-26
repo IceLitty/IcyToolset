@@ -24,7 +24,7 @@ public class FileSizeTextFormat extends Format {
 
     @Override
     public StringBuffer format(Object obj, @NotNull StringBuffer toAppendTo, @NotNull FieldPosition pos) {
-        if (obj == null || String.valueOf(obj).length() == 0) {
+        if (obj == null || String.valueOf(obj).isEmpty()) {
             return null;
         }
         String objStr = String.valueOf(obj);
@@ -53,7 +53,7 @@ public class FileSizeTextFormat extends Format {
 
     @Override
     public Object parseObject(String source, @NotNull ParsePosition pos) {
-        if (source == null || source.length() == 0) {
+        if (source == null || source.isEmpty()) {
             return null;
         }
         char lastChar = source.charAt(source.length() - 1);
