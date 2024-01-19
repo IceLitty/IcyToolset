@@ -11,6 +11,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author IceRain
@@ -21,6 +23,8 @@ public final class ToolWindowScriptEditorService {
 
     private final Project project;
     private EditorEx editor;
+    @Getter
+    @Setter
     private ScriptFile lastScriptFile = null;
 
     public ToolWindowScriptEditorService(Project project) {
@@ -53,14 +57,6 @@ public final class ToolWindowScriptEditorService {
         if (this.editor != null && !this.editor.isDisposed()) {
             EditorFactory.getInstance().releaseEditor(this.editor);
         }
-    }
-
-    public ScriptFile getLastScriptFile() {
-        return lastScriptFile;
-    }
-
-    public void setLastScriptFile(ScriptFile lastScriptFile) {
-        this.lastScriptFile = lastScriptFile;
     }
 
 }

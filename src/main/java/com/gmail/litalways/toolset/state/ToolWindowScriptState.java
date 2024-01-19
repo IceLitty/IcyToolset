@@ -3,6 +3,7 @@ package com.gmail.litalways.toolset.state;
 import com.gmail.litalways.toolset.constant.KeyConstant;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
@@ -18,11 +19,12 @@ import java.util.List;
  * @author IceRain
  * @since 2023/04/12
  */
+@Service(Service.Level.APP)
 @State(
         name = KeyConstant.TOOL_WINDOW_KEY_SCRIPT,
         storages = @Storage(KeyConstant.CONFIG_STATE_FILENAME)
 )
-public class ToolWindowScriptState implements PersistentStateComponent<ToolWindowScriptState> {
+public final class ToolWindowScriptState implements PersistentStateComponent<ToolWindowScriptState> {
 
     public List<ScriptFile> scriptFiles = new ArrayList<>();
 
@@ -32,11 +34,11 @@ public class ToolWindowScriptState implements PersistentStateComponent<ToolWindo
      * @return 当前实例
      */
     public static ToolWindowScriptState getInstance() {
-        return ApplicationManager.getApplication().getComponent(ToolWindowScriptState.class);
+        return ApplicationManager.getApplication().getService(ToolWindowScriptState.class);
     }
 
     @Override
-    public @Nullable ToolWindowScriptState getState() {
+    public @NotNull ToolWindowScriptState getState() {
         return this;
     }
 

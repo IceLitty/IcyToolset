@@ -9,15 +9,21 @@ import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ex.ApplicationManagerEx;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.vfs.JarFileSystem;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.JBColor;
@@ -27,6 +33,9 @@ import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.util.PlatformIcons;
+import groovy.lang.GroovyClassLoader;
+import lombok.extern.slf4j.Slf4j;
+import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.script.ScriptEngine;
@@ -34,15 +43,22 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 /**
  * @author IceRain
  * @since 2023/04/07
  */
+@Slf4j
 public class ToolWindowScript {
 
     JPanel panelMain;
@@ -327,7 +343,7 @@ public class ToolWindowScript {
             } else {
                 NotificationUtil.warning(MessageUtil.getMessage("script.tip.not.select.type"));
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             this.textareaScriptResult.setText(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
         }
     }

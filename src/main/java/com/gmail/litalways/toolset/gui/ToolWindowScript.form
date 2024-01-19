@@ -96,7 +96,9 @@
             <children>
               <component id="463cb" class="javax.swing.JTextArea" binding="textareaScriptResult">
                 <constraints/>
-                <properties/>
+                <properties>
+                  <lineWrap value="true"/>
+                </properties>
               </component>
             </children>
           </scrollpane>

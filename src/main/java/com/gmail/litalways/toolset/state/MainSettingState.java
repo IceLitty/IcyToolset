@@ -3,6 +3,7 @@ package com.gmail.litalways.toolset.state;
 import com.gmail.litalways.toolset.constant.KeyConstant;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
@@ -19,11 +20,12 @@ import java.util.List;
  * @author IceRain
  * @since 2023/04/06
  */
+@Service(Service.Level.APP)
 @State(
         name = KeyConstant.CONFIG_STATE_KEY_SETTINGS,
         storages = @Storage(KeyConstant.CONFIG_STATE_FILENAME)
 )
-public class MainSettingState implements PersistentStateComponent<MainSettingState> {
+public final class MainSettingState implements PersistentStateComponent<MainSettingState> {
 
     public List<MainSettingsClassName> beanUtilsClassName = getDefaultBeanUtilsClassName();
 
@@ -40,7 +42,7 @@ public class MainSettingState implements PersistentStateComponent<MainSettingSta
      * @return 当前实例
      */
     public static MainSettingState getInstance() {
-        return ApplicationManager.getApplication().getComponent(MainSettingState.class);
+        return ApplicationManager.getApplication().getService(MainSettingState.class);
     }
 
     /**
@@ -49,7 +51,7 @@ public class MainSettingState implements PersistentStateComponent<MainSettingSta
      * @return 当前实例
      */
     @Override
-    public @Nullable MainSettingState getState() {
+    public @NotNull MainSettingState getState() {
         return this;
     }
 

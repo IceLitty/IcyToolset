@@ -222,16 +222,17 @@
                              instance="com.gmail.litalways.toolset.config.MainSettingStateConfigurable" />
   </extensions>
 
-  <application-components>
-    <!-- 持久化 -->
-    <component>
-      <implementation-class>com.gmail.litalways.toolset.state.ToolWindowScriptState</implementation-class>
-    </component>
-    <!-- 插件配置菜单储存（复杂配置） -->
-    <component>
-      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>
-    </component>
-  </application-components>
+  <!-- Component弃用了，改成Service注册了 -->
+<!--  <application-components>-->
+<!--    &lt;!&ndash; 持久化 &ndash;&gt;-->
+<!--    <component>-->
+<!--      <implementation-class>com.gmail.litalways.toolset.state.ToolWindowScriptState</implementation-class>-->
+<!--    </component>-->
+<!--    &lt;!&ndash; 插件配置菜单储存（复杂配置） &ndash;&gt;-->
+<!--    <component>-->
+<!--      <implementation-class>com.gmail.litalways.toolset.state.MainSettingState</implementation-class>-->
+<!--    </component>-->
+<!--  </application-components>-->
 
   <projectListeners>
     <!-- 防止Editor在退出时没有被回收 -->
