@@ -6,28 +6,16 @@ import com.gmail.litalways.toolset.state.ScriptFile;
 import com.gmail.litalways.toolset.state.ToolWindowScriptState;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.vfs.JarFileSystem;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.script.LuaScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.python.jsr223.PyScriptEngineFactory;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author IceRain
@@ -101,37 +89,8 @@ public class MainFormScriptFunction {
                     // Python
                     PyScriptEngineFactory pyScriptEngineFactory = new PyScriptEngineFactory();
                     manager.registerEngineName("python", pyScriptEngineFactory);
-                    // Groovy
-                    AtomicReference<Exception> failLoadEx = new AtomicReference<>(null);
-                    List<String> failLoads = new ArrayList<>();
-                    try {
-                        VirtualFile[] libs = ModuleRootManager.getInstance(ModuleManager.getInstance(this.component.getCurrentProject()).getModules()[0]).orderEntries().classes().getRoots();
-                        List<String> libsPath = Arrays.stream(libs).filter(lib -> lib.getFileSystem() instanceof JarFileSystem || lib.getFileSystem() instanceof LocalFileSystem).map(VirtualFile::getPath).toList();
-                        ScriptEngine groovyEngine = ScriptUtil.getGroovyEngine();
-                        Method method = groovyEngine.getClass().getMethod("getClassLoader");
-                        Object classLoader = method.invoke(groovyEngine);
-                        Method addClasspath = classLoader.getClass().getMethod("addClasspath", String.class);
-                        libsPath.forEach(lib -> {
-                            try {
-                                addClasspath.invoke(classLoader, lib);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                failLoadEx.set(e);
-                                failLoads.add(lib);
-                            }
-                        });
-                    } catch (Exception e) {
-                        failLoadEx.set(e);
-                    }
-                    if (!failLoads.isEmpty()) {
-                        Exception e = failLoadEx.get();
-                        if (e == null) {
-                            NotificationUtil.warning(MessageUtil.getMessage("script.tip.groovy.inject.classpath.error"),
-                                    String.join(", ", failLoads));
-                        } else {
-                            NotificationUtil.warning(MessageUtil.getMessage("script.tip.groovy.inject.classpath.error"),
-                                    e.getClass().getSimpleName() + ": " + e.getLocalizedMessage() + "\n" + String.join(", ", failLoads));
-                        }
-                    }
+                    // Groovy 由窗体类动态加载实例，支持热部署项目输出+依赖
+                    ScriptUtil.getGroovyEngine();
                     this.component.injectedNashorn.set(2);
                     return;
                 }

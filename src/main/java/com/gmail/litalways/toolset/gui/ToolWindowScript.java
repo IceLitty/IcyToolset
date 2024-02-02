@@ -9,7 +9,6 @@ import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.application.ex.ApplicationManagerEx;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -33,9 +32,7 @@ import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.util.PlatformIcons;
-import groovy.lang.GroovyClassLoader;
 import lombok.extern.slf4j.Slf4j;
-import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.script.ScriptEngine;
@@ -43,6 +40,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -78,6 +76,8 @@ public class ToolWindowScript {
     JTextField textScriptFilename;
     ScriptModel scriptModel;
     AtomicInteger injectedNashorn;
+
+    private Object groovyClassLoader;
 
     private final Project project;
     private final ToolWindow toolWindow;
@@ -331,7 +331,54 @@ public class ToolWindowScript {
             } else if (this.radioScriptLua.isSelected()) {
                 this.textareaScriptResult.setText(String.valueOf(ScriptUtil.getLuaEngine().eval(script)));
             } else if (this.radioScriptGroovy.isSelected()) {
-                this.textareaScriptResult.setText(String.valueOf(ScriptUtil.getGroovyEngine().eval(script)));
+                AtomicReference<Exception> failLoadEx = new AtomicReference<>(null);
+                List<String> failLoads = new ArrayList<>();
+                VirtualFile[] libs = ModuleRootManager.getInstance(ModuleManager.getInstance(this.getCurrentProject()).getModules()[0]).orderEntries().classes().getRoots();
+                List<String> libsPath = Arrays.stream(libs)
+                        .filter(lib -> lib.getFileSystem() instanceof JarFileSystem || lib.getFileSystem() instanceof LocalFileSystem)
+                        .map(lib -> {
+                            if (lib.getFileSystem() instanceof JarFileSystem) {
+                                String path = lib.getPath();
+                                if (path.endsWith("!/")) {
+                                    path = path.substring(0, path.length() - 2);
+                                }
+                                return path;
+                            } else {
+                                return lib.getPath();
+                            }
+                        })
+                        .toList();
+                ScriptEngine groovyEngine = ScriptUtil.getGroovyEngine().getFactory().getScriptEngine();
+                Method getClassLoader = groovyEngine.getClass().getMethod("getClassLoader");
+                if (groovyClassLoader == null) {
+                    groovyClassLoader = getClassLoader.invoke(groovyEngine);
+                }
+                Class<?> groovyClassLoaderClass = getClassLoader.getReturnType();
+                Constructor<?> groovyClassLoaderConstructor = groovyClassLoaderClass.getConstructor(groovyClassLoaderClass);
+                Object newGroovyClassLoader = groovyClassLoaderConstructor.newInstance(groovyClassLoader);
+                Method addClasspath = groovyClassLoaderClass.getMethod("addClasspath", String.class);
+                libsPath.forEach(lib -> {
+                    try {
+                        addClasspath.invoke(newGroovyClassLoader, lib);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        failLoadEx.set(e);
+                        failLoads.add(lib);
+                    }
+                });
+                Method setClassLoader = groovyEngine.getClass().getMethod("setClassLoader", groovyClassLoaderClass);
+                setClassLoader.invoke(groovyEngine, newGroovyClassLoader);
+                if (failLoads.isEmpty()) {
+                    this.textareaScriptResult.setText(String.valueOf(groovyEngine.eval(script)));
+                } else {
+                    Exception e = failLoadEx.get();
+                    if (e == null) {
+                        NotificationUtil.warning(MessageUtil.getMessage("script.tip.groovy.inject.classpath.error"),
+                                String.join(", ", failLoads));
+                    } else {
+                        NotificationUtil.warning(MessageUtil.getMessage("script.tip.groovy.inject.classpath.error"),
+                                e.getClass().getSimpleName() + ": " + e.getLocalizedMessage() + "\n" + String.join(", ", failLoads));
+                    }
+                }
             } else if (this.radioScriptPython.isSelected()) {
                 String[] scripts = script.split("\n\n");
                 ScriptEngine pythonEngine = ScriptUtil.getPythonEngine();
