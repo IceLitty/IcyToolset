@@ -321,6 +321,9 @@ public class MainFormConvertCommonFunction {
             if (result.endsWith("\n")) {
                 result = result.substring(0, result.length() - 1);
             }
+            if (split.length == 1 && result.split("\n").length > 1) {
+                this.component.checkConvertCommonLine.setSelected(false);
+            }
             this.component.textareaConvertCommonDecoded.setText(result);
         } else {
             String decoded;
