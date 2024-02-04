@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public class MainFormOtherFunction {
 
     public MainFormOtherFunction(ToolWindowOther component) {
         this.component = component;
-        this.component.buttonAboutEncoding.addActionListener(e -> this.component.buttonAboutEncoding.setText(System.getProperty("file.encoding")));
+        this.component.buttonAboutEncoding.addActionListener(e -> this.component.buttonAboutEncoding.setText(Charset.defaultCharset().displayName()));
         this.component.buttonAboutGenHashRun.addActionListener(this::generateHash);
         this.component.fileAboutGenHashPath.addActionListener(this::selectGenerateHashPath);
         this.component.selectAboutGenHashType.addActionListener(this::autoWriteGenerateHashSuffix);
@@ -50,7 +51,7 @@ public class MainFormOtherFunction {
     private void autoWriteGenerateHashSuffix(ActionEvent e) {
         if (this.component.selectAboutGenHashType.getSelectedIndex() != -1) {
             String type = String.valueOf(this.component.selectAboutGenHashType.getSelectedItem());
-            if (!"null".equalsIgnoreCase(type) && type.trim().length() != 0) {
+            if (!"null".equalsIgnoreCase(type) && !type.trim().isEmpty()) {
                 this.component.textAboutGenHashSuffix.setText("." + type.toLowerCase().replace("-", "").replace("_", ""));
             }
         }
@@ -72,22 +73,22 @@ public class MainFormOtherFunction {
             return;
         }
         String type = String.valueOf(this.component.selectAboutGenHashType.getSelectedItem());
-        if ("null".equalsIgnoreCase(type) || type.trim().length() == 0) {
+        if ("null".equalsIgnoreCase(type) || type.trim().isEmpty()) {
             NotificationUtil.error(MessageUtil.getMessage("other.generate.hash.tip.no.hash.type"));
             return;
         }
         String suffix = this.component.textAboutGenHashSuffix.getText();
-        if ("null".equalsIgnoreCase(suffix) || suffix.trim().length() == 0) {
+        if ("null".equalsIgnoreCase(suffix) || suffix.trim().isEmpty()) {
             NotificationUtil.error(MessageUtil.getMessage("other.generate.hash.tip.suffix.can.not.be.none"));
             return;
         }
         String pathPattern = this.component.textAboutGenHashPathFilter.getText();
-        if ("null".equalsIgnoreCase(pathPattern) || pathPattern.trim().length() == 0) {
+        if ("null".equalsIgnoreCase(pathPattern) || pathPattern.trim().isEmpty()) {
             this.component.textAboutGenHashPathFilter.setText(".*");
             pathPattern = ".*";
         }
         String filenamePattern = this.component.textAboutGenHashFileFilter.getText();
-        if ("null".equalsIgnoreCase(filenamePattern) || filenamePattern.trim().length() == 0) {
+        if ("null".equalsIgnoreCase(filenamePattern) || filenamePattern.trim().isEmpty()) {
             this.component.textAboutGenHashFileFilter.setText(".*");
             filenamePattern = ".*";
         }
@@ -142,7 +143,7 @@ public class MainFormOtherFunction {
                 } catch (Exception e) {
                     NotificationUtil.error(MessageUtil.getMessage("other.generate.hash.tip.unzip.pom.error", f.getName(), e.getClass().getSimpleName(), e.getLocalizedMessage()));
                 }
-                if (artifactId != null && groupId != null && pom.size() > 0) {
+                if (artifactId != null && groupId != null && !pom.isEmpty()) {
                     for (Map.Entry<String, String> entry : pom.entrySet()) {
                         if (entry.getKey().contains(artifactId) && entry.getKey().contains(groupId)) {
                             pomStr = entry.getValue();
@@ -150,7 +151,7 @@ public class MainFormOtherFunction {
                         }
                     }
                 }
-                if (pomStr != null && pomStr.trim().length() > 0) {
+                if (pomStr != null && !pomStr.trim().isEmpty()) {
                     boolean writeSuccess = false;
                     File pomFile = new File(f.getPath().substring(0, f.getPath().length() - f.getName().length()), f.getName().substring(0, f.getName().length() - 3) + "pom");
                     try (FileWriter fw = new FileWriter(pomFile, StandardCharsets.UTF_8)) {

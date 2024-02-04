@@ -30,6 +30,7 @@ import java.util.*;
  *
  * @author IceRain
  * @since 2023/04/17
+ * @noinspection DuplicatedCode
  */
 @SuppressWarnings("IntentionDescriptionNotFoundInspection")
 public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
@@ -154,13 +155,13 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                                             boolean find = false;
                                             String qualifierClassname = pc.getQualifiedName();
                                             for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
-                                                if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0 && !conf.getSimpleClassName().equals(simpleClassName)) {
+                                                if (conf.getSimpleClassName() != null && !conf.getSimpleClassName().trim().isEmpty() && !conf.getSimpleClassName().equals(simpleClassName)) {
                                                     continue;
                                                 }
-                                                if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0 && !conf.getQualifierClassName().equals(qualifierClassname)) {
+                                                if (conf.getQualifierClassName() != null && !conf.getQualifierClassName().trim().isEmpty() && !conf.getQualifierClassName().equals(qualifierClassname)) {
                                                     continue;
                                                 }
-                                                if (conf.getMethodName() != null && conf.getMethodName().trim().length() > 0 && !conf.getMethodName().equals(methodName)) {
+                                                if (conf.getMethodName() != null && !conf.getMethodName().trim().isEmpty() && !conf.getMethodName().equals(methodName)) {
                                                     continue;
                                                 }
                                                 // 查询到了被BeanUtil调用的该类型
@@ -185,13 +186,13 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                                             qualifierClassname = psiClass.getQualifiedName();
                                         }
                                         for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
-                                            if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0 && !conf.getSimpleClassName().equals(simpleClassName)) {
+                                            if (conf.getSimpleClassName() != null && !conf.getSimpleClassName().trim().isEmpty() && !conf.getSimpleClassName().equals(simpleClassName)) {
                                                 continue;
                                             }
-                                            if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0 && !conf.getQualifierClassName().equals(qualifierClassname)) {
+                                            if (conf.getQualifierClassName() != null && !conf.getQualifierClassName().trim().isEmpty() && !conf.getQualifierClassName().equals(qualifierClassname)) {
                                                 continue;
                                             }
-                                            if (conf.getMethodName() != null && conf.getMethodName().trim().length() > 0 && !conf.getMethodName().equals(methodName)) {
+                                            if (conf.getMethodName() != null && !conf.getMethodName().trim().isEmpty() && !conf.getMethodName().equals(methodName)) {
                                                 continue;
                                             }
                                             // 查询到了被BeanUtil调用的该类型
@@ -204,7 +205,7 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                         }
                     }
                     // 收集结果集并显示
-                    if (filteredReference.size() == 0) {
+                    if (filteredReference.isEmpty()) {
                         ApplicationManager.getApplication().invokeLater(() -> {
                             // EDT
                             HintManager.getInstance().showInformationHint(editor, MessageUtil.getMessage("action.find.usage.by.bean.utils.not.found"));
@@ -240,10 +241,10 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                     PsiShortNamesCache allClassCache = PsiShortNamesCache.getInstance(project);
                     Set<PsiClass> beanUtilClasses = new HashSet<>();
                     for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
-                        if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0) {
+                        if (conf.getQualifierClassName() != null && !conf.getQualifierClassName().trim().isEmpty()) {
                             @NotNull PsiClass[] classesByName = allClassCache.getClassesByName(conf.getQualifierClassName(), GlobalSearchScope.allScope(project));
                             Collections.addAll(beanUtilClasses, classesByName);
-                        } else if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0) {
+                        } else if (conf.getSimpleClassName() != null && !conf.getSimpleClassName().trim().isEmpty()) {
                             @NotNull PsiClass[] classesByName = allClassCache.getClassesByName(conf.getSimpleClassName(), GlobalSearchScope.allScope(project));
                             Collections.addAll(beanUtilClasses, classesByName);
                         }
@@ -292,13 +293,13 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                                     if (methodName != null) {
                                         methodMatch = false;
                                         for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
-                                            if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0 && !conf.getSimpleClassName().equals(simpleClassName)) {
+                                            if (conf.getSimpleClassName() != null && !conf.getSimpleClassName().trim().isEmpty() && !conf.getSimpleClassName().equals(simpleClassName)) {
                                                 continue;
                                             }
-                                            if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0 && !conf.getQualifierClassName().equals(qualifierClassname)) {
+                                            if (conf.getQualifierClassName() != null && !conf.getQualifierClassName().trim().isEmpty() && !conf.getQualifierClassName().equals(qualifierClassname)) {
                                                 continue;
                                             }
-                                            if (conf.getMethodName() != null && conf.getMethodName().trim().length() > 0 && !conf.getMethodName().equals(methodName)) {
+                                            if (conf.getMethodName() != null && !conf.getMethodName().trim().isEmpty() && !conf.getMethodName().equals(methodName)) {
                                                 continue;
                                             }
                                             methodMatch = true;
@@ -324,7 +325,7 @@ public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
                         }
                     }
                     // 收集结果集并显示
-                    if (filteredReference.size() == 0) {
+                    if (filteredReference.isEmpty()) {
                         ApplicationManager.getApplication().invokeLater(() -> {
                             // EDT
                             HintManager.getInstance().showInformationHint(editor, MessageUtil.getMessage("action.find.usage.by.bean.utils.not.found"));

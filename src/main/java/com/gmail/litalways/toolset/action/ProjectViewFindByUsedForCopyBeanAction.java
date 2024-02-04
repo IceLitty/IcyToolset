@@ -30,6 +30,7 @@ import java.util.*;
  *
  * @author IceRain
  * @since 2023/04/14
+ * @noinspection DuplicatedCode
  */
 public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
 
@@ -52,10 +53,10 @@ public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
                     PsiShortNamesCache allClassCache = PsiShortNamesCache.getInstance(project);
                     Set<PsiClass> beanUtilClasses = new HashSet<>();
                     for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
-                        if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0) {
+                        if (conf.getQualifierClassName() != null && !conf.getQualifierClassName().trim().isEmpty()) {
                             @NotNull PsiClass[] classesByName = allClassCache.getClassesByName(conf.getQualifierClassName(), GlobalSearchScope.allScope(project));
                             Collections.addAll(beanUtilClasses, classesByName);
-                        } else if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0) {
+                        } else if (conf.getSimpleClassName() != null && !conf.getSimpleClassName().trim().isEmpty()) {
                             @NotNull PsiClass[] classesByName = allClassCache.getClassesByName(conf.getSimpleClassName(), GlobalSearchScope.allScope(project));
                             Collections.addAll(beanUtilClasses, classesByName);
                         }
@@ -104,13 +105,13 @@ public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
                                     if (methodName != null) {
                                         methodMatch = false;
                                         for (MainSettingsClassName conf : MainSettingState.getInstance().beanUtilsClassName) {
-                                            if (conf.getSimpleClassName() != null && conf.getSimpleClassName().trim().length() > 0 && !conf.getSimpleClassName().equals(simpleClassName)) {
+                                            if (conf.getSimpleClassName() != null && !conf.getSimpleClassName().trim().isEmpty() && !conf.getSimpleClassName().equals(simpleClassName)) {
                                                 continue;
                                             }
-                                            if (conf.getQualifierClassName() != null && conf.getQualifierClassName().trim().length() > 0 && !conf.getQualifierClassName().equals(qualifierClassname)) {
+                                            if (conf.getQualifierClassName() != null && !conf.getQualifierClassName().trim().isEmpty() && !conf.getQualifierClassName().equals(qualifierClassname)) {
                                                 continue;
                                             }
-                                            if (conf.getMethodName() != null && conf.getMethodName().trim().length() > 0 && !conf.getMethodName().equals(methodName)) {
+                                            if (conf.getMethodName() != null && !conf.getMethodName().trim().isEmpty() && !conf.getMethodName().equals(methodName)) {
                                                 continue;
                                             }
                                             methodMatch = true;
@@ -136,7 +137,7 @@ public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
                         }
                     }
                     // 收集结果集并显示
-                    if (filteredReference.size() == 0) {
+                    if (filteredReference.isEmpty()) {
                         NotificationUtil.info(MessageUtil.getMessage("action.find.usage.by.bean.utils.not.found"));
                     } else {
                         List<Usage> usages = new ArrayList<>();

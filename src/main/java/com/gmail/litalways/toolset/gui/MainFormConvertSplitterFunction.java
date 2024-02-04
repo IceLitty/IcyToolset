@@ -87,7 +87,7 @@ public class MainFormConvertSplitterFunction {
         //
         int splitCount = 1;
         String countText = this.component.textConvertSplitterCount.getValue() == null ? null : String.valueOf(this.component.textConvertSplitterCount.getValue());
-        if (countText != null && countText.trim().length() > 0) {
+        if (countText != null && !countText.trim().isEmpty()) {
             if (Pattern.compile("^\\d+$").matcher(countText).matches()) {
                 splitCount = Integer.parseInt(countText);
                 if (splitCount < 2) {
@@ -101,7 +101,7 @@ public class MainFormConvertSplitterFunction {
         }
         //
         String splitLength = this.component.textConvertSplitterSize.getValue() == null ? null : String.valueOf(this.component.textConvertSplitterSize.getValue());
-        if (splitLength != null && splitLength.trim().length() > 0) {
+        if (splitLength != null && !splitLength.trim().isEmpty()) {
             if (Pattern.compile("^\\d+[gGmMkK]$").matcher(splitLength).matches()) {
                 String number = splitLength.substring(0, splitLength.length() - 1);
                 String suffix = splitLength.substring(splitLength.length() - 1);

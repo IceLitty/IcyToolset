@@ -105,7 +105,7 @@ public class TestJwt {
         log.info(jwkString);
         String pubKeyR = jwk2pem(jwkString);
         log.info(pubKeyR);
-        log.info("-------------");;
+        log.info("-------------");
         //
         String privJwk = JWKUtil.privateKey2jwk(JWKUtil.pem2byte(privKey), "RS256", cert, "SHA-1");
         log.info(privJwk);
@@ -128,7 +128,7 @@ public class TestJwt {
 
     public static String jwk2pem(final String jwkString) throws IllegalArgumentException {
         try {
-            Map<String, Object> jwkMap = new JsonMapper().readValue(jwkString, new TypeReference<Map<String, Object>>() {
+            Map<String, Object> jwkMap = new JsonMapper().readValue(jwkString, new TypeReference<>() {
             });
             if (!jwkMap.containsKey("n") || !jwkMap.containsKey("e")) {
                 throw new IllegalArgumentException("Give JWK not contain modulus and exponent.");

@@ -87,9 +87,7 @@ public class MainFormQRFunction {
             this.component.checkMaskOffUseColor.setSelected(false);
             this.component.checkLogo.setSelected(false);
         });
-        this.component.buttonZxingToFile.addActionListener(e -> {
-            encode();
-        });
+        this.component.buttonZxingToFile.addActionListener(e -> encode());
         this.component.fileZxingFromFile.addActionListener(e -> {
             FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, true, false, true, false);
             this.toSelect = FileChooser.chooseFile(descriptor, null, this.toSelect);

@@ -110,7 +110,7 @@ public class GenerateSetterAction extends AnAction {
         String sourceVarName = Messages.showInputDialog(
                 MessageUtil.getMessage("action.generate.setter.input.variable.name.of.source.object"),
                 KeyConstant.NOTIFICATION_GROUP_KEY, Messages.getQuestionIcon());
-        if (sourceVarName == null || sourceVarName.trim().length() == 0) {
+        if (sourceVarName == null || sourceVarName.trim().isEmpty()) {
             return;
         }
         // 获取需要生成Setter的变量名
@@ -210,7 +210,7 @@ public class GenerateSetterAction extends AnAction {
             // 方法参数
             if (parent.getParent() instanceof PsiParameterList ppl
                     && ppl.getParent() instanceof PsiMethod pm
-                    && pm.getBody().getFirstChild().getNextSibling() instanceof PsiWhiteSpace p
+                    && pm.getBody() != null && pm.getBody().getFirstChild().getNextSibling() instanceof PsiWhiteSpace p
                     && p.getText().startsWith("\n") && p.getText().length() > 1) {
                 return p.getText().substring(1) + "    ";
             }

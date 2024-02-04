@@ -290,7 +290,6 @@ public class MainFormEncryptHashFunction {
                             ) + eachResult.getResult());
                 } catch (Exception ex) {
                     NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
-                    return;
                 }
             }
         }

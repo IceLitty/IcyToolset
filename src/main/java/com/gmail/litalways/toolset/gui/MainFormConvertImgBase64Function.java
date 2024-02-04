@@ -128,7 +128,7 @@ public class MainFormConvertImgBase64Function {
      * @param base64 BASE64
      */
     private void encodeToFile(String base64) {
-        if (base64 == null || base64.trim().length() == 0) {
+        if (base64 == null || base64.trim().isEmpty()) {
             NotificationUtil.error(MessageUtil.getMessage("convert.base64.tip.not.base64"));
             return;
         }
@@ -229,13 +229,13 @@ public class MainFormConvertImgBase64Function {
         String text = this.component.textareaConvertImgBase64.getText();
         int encodingModelIndex = this.component.selectConvertImgBase64Charset.getSelectedIndex();
         Object selectedObjects = this.component.selectConvertImgBase64Charset.getModel().getSelectedItem();
-        String charset;
+        Charset charset;
         if (encodingModelIndex == 0) {
-            charset = System.getProperty("file.encoding");
+            charset = Charset.defaultCharset();
         } else {
-            charset = (String) selectedObjects;
+            charset = Charset.forName((String) selectedObjects);
         }
-        boolean needReSelectFile = text == null || text.trim().length() == 0 || StrUtil.endsWithShowMax(text);
+        boolean needReSelectFile = text == null || text.trim().isEmpty() || StrUtil.endsWithShowMax(text);
         if (needReSelectFile) {
 //            // 由于文件选择控件不支持该识别，所以按钮这边也同步放弃该方案
 //            FileChooserDescriptor descriptor;
@@ -267,7 +267,7 @@ public class MainFormConvertImgBase64Function {
                 }
             } else {
                 // 选择单个文件
-                try (InputStreamReader isr = new InputStreamReader(src.getInputStream(), Charset.forName(charset));
+                try (InputStreamReader isr = new InputStreamReader(src.getInputStream(), charset);
                      BufferedReader br = new BufferedReader(isr)) {
                     StringBuilder sb = new StringBuilder();
                     String line;
@@ -297,8 +297,8 @@ public class MainFormConvertImgBase64Function {
      * @param destPath 目标文件夹
      * @param charset  字符集
      */
-    private void decodeToFile(String base64, String destPath, String charset) {
-        if (base64.trim().length() == 0) {
+    private void decodeToFile(String base64, String destPath, Charset charset) {
+        if (base64.trim().isEmpty()) {
             NotificationUtil.error(MessageUtil.getMessage("convert.base64.tip.not.base64"), destPath);
             return;
         }
@@ -338,7 +338,7 @@ public class MainFormConvertImgBase64Function {
      * @param charset 字符集
      */
     @SuppressWarnings("UnnecessaryContinue")
-    private void decodeToFileMulti(File dir, String charset) {
+    private void decodeToFileMulti(File dir, Charset charset) {
         File[] dirListFiles;
         if (dir == null || !dir.isDirectory() || !dir.exists() || !dir.canRead() || !dir.canWrite() || (dirListFiles = dir.listFiles()) == null || dirListFiles.length == 0) {
             NotificationUtil.error(MessageUtil.getMessage("convert.base64.tip.not.select.base64.dir"), dir == null ? null : dir.getPath());
@@ -362,7 +362,7 @@ public class MainFormConvertImgBase64Function {
                 String suffix;
                 String text;
                 try (FileInputStream fis = new FileInputStream(f);
-                     InputStreamReader isr = new InputStreamReader(fis, Charset.forName(charset));
+                     InputStreamReader isr = new InputStreamReader(fis, charset);
                      BufferedReader br = new BufferedReader(isr)) {
                     StringBuilder sb = new StringBuilder();
                     String line;
@@ -402,7 +402,7 @@ public class MainFormConvertImgBase64Function {
                 } else {
                     destPath = f.getPath() + suffix;
                 }
-                if (text.trim().length() == 0) {
+                if (text.trim().isEmpty()) {
                     NotificationUtil.warning(MessageUtil.getMessage("convert.base64.tip.not.base64"), f.getPath());
                     continue;
                 }

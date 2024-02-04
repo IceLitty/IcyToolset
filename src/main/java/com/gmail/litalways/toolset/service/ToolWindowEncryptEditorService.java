@@ -4,6 +4,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
+import lombok.Getter;
 
 /**
  * @author IceRain
@@ -13,14 +14,11 @@ import com.intellij.openapi.project.Project;
 public final class ToolWindowEncryptEditorService {
 
     private final Project project;
+    @Getter
     private EditorEx[] editors;
 
     public ToolWindowEncryptEditorService(Project project) {
         this.project = project;
-    }
-
-    public EditorEx[] getEditors() {
-        return editors;
     }
 
     public void setEditors(EditorEx... editors) {
@@ -28,10 +26,10 @@ public final class ToolWindowEncryptEditorService {
     }
 
     public void disposed() {
-        if (this.editors != null && this.editors.length != 0) {
-            for (int i = 0; i < this.editors.length; i++) {
-                if (!this.editors[i].isDisposed()) {
-                    EditorFactory.getInstance().releaseEditor(this.editors[i]);
+        if (this.editors != null) {
+            for (EditorEx editor : this.editors) {
+                if (!editor.isDisposed()) {
+                    EditorFactory.getInstance().releaseEditor(editor);
                 }
             }
         }

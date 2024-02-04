@@ -121,7 +121,7 @@ public class ToolWindowFormat {
                 }
                 String text = editor.getDocument().getText();
                 String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
-                if (tmp.length() < 1) {
+                if (tmp.isEmpty()) {
                     return;
                 }
                 tmp = tmp.substring(0, 1);

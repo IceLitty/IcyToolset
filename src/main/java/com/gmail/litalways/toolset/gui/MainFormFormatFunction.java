@@ -35,7 +35,7 @@ public class MainFormFormatFunction {
     private void format(ActionEvent e) {
         String text = this.component.editor.getDocument().getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
-        if (tmp.length() < 1) {
+        if (tmp.isEmpty()) {
             return;
         }
         switch (tmp.substring(0, 1)) {
@@ -45,9 +45,7 @@ public class MainFormFormatFunction {
                     text = jsonObject.toJSONString(4);
                     text = text.replace("\r\n", "\n");
                     final String _text = text;
-                    ApplicationManager.getApplication().runWriteAction(() -> {
-                        this.component.editor.getDocument().setText(_text);
-                    });
+                    ApplicationManager.getApplication().runWriteAction(() -> this.component.editor.getDocument().setText(_text));
                 } catch (JSONException e1) {
                     showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
@@ -58,9 +56,7 @@ public class MainFormFormatFunction {
                     text = jsonArray.toJSONString(4);
                     text = text.replace("\r\n", "\n");
                     final String _text = text;
-                    ApplicationManager.getApplication().runWriteAction(() -> {
-                        this.component.editor.getDocument().setText(_text);
-                    });
+                    ApplicationManager.getApplication().runWriteAction(() -> this.component.editor.getDocument().setText(_text));
                 } catch (JSONException e1) {
                     showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
@@ -71,9 +67,7 @@ public class MainFormFormatFunction {
                     text = XmlUtil.toStr(document, true);
                     text = text.replace("\r\n", "\n");
                     final String _text = text;
-                    ApplicationManager.getApplication().runWriteAction(() -> {
-                        this.component.editor.getDocument().setText(_text);
-                    });
+                    ApplicationManager.getApplication().runWriteAction(() -> this.component.editor.getDocument().setText(_text));
                 } catch (UtilException e1) {
                     showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
@@ -135,7 +129,7 @@ public class MainFormFormatFunction {
         }
         for (int i = 0; i < part1.size(); i++) {
             String s = part1.get(i);
-            if (s == null || s.trim().length() == 0) {
+            if (s == null || s.trim().isEmpty()) {
                 continue;
             }
             StringBuilder stringBuilder = new StringBuilder();
@@ -186,7 +180,7 @@ public class MainFormFormatFunction {
     public void unFormat(ActionEvent e) {
         String text = this.component.editor.getDocument().getText();
         String tmp = text.replace("\t", "").replace("\r", "").replace("\n", "").trim();
-        if (tmp.length() < 1) {
+        if (tmp.isEmpty()) {
             return;
         }
         switch (tmp.substring(0, 1)) {
@@ -197,9 +191,7 @@ public class MainFormFormatFunction {
                     text = unFormatJson(text);
                     text = text.replace("\r\n", "\n");
                     final String _text = text;
-                    ApplicationManager.getApplication().runWriteAction(() -> {
-                        this.component.editor.getDocument().setText(_text);
-                    });
+                    ApplicationManager.getApplication().runWriteAction(() -> this.component.editor.getDocument().setText(_text));
                 } catch (JSONException e1) {
                     showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
@@ -211,9 +203,7 @@ public class MainFormFormatFunction {
                     text = unFormatJson(text);
                     text = text.replace("\r\n", "\n");
                     final String _text = text;
-                    ApplicationManager.getApplication().runWriteAction(() -> {
-                        this.component.editor.getDocument().setText(_text);
-                    });
+                    ApplicationManager.getApplication().runWriteAction(() -> this.component.editor.getDocument().setText(_text));
                 } catch (JSONException e1) {
                     showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }
@@ -225,9 +215,7 @@ public class MainFormFormatFunction {
                     text = unFormatXml(text);
                     text = text.replace("\r\n", "\n");
                     final String _text = text;
-                    ApplicationManager.getApplication().runWriteAction(() -> {
-                        this.component.editor.getDocument().setText(_text);
-                    });
+                    ApplicationManager.getApplication().runWriteAction(() -> this.component.editor.getDocument().setText(_text));
                 } catch (UtilException e1) {
                     showErrorHint(MessageUtil.getMessage("format.tip.wrong.document", e1.getLocalizedMessage()));
                 }

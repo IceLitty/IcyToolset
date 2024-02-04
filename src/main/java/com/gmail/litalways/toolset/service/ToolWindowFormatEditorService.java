@@ -4,6 +4,8 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.Project;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author IceRain
@@ -13,18 +15,12 @@ import com.intellij.openapi.project.Project;
 public final class ToolWindowFormatEditorService {
 
     private final Project project;
+    @Setter
+    @Getter
     private EditorEx editor;
 
     public ToolWindowFormatEditorService(Project project) {
         this.project = project;
-    }
-
-    public EditorEx getEditor() {
-        return editor;
-    }
-
-    public void setEditor(EditorEx editor) {
-        this.editor = editor;
     }
 
     public void disposed() {

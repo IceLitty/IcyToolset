@@ -1,5 +1,8 @@
 package com.gmail.litalways.toolset.util;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,10 +15,17 @@ import java.util.function.Consumer;
  */
 public class FileSplitUtil {
 
+    @Setter
     boolean splitByLineBreaker = true;
     long partNo;
+    @Setter
+    @Getter
     long splitLength;
+    @Setter
+    @Getter
     File file;
+    @Setter
+    @Getter
     Integer readCacheSize = 1024;
     final List<Long> readBytes = new ArrayList<>();
     final Consumer<String> log;
@@ -32,7 +42,7 @@ public class FileSplitUtil {
                 suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
             } catch (Exception ignored) {
             }
-            String suffixStr = suffix == null || suffix.trim().length() == 0 ? "" : "." + suffix;
+            String suffixStr = suffix == null || suffix.trim().isEmpty() ? "" : "." + suffix;
             File outFile = new File(file.getParent(), file.getName() + "." + new BigDecimal(String.valueOf(partNo)).toPlainString() + suffixStr);
             readPart(file, outFile, true);
             partNo++;
@@ -135,34 +145,6 @@ public class FileSplitUtil {
             return false;
         }
         return true;
-    }
-
-    public void setSplitByLineBreaker(boolean splitByLineBreaker) {
-        this.splitByLineBreaker = splitByLineBreaker;
-    }
-
-    public long getSplitLength() {
-        return splitLength;
-    }
-
-    public void setSplitLength(long splitLength) {
-        this.splitLength = splitLength;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public Integer getReadCacheSize() {
-        return readCacheSize;
-    }
-
-    public void setReadCacheSize(Integer readCacheSize) {
-        this.readCacheSize = readCacheSize;
     }
 
 }
