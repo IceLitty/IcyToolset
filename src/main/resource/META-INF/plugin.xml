@@ -188,7 +188,10 @@
   <actions>
     <!-- 用于试验菜单功能 -->
 <!--    <group id="com.gmail.litalways.toolset.actions.simple" popup="true" icon="AllIcons.General.ExternalTools">-->
+<!--      &lt;!&ndash; 组ID https://centic9.github.io/IntelliJ-Action-IDs/ &ndash;&gt;-->
 <!--      <add-to-group group-id="ToolsMenu" anchor="last" />-->
+<!--      &lt;!&ndash; 快捷键 https://github.com/JetBrains/intellij-community/blob/master/platform/platform-resources/src/keymaps/%24default.xml &ndash;&gt;-->
+<!--      <keyboard-shortcut keymap="$default" first-keystroke="control alt ENTER" />-->
 <!--      <action id="com.gmail.litalways.toolset.actions.simple.simple" class="com.gmail.litalways.toolset.action.SimpleAction" />-->
 <!--    </group>-->
     <!-- Alt+Insert 生成菜单添加Setter生成功能 -->
@@ -200,6 +203,13 @@
     <action id="com.gmail.litalways.toolset.action.find.by.bean.copy"
             class="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanAction">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>
+    </action>
+    <!-- 用于提供脚本执行Editor快捷键执行的功能 -->
+    <action id="com.gmail.litalways.toolset.editor.script.run" icon="AllIcons.Actions.RunAll"
+            class="com.gmail.litalways.toolset.action.EditorScriptRunAction">
+<!--      <add-to-group group-id="EditorPopupMenu" anchor="first" />-->
+      <add-to-group group-id="EditorGutterPopupMenu" anchor="first" />
+      <keyboard-shortcut keymap="$default" first-keystroke="control ENTER" />
     </action>
   </actions>
 

@@ -69,10 +69,18 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.11.0'
     // https://mvnrepository.com/artifact/cn.hutool/hutool-all
     implementation 'cn.hutool:hutool-all:5.8.25'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    // 二维码工具类
     // https://mvnrepository.com/artifact/com.google.zxing/core
-    implementation 'com.google.zxing:core:3.5.2'
+    implementation 'com.google.zxing:core:3.5.3'
     // https://mvnrepository.com/artifact/com.google.zxing/javase
-    implementation 'com.google.zxing:javase:3.5.2'
+    implementation 'com.google.zxing:javase:3.5.3'
+    // 脚本引擎
     // jdk15移除了nashorn引擎，从而不支持用java直接运行js
     // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
     implementation 'org.openjdk.nashorn:nashorn-core:15.4'
@@ -81,28 +89,23 @@ dependencies {
     // https://mvnrepository.com/artifact/org.luaj/luaj-jse
     implementation 'org.luaj:luaj-jse:3.0.1'
     // https://mvnrepository.com/artifact/org.apache.groovy/groovy-all
-    implementation 'org.apache.groovy:groovy-all:4.0.17'
+    implementation 'org.apache.groovy:groovy-all:4.0.18'
 //    // https://mvnrepository.com/artifact/ch.obermuhlner/jshell-scriptengine
 //    implementation 'ch.obermuhlner:jshell-scriptengine:1.1.0'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    // JWT加解密
     // https://mvnrepository.com/artifact/com.auth0/java-jwt
     implementation 'com.auth0:java-jwt:4.4.0'
 //    // https://mvnrepository.com/artifact/com.auth0/jwks-rsa
 //    implementation 'com.auth0:jwks-rsa:0.22.1'
     // https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt
     implementation 'com.nimbusds:nimbus-jose-jwt:9.37.3'
-    // 解决 gradle 使用 lombok 的问题
+    // lombok
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
-    // 单元测试
+    // junit
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine

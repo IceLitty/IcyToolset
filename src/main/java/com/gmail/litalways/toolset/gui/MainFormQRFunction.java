@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -193,16 +194,14 @@ public class MainFormQRFunction {
         this.component.checkLogo.setSelected(false);
     }
 
-    private String getCharset() {
+    private Charset getCharset() {
         int encodingModelIndex = this.component.selectZxingEncoding.getSelectedIndex();
         Object selectedObjects = this.component.selectZxingEncoding.getModel().getSelectedItem();
-        String charset;
         if (encodingModelIndex == 0) {
-            charset = System.getProperty("file.encoding");
+            return Charset.defaultCharset();
         } else {
-            charset = (String) selectedObjects;
+            return Charset.forName((String) selectedObjects);
         }
-        return charset;
     }
 
     private void encode() {

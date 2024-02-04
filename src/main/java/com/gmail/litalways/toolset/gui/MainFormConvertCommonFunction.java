@@ -21,6 +21,7 @@ import java.awt.event.FocusListener;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -137,25 +138,25 @@ public class MainFormConvertCommonFunction {
     }
 
     private void redo() {
-        if (this.lastCommandIsEncode.get()) {
-            flagCanDecode.set(false);
-            encode();
-        } else {
-            flagCanEncode.set(false);
-            decode();
+        if (this.component.checkConvertCommonAuto.isSelected()) {
+            if (this.lastCommandIsEncode.get()) {
+                flagCanDecode.set(false);
+                encode();
+            } else {
+                flagCanEncode.set(false);
+                decode();
+            }
         }
     }
 
-    private String getCharset() {
+    private Charset getCharset() throws UnsupportedEncodingException {
         int encodingModelIndex = this.component.selectConvertCommonCharset.getSelectedIndex();
         Object selectedObjects = this.component.selectConvertCommonCharset.getModel().getSelectedItem();
-        String charset;
         if (encodingModelIndex == 0) {
-            charset = System.getProperty("file.encoding");
+            return Charset.defaultCharset();
         } else {
-            charset = (String) selectedObjects;
+            return Charset.forName((String) selectedObjects);
         }
-        return charset;
     }
 
     private void autoEncode() {
@@ -175,7 +176,7 @@ public class MainFormConvertCommonFunction {
 
     private void encode() {
         String decoded = this.component.textareaConvertCommonDecoded.getText();
-        if (decoded == null || decoded.trim().length() == 0) {
+        if (decoded == null || decoded.trim().isEmpty()) {
             return;
         }
         if (this.component.checkConvertCommonLine.isSelected()) {
@@ -207,7 +208,7 @@ public class MainFormConvertCommonFunction {
     }
 
     private String encode(String decoded) throws UnsupportedEncodingException, ParseException {
-        if (decoded == null || decoded.trim().length() == 0) {
+        if (decoded == null || decoded.trim().isEmpty()) {
             return "";
         }
         if (this.component.radioConvertCommonBase64.isSelected()) {
@@ -301,7 +302,7 @@ public class MainFormConvertCommonFunction {
 
     private void decode() {
         String encoded = this.component.textareaConvertCommonEncoded.getText();
-        if (encoded == null || encoded.trim().length() == 0) {
+        if (encoded == null || encoded.trim().isEmpty()) {
             return;
         }
         if (this.component.checkConvertCommonLine.isSelected()) {
@@ -333,7 +334,7 @@ public class MainFormConvertCommonFunction {
     }
 
     private String decode(String encoded) throws UnsupportedEncodingException {
-        if (encoded == null || encoded.trim().length() == 0) {
+        if (encoded == null || encoded.trim().isEmpty()) {
             return "";
         }
         if (this.component.radioConvertCommonBase64.isSelected()) {

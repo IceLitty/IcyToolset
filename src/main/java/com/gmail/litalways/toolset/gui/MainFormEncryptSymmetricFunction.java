@@ -12,6 +12,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEParameterSpec;
 import java.awt.event.ActionEvent;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -78,16 +79,14 @@ public class MainFormEncryptSymmetricFunction {
         }
     }
 
-    private String getCharset() {
+    private Charset getCharset() throws UnsupportedEncodingException {
         int encodingModelIndex = this.component.selectEncryptSymmetricEncoding.getSelectedIndex();
         Object selectedObjects = this.component.selectEncryptSymmetricEncoding.getModel().getSelectedItem();
-        String charset;
         if (encodingModelIndex == 0) {
-            charset = System.getProperty("file.encoding");
+            return Charset.defaultCharset();
         } else {
-            charset = (String) selectedObjects;
+            return Charset.forName((String) selectedObjects);
         }
-        return charset;
     }
 
     private String func(boolean isEncrypt, String type, String modeStr, int paddingIndex, String keyStr, String ivStr, String saltStr, String sourceStr, String outputType) throws UnsupportedEncodingException {
@@ -123,7 +122,7 @@ public class MainFormEncryptSymmetricFunction {
         };
         byte[] key = keyStr.getBytes(getCharset());
         byte[] iv = null;
-        if (ivStr != null && ivStr.trim().length() > 0) {
+        if (ivStr != null && !ivStr.trim().isEmpty()) {
             iv = ivStr.getBytes(getCharset());
         }
         SymmetricCrypto crypto;

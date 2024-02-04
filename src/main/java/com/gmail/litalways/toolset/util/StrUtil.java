@@ -1,6 +1,7 @@
 package com.gmail.litalways.toolset.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -29,7 +30,7 @@ public class StrUtil {
     }
 
     // Byte String to Hex solution from https://stackoverflow.com/a/9855338
-    public static String bytesToHex(byte[] bytes, String charset) throws UnsupportedEncodingException {
+    public static String bytesToHex(byte[] bytes, Charset charset) throws UnsupportedEncodingException {
         byte[] hexChars = new byte[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;

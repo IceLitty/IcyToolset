@@ -22,5 +22,7 @@ public class KeyConstant {
     public static final String CONFIG_STATE_KEY_SETTINGS = "com.gmail.litalways.toolset.settings";
     public static final String TOOL_WINDOW_STATE_FILENAME = "IcyToolset.xml";
     public static final String TOOL_WINDOW_KEY_SCRIPT = "com.gmail.litalways.toolset.script";
+    // 快捷键ActionId
+    public static final String ACTION_SCRIPT_EDITOR_SHORTCUT = "com.gmail.litalways.toolset.editor.script.run";
 
 }

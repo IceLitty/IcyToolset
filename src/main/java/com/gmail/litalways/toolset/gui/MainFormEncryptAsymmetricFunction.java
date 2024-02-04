@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.event.ActionEvent;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.util.Base64;
@@ -185,16 +186,14 @@ public class MainFormEncryptAsymmetricFunction {
         });
     }
 
-    private String getCharset() {
+    private Charset getCharset() throws UnsupportedEncodingException {
         int encodingModelIndex = this.component.selectEncryptAsymmetricEncoding.getSelectedIndex();
         Object selectedObjects = this.component.selectEncryptAsymmetricEncoding.getModel().getSelectedItem();
-        String charset;
         if (encodingModelIndex == 0) {
-            charset = System.getProperty("file.encoding");
+            return Charset.defaultCharset();
         } else {
-            charset = (String) selectedObjects;
+            return Charset.forName((String) selectedObjects);
         }
-        return charset;
     }
 
     private String encryptWithPublicKey(String source) throws UnsupportedEncodingException {

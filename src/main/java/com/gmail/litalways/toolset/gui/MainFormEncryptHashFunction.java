@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Base64;
 
 /**
@@ -99,15 +100,12 @@ public class MainFormEncryptHashFunction {
             public void insertUpdate(DocumentEvent e) {
                 doHash(1);
             }
-
             @Override
             public void removeUpdate(DocumentEvent e) {
                 doHash(1);
             }
-
             @Override
-            public void changedUpdate(DocumentEvent e) {
-            }
+            public void changedUpdate(DocumentEvent e) {}
         });
         this.component.buttonEncryptHashFile.addActionListener(e -> this.doHash(0));
         this.component.buttonEncryptHashText.addActionListener(e -> this.doHash(1));
@@ -144,7 +142,7 @@ public class MainFormEncryptHashFunction {
 
     private DigestAssert getAssertStr(VirtualFile source) {
         String assertStr = this.component.textEncryptHashAssert.getText();
-        if (assertStr != null && assertStr.trim().length() > 0) {
+        if (assertStr != null && !assertStr.trim().isEmpty()) {
             return new DigestAssert(assertStr, null, null);
         }
         if (source == null || this.toSelectAssets.length == 0) {
@@ -212,13 +210,13 @@ public class MainFormEncryptHashFunction {
     private void doHash(int sourceType) {
         this.lastFunction = sourceType;
         String type = (String) this.component.selectEncryptHashType.getModel().getSelectedItem();
-        if (type == null || type.trim().length() == 0) {
+        if (type == null || type.trim().isEmpty()) {
             NotificationUtil.error(MessageUtil.getMessage("encrypt.hash.tip.digest.is.null"));
             return;
         }
         String keyStr = this.component.textEncryptHashKey.getText();
         byte[] key = null;
-        if (keyStr != null && keyStr.trim().length() > 0) {
+        if (keyStr != null && !keyStr.trim().isEmpty()) {
             try {
                 key = Base64.getDecoder().decode(keyStr);
             } catch (Exception ex) {
@@ -313,16 +311,14 @@ public class MainFormEncryptHashFunction {
         }
     }
 
-    private String getCharset() {
+    private Charset getCharset() throws UnsupportedEncodingException {
         int encodingModelIndex = this.component.selectEncryptHashEncoding.getSelectedIndex();
         Object selectedObjects = this.component.selectEncryptHashEncoding.getModel().getSelectedItem();
-        String charset;
         if (encodingModelIndex == 0) {
-            charset = System.getProperty("file.encoding");
+            return Charset.defaultCharset();
         } else {
-            charset = (String) selectedObjects;
+            return Charset.forName((String) selectedObjects);
         }
-        return charset;
     }
 
     private DigestAssertResult hash(String type, byte[] key, String source, boolean sourceIsFile, DigestAssert assertStr) throws UnsupportedEncodingException {
@@ -344,7 +340,7 @@ public class MainFormEncryptHashFunction {
         if ("Base64".equalsIgnoreCase(outputType)) {
             resultHex = new String(Base64.getEncoder().encode(HexUtil.decodeHex(resultHex)), getCharset());
         }
-        if (assertStr != null && assertStr.getAssertStr().trim().length() > 0) {
+        if (assertStr != null && !assertStr.getAssertStr().trim().isEmpty()) {
             if (assertStr.getAssertStr().equalsIgnoreCase(resultHex)) {
                 return new DigestAssertResult(resultHex, true);
             }

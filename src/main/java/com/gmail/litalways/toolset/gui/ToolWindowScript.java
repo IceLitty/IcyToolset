@@ -108,6 +108,7 @@ public class ToolWindowScript {
     @SuppressWarnings("CommentedOutCode")
     private void createUIComponents() {
         ToolWindowScriptEditorService toolWindowScriptEditorService = this.project.getService(ToolWindowScriptEditorService.class);
+        toolWindowScriptEditorService.setScriptUi(this);
         // 生成空文本默认编辑器
         this.textareaScriptSourceEditor = toolWindowScriptEditorService.newEditor("dummy.txt", PlainTextFileType.INSTANCE, "");
         this.textareaScriptSource = this.textareaScriptSourceEditor.getComponent();
@@ -320,7 +321,7 @@ public class ToolWindowScript {
         this.textareaScriptSourceEditor.getScrollPane().getHorizontalScrollBar().addAdjustmentListener(this.syncListener);
     }
 
-    void eval() {
+    public void eval() {
         try {
             if (this.injectedNashorn.get() != 2) {
                 return;
