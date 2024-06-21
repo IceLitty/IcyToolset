@@ -16,6 +16,10 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
 
+//runIde {
+//    jvmArgs = ["-Dfile.encoding=UTF-8", "--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED", "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"]
+//}
+
 sourceSets {
     main {
         java {

@@ -42,7 +42,7 @@ public class GenerateSetterAction extends AnAction {
         // 获取光标坐标（光标右侧字符）
         int offset = editor.getCaretModel().getOffset();
         PsiElement psiElement = file.findElementAt(offset);
-        // 选择在标识符末尾的优化
+        // 光标在标识符末尾的优化
         if (psiElement != null && !(psiElement instanceof PsiIdentifier) && psiElement.getPrevSibling() instanceof PsiIdentifier && offset != 0) {
             offset--;
             psiElement = file.findElementAt(offset);
@@ -75,7 +75,7 @@ public class GenerateSetterAction extends AnAction {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.cannot.get.class.type"));
             return;
         }
-        // 不处理Map类型
+        // 不处理Map类型 TODO 读取值来源的psi，仅不处理都是map的情况
         if (Map.class.getName().equals(psiTargetClass.getQualifiedName())) {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.not.support.map"));
             return;
@@ -113,6 +113,8 @@ public class GenerateSetterAction extends AnAction {
         if (sourceVarName == null || sourceVarName.trim().isEmpty()) {
             return;
         }
+        // TODO 获取Getter源的变量引用类型
+
         // 获取需要生成Setter的变量名
         String targetElementName = psiElement.getText().trim();
         // 获取缩进
