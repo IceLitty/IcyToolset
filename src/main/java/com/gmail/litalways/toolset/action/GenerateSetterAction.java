@@ -194,6 +194,12 @@ public class GenerateSetterAction extends AnAction {
         e.getPresentation().setEnabledAndVisible(true);
     }
 
+//    private static PsiElement getPsiElementByVariableName(String variableName, @Nullable PsiElement beforeThisElement) {
+//        if (beforeThisElement == null) {
+//            return null;
+//        }
+//    }
+
     /**
      * 查找该语句的换行标识符
      *
@@ -287,10 +293,16 @@ public class GenerateSetterAction extends AnAction {
         if (psiElement == null) {
             return null;
         }
+//        Object a;
+//        Object b;
+//        if (a == b) {} // TODO 拿不到？
+//        if (a.a() == b) {} // TODO 拿不到？
+//        a = b; // TODO 拿不到a？且拿b会因getFirstChild拿到a
         if (psiElement instanceof PsiLocalVariable p) {
+            // 直接赋值 var a = b; / try (Object a = b();) {}
             return p.getType();
         } else if (psiElement instanceof PsiReferenceExpression && psiElement.getFirstChild() instanceof PsiReferenceExpression p) {
-            // 引用表达式取头部引用对象的Type
+            // 引用表达式取头部引用对象的Type if (a == b) {} / Object a; a = b; / NOT test(a, b);
             return p.getType();
         } else if (psiElement instanceof PsiJavaCodeReferenceElement pre) {
             if (pre.getParent() instanceof PsiTypeElement pte) {
@@ -308,6 +320,7 @@ public class GenerateSetterAction extends AnAction {
                 }
             }
         } else if (psiElement instanceof PsiParameter p) {
+            // 方法参数 public void someMethod(Object targetObj) {} / if (a instanceof Object targetB) {}
             return p.getType();
         }
         return null;
