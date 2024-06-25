@@ -16,6 +16,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.java.PsiIdentifierImpl;
 import com.intellij.psi.util.PsiTreeUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,7 @@ import java.util.Map;
  * @author IceRain
  * @since 2023/04/17
  */
+@Slf4j
 public class GenerateSetterAction extends AnAction {
 
     @Override
@@ -75,16 +77,54 @@ public class GenerateSetterAction extends AnAction {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.cannot.get.class.type"));
             return;
         }
-        // 不处理Map类型 TODO 读取值来源的psi，仅不处理都是map的情况
-        if (Map.class.getName().equals(psiTargetClass.getQualifiedName())) {
+        // 针对Map类型做特殊判断，不处理数据来源和去向均为Map的情况
+        boolean targetIsMap = Map.class.getName().equals(psiTargetClass.getQualifiedName());
+        // 提示用户输入Getter来源
+        String sourceVarName = Messages.showInputDialog(
+                MessageUtil.getMessage("action.generate.setter.input.variable.name.of.source.object"),
+                KeyConstant.NOTIFICATION_GROUP_KEY, Messages.getQuestionIcon());
+        if (sourceVarName == null || sourceVarName.trim().isEmpty()) {
+            return;
+        }
+        // 获取Getter源的变量引用类型
+        boolean sourceIsMap = true;
+        PsiClass psiSourceClass = null;
+        PsiElement sourceElement = getPsiElementByVariableName(sourceVarName, psiElement);
+        if (sourceElement != null) {
+            // 能获取到数据来源对象，就判断是不是Map
+            PsiType sourceTargetType = getPsiType(sourceElement);
+            if (sourceTargetType instanceof PsiClassType sourcePct) {
+                psiSourceClass = sourcePct.resolve();
+                if (psiSourceClass != null) {
+                    String sourceClassName = psiSourceClass.getQualifiedName();
+                    if (Map.class.getName().equals(sourceClassName)) {
+                        if (targetIsMap) {
+                            NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.not.support.map"));
+                            return;
+                        }
+                    } else {
+                        sourceIsMap = false;
+                    }
+                }
+            }
+        }
+        // 来源元素若获取不到，默认为vo，但不允许目标元素是map类型,因为要获取字段
+        if (targetIsMap && sourceIsMap) {
             NotificationUtil.warning(MessageUtil.getMessage("action.generate.setter.not.support.map"));
             return;
         }
-        PsiMethod[] psiTargetClassAllMethods = psiTargetClass.getAllMethods();
+        // 准备提示用户选择哪些字段需要生成Setter
+        PsiMethod[] psiTargetClassAllMethods = (targetIsMap ? psiSourceClass : psiTargetClass).getAllMethods();
         List<PsiMethodMember> psiTargetMethodsList = new ArrayList<>();
         for (PsiMethod psiMethod : psiTargetClassAllMethods) {
-            if (!psiMethod.getName().startsWith("set")) {
-                continue;
+            if (targetIsMap) {
+                if (!psiMethod.getName().startsWith("get")) {
+                    continue;
+                }
+            } else {
+                if (!psiMethod.getName().startsWith("set")) {
+                    continue;
+                }
             }
             psiTargetMethodsList.add(new PsiMethodMember(psiMethod));
         }
@@ -106,15 +146,6 @@ public class GenerateSetterAction extends AnAction {
         if (selectedElements == null || selectedElements.isEmpty()) {
             return;
         }
-        // 提示用户输入Getter来源
-        String sourceVarName = Messages.showInputDialog(
-                MessageUtil.getMessage("action.generate.setter.input.variable.name.of.source.object"),
-                KeyConstant.NOTIFICATION_GROUP_KEY, Messages.getQuestionIcon());
-        if (sourceVarName == null || sourceVarName.trim().isEmpty()) {
-            return;
-        }
-        // TODO 获取Getter源的变量引用类型
-
         // 获取需要生成Setter的变量名
         String targetElementName = psiElement.getText().trim();
         // 获取缩进
@@ -134,10 +165,68 @@ public class GenerateSetterAction extends AnAction {
 //                        .trim();
 //                builder.append(indentWhitespace).append("// ").append(comment).append("\n");
 //            }
-            String setMethodName = psiMethod.getName();
-            String getMethodName = "g" + setMethodName.substring(1);
-            builder.append(indentWhitespace).append(targetElementName).append(".").append(setMethodName).append("(")
-                    .append(sourceVarName).append(".").append(getMethodName).append("());\n");
+            if (targetIsMap) {
+                // 目标是Map，赋值表达式
+                String getMethodName = psiMethod.getName();
+                String fieldName = getMethodName.substring(3);
+                fieldName = fieldName.length() > 1 ? fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1) : fieldName.toLowerCase();
+                builder.append(indentWhitespace).append(targetElementName).append(".put(\"").append(fieldName).append("\", ")
+                        .append(sourceVarName).append(".").append(getMethodName).append("());\n");
+            } else if (sourceIsMap && psiSourceClass != null && Map.class.getName().equals(psiSourceClass.getQualifiedName())) {
+                // 来源确定是Map
+                String setMethodName = psiMethod.getName();
+                String fieldName = setMethodName.substring(3);
+                fieldName = fieldName.length() > 1 ? fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1) : fieldName.toLowerCase();
+                String useValueOfOrParse = null;
+                String fieldCast = "";
+                PsiParameter[] parameters = psiMethod.getParameterList().getParameters();
+                if (parameters.length > 0) {
+                    if (parameters[0].getType() instanceof PsiPrimitiveType methodPt) {
+                        // 基础类型直接强转
+                        fieldCast = "(" + methodPt.getName() + ") ";
+                    } else if (parameters[0].getType() instanceof PsiClassType methodPct) {
+                        // 除Character外的包装类型和String做解析，其他强转
+                        PsiClass methodClass = methodPct.resolve();
+                        if (methodClass != null) {
+                            String qualifiedName = methodClass.getQualifiedName();
+                            if (String.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : String.valueOf(${get})";
+                            } else if (Boolean.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : Boolean.parseBoolean(String.valueOf(${get}))";
+                            } else if (Short.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : Short.parseShort(String.valueOf(${get}))";
+                            } else if (Integer.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : Integer.parseInt(String.valueOf(${get}))";
+                            } else if (Long.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : Long.parseLong(String.valueOf(${get}))";
+                            } else if (Float.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : Float.parseFloat(String.valueOf(${get}))";
+                            } else if (Double.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : Double.parseDouble(String.valueOf(${get}))";
+                            } else if (Byte.class.getName().equals(qualifiedName)) {
+                                useValueOfOrParse = "${get} == null ? null : Byte.parseByte(String.valueOf(${get}))";
+                            } else {
+                                fieldCast = "(" + methodPct.getPresentableText(false) + ") ";
+                            }
+                        }
+                    } else {
+                        // 其他类型，如数组
+                        fieldCast = "(" + parameters[0].getType().getPresentableText(false) + ") ";
+                    }
+                }
+                builder.append(indentWhitespace).append(targetElementName).append(".").append(setMethodName).append("(");
+                if (useValueOfOrParse != null) {
+                    builder.append(useValueOfOrParse.replace("${get}", sourceVarName + ".get(\"" + fieldName + "\")")).append(");\n");
+                } else {
+                    builder.append(fieldCast).append(sourceVarName).append(".get(\"").append(fieldName).append("\"));\n");
+                }
+            } else {
+                // 来源不确定或没有Map参与本次执行
+                String setMethodName = psiMethod.getName();
+                String getMethodName = "g" + setMethodName.substring(1);
+                builder.append(indentWhitespace).append(targetElementName).append(".").append(setMethodName).append("(")
+                        .append(sourceVarName).append(".").append(getMethodName).append("());\n");
+            }
         }
         String builderString = builder.toString();
         if (builderString.endsWith("\n")) {
@@ -194,11 +283,81 @@ public class GenerateSetterAction extends AnAction {
         e.getPresentation().setEnabledAndVisible(true);
     }
 
-//    private static PsiElement getPsiElementByVariableName(String variableName, @Nullable PsiElement beforeThisElement) {
-//        if (beforeThisElement == null) {
-//            return null;
-//        }
-//    }
+    /**
+     * 向上寻找指定实例名的Psi对象
+     *
+     * @param variableName      实例名
+     * @param beforeThisElement 开始寻找的Psi节点
+     * @return 寻找到的Psi对象
+     */
+    private static @Nullable PsiElement getPsiElementByVariableName(@NotNull String variableName, @Nullable PsiElement beforeThisElement) {
+        if (beforeThisElement == null) {
+            return null;
+        }
+        PsiElement nowElement = beforeThisElement;
+        // 需要向上找
+        boolean needUp = true;
+        do {
+            if (needUp) {
+                PsiElement prevSibling = nowElement.getPrevSibling();
+                if (prevSibling != null) {
+                    nowElement = prevSibling;
+                } else {
+                    PsiElement parent = nowElement.getParent();
+                    while (true) {
+                        if (parent == null) {
+                            break;
+                        }
+                        PsiElement parentPrev = parent.getPrevSibling();
+                        if (parentPrev == null) {
+                            parent = parent.getParent();
+                        } else {
+                            parent = parentPrev;
+                            break;
+                        }
+                    }
+                    if (parent != null) {
+                        nowElement = parent;
+                    } else {
+                        break;
+                    }
+                }
+                needUp = false;
+            }
+            if (nowElement instanceof PsiBlockStatement) {
+                // 特例：如果是代码块，则跳过
+                needUp = true;
+            } else if (checkPsiElementName(variableName, nowElement)) {
+                // 检查是符合条件的对象，直接返回
+                return nowElement;
+            } else {
+                // 其他情况
+                PsiElement[] children = nowElement.getChildren();
+                if (children.length > 0) {
+                    // 从children的末尾开始循环判断
+                    nowElement = children[children.length - 1];
+                } else {
+                    needUp = true;
+                }
+            }
+        } while (!(nowElement instanceof PsiFile));
+        return nowElement;
+    }
+
+    /**
+     * 根据参数名判断Psi对象
+     *
+     * @param variableName 参数名
+     * @param node         当前需要判断的Psi对象
+     * @return 是否等于
+     */
+    private static boolean checkPsiElementName(@NotNull String variableName, PsiElement node) {
+        if (node instanceof PsiNamedElement v) {
+            String name = v.getName();
+            return variableName.equals(name);
+        }
+        return false;
+    }
 
     /**
      * 查找该语句的换行标识符
@@ -269,7 +428,7 @@ public class GenerateSetterAction extends AnAction {
         } else if (parent instanceof PsiMethod pm) {
             return pm.getBody();
         } else if (parent instanceof PsiExpression pe) {
-            // 表达式，取最外层表达式的最后元素
+            // 表达式，取最外层表达式的最后元素（目前对于if等表达式内写法会造成意外情况）
             if (pe.getParent() instanceof PsiExpression) {
                 return getInsertPointOfStatement(parent);
             } else {
@@ -293,16 +452,17 @@ public class GenerateSetterAction extends AnAction {
         if (psiElement == null) {
             return null;
         }
-//        Object a;
-//        Object b;
-//        if (a == b) {} // TODO 拿不到？
-//        if (a.a() == b) {} // TODO 拿不到？
-//        a = b; // TODO 拿不到a？且拿b会因getFirstChild拿到a
         if (psiElement instanceof PsiLocalVariable p) {
             // 直接赋值 var a = b; / try (Object a = b();) {}
             return p.getType();
         } else if (psiElement instanceof PsiReferenceExpression && psiElement.getFirstChild() instanceof PsiReferenceExpression p) {
-            // 引用表达式取头部引用对象的Type if (a == b) {} / Object a; a = b; / NOT test(a, b);
+            // 引用表达式取头部引用对象的Type
+            return p.getType();
+        } else if (psiElement instanceof PsiReferenceExpression p && psiElement.getFirstChild() instanceof PsiReferenceParameterList) {
+            // if (a == b) {} / Object a; a = b; / NOT test(a, b);
+            return p.getType();
+        } else if (psiElement instanceof PsiExpression p) {
+            // ?
             return p.getType();
         } else if (psiElement instanceof PsiJavaCodeReferenceElement pre) {
             if (pre.getParent() instanceof PsiTypeElement pte) {
