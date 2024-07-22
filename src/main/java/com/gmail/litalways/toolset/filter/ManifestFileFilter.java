@@ -5,18 +5,18 @@ import java.io.File;
 
 /**
  * @author IceRain
- * @since 2022/01/29
+ * @since 2024/07/22
  */
-public class PngFileFilter extends FileFilter {
+public class ManifestFileFilter extends FileFilter {
 
     @Override
     public boolean accept(File f) {
-        return f != null && f.isFile() && f.getName().toLowerCase().endsWith(".png");
+        return f != null && f.isFile() && "MANIFEST.MF".equals(f.getName());
     }
 
     @Override
     public String getDescription() {
-        return "*.png";
+        return "MANIFEST.MF";
     }
 
 }

@@ -42,7 +42,9 @@ public class ToolWindowEncrypt {
     JScrollPane scrollEncryptHashText;
     JTextArea textareaEncryptHashText;
     TextFieldWithBrowseButton fileEncryptHashFile;
+    JButton buttonEncryptHashManifest;
     JButton buttonEncryptHashOpenDirectory;
+    JTextField textEncryptHashPathNameFilter;
     JTextField textEncryptHashKey;
     JButton buttonEncryptHashGenerateKey;
     JScrollPane scrollEncryptHashResult;
