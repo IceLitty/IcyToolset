@@ -108,21 +108,21 @@ public class MainFormEncryptAsymmetricFunction {
             String publicKey = this.component.textEncryptAsymmetricPublicKey.getText();
             if (publicKey != null && !publicKey.trim().isEmpty()) {
                 try {
-                    pubKey = Base64.getDecoder().decode(publicKey);
-                    mode = 0;
-                } catch (Exception ignored) {
                     pubKey = HexUtil.decodeHex(publicKey);
                     mode = 1;
+                } catch (Exception ignored) {
+                    pubKey = Base64.getDecoder().decode(publicKey);
+                    mode = 0;
                 }
             }
             String privateKey = this.component.textEncryptAsymmetricPrivateKey.getText();
             if (privateKey != null && !privateKey.trim().isEmpty()) {
                 try {
-                    privKey = Base64.getDecoder().decode(privateKey);
-                    mode = mode == -1 ? 0 : mode;
-                } catch (Exception ignored) {
                     privKey = HexUtil.decodeHex(privateKey);
                     mode = mode == -1 ? 1 : mode;
+                } catch (Exception ignored) {
+                    privKey = Base64.getDecoder().decode(privateKey);
+                    mode = mode == -1 ? 0 : mode;
                 }
             }
             if (mode == 0) {
@@ -137,15 +137,16 @@ public class MainFormEncryptAsymmetricFunction {
                     privateKey = sm2.getDHex();
                 }
             } else if (mode == 1) {
-                // to Base64
-                if (publicKey != null && !publicKey.trim().isEmpty() && pubKey != null) {
-                    SM2 sm2 = new SM2(null, pubKey);
-                    publicKey = sm2.getPublicKeyBase64();
-                }
-                if (privateKey != null && !privateKey.trim().isEmpty() && privKey != null) {
-                    SM2 sm2 = new SM2(privKey, null);
-                    privateKey = sm2.getPrivateKeyBase64();
-                }
+                // TODO missing ECDomainParameters(curve, G, n, h, seed) can't be re-create
+//                // to Base64
+//                if (publicKey != null && !publicKey.trim().isEmpty() && pubKey != null) {
+//                    SM2 sm2 = new SM2(null, pubKey);
+//                    publicKey = sm2.getPublicKeyBase64();
+//                }
+//                if (privateKey != null && !privateKey.trim().isEmpty() && privKey != null) {
+//                    SM2 sm2 = new SM2(privKey, null);
+//                    privateKey = sm2.getPrivateKeyBase64();
+//                }
             }
             this.component.textEncryptAsymmetricPublicKey.setText(publicKey);
             this.component.textEncryptAsymmetricPrivateKey.setText(privateKey);
