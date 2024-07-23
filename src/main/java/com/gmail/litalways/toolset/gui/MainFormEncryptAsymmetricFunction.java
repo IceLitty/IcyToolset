@@ -1,8 +1,10 @@
 package com.gmail.litalways.toolset.gui;
 
+import cn.hutool.core.util.HexUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.AsymmetricCrypto;
 import cn.hutool.crypto.asymmetric.KeyType;
+import cn.hutool.crypto.asymmetric.SM2;
 import com.gmail.litalways.toolset.listener.ScrollbarSyncListener;
 import com.gmail.litalways.toolset.util.MessageUtil;
 import com.gmail.litalways.toolset.util.NotificationUtil;
@@ -43,6 +45,7 @@ public class MainFormEncryptAsymmetricFunction {
     public MainFormEncryptAsymmetricFunction(Project project, ToolWindowEncrypt component) {
         this.project = project;
         this.component = component;
+        this.component.buttonEncryptAsymmetricSwitchSm2KeyType.addActionListener(this::switchSm2KeyType);
         this.component.fileEncryptAsymmetricPublicKey.addActionListener(this::selectPublicKey);
         this.component.fileEncryptAsymmetricPrivateKey.addActionListener(this::selectPrivateKey);
         this.component.buttonEncryptAsymmetricGenerateKey.addActionListener(this::generateKey);
@@ -95,6 +98,60 @@ public class MainFormEncryptAsymmetricFunction {
         this.component.textareaEncryptAsymmetricDecrypted.setText("");
     }
 
+    private void switchSm2KeyType(ActionEvent e) {
+        String algorithm = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
+        if ("SM2".equals(algorithm)) {
+            // 0: Base64 -> Hex; 1: Hex -> Base64
+            int mode = -1;
+            byte[] pubKey = null;
+            byte[] privKey = null;
+            String publicKey = this.component.textEncryptAsymmetricPublicKey.getText();
+            if (publicKey != null && !publicKey.trim().isEmpty()) {
+                try {
+                    pubKey = Base64.getDecoder().decode(publicKey);
+                    mode = 0;
+                } catch (Exception ignored) {
+                    pubKey = HexUtil.decodeHex(publicKey);
+                    mode = 1;
+                }
+            }
+            String privateKey = this.component.textEncryptAsymmetricPrivateKey.getText();
+            if (privateKey != null && !privateKey.trim().isEmpty()) {
+                try {
+                    privKey = Base64.getDecoder().decode(privateKey);
+                    mode = mode == -1 ? 0 : mode;
+                } catch (Exception ignored) {
+                    privKey = HexUtil.decodeHex(privateKey);
+                    mode = mode == -1 ? 1 : mode;
+                }
+            }
+            if (mode == 0) {
+                // to Hex
+                if (publicKey != null && !publicKey.trim().isEmpty() && pubKey != null) {
+                    SM2 sm2 = new SM2(null, pubKey);
+                    byte[] q = sm2.getQ(false);
+                    publicKey = HexUtil.encodeHexStr(q);
+                }
+                if (privateKey != null && !privateKey.trim().isEmpty() && privKey != null) {
+                    SM2 sm2 = new SM2(privKey, null);
+                    privateKey = sm2.getDHex();
+                }
+            } else if (mode == 1) {
+                // to Base64
+                if (publicKey != null && !publicKey.trim().isEmpty() && pubKey != null) {
+                    SM2 sm2 = new SM2(null, pubKey);
+                    publicKey = sm2.getPublicKeyBase64();
+                }
+                if (privateKey != null && !privateKey.trim().isEmpty() && privKey != null) {
+                    SM2 sm2 = new SM2(privKey, null);
+                    privateKey = sm2.getPrivateKeyBase64();
+                }
+            }
+            this.component.textEncryptAsymmetricPublicKey.setText(publicKey);
+            this.component.textEncryptAsymmetricPrivateKey.setText(privateKey);
+        }
+    }
+
     private void selectPublicKey(ActionEvent e) {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, true, false, true, false);
         this.toSelectPublicKey = FileChooser.chooseFile(descriptor, null, this.toSelectPublicKey);
@@ -131,30 +188,32 @@ public class MainFormEncryptAsymmetricFunction {
 
     private void generateKey(ActionEvent e) {
         this.component.buttonEncryptAsymmetricGenerateKey.setEnabled(false);
-        if ((ActionEvent.SHIFT_MASK & e.getModifiers()) != 0) {
-            nowKeyPairGenLength = switch (nowKeyPairGenLength) {
-                case 1024 -> 2048;
-                case 2048 -> 4096;
-                case 4096, 8192 -> 8192;
-                default -> 1024;
-            };
-        } else if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
-            nowKeyPairGenLength = switch (nowKeyPairGenLength) {
-                case 8192 -> 4096;
-                case 4096 -> 2048;
-                default -> 1024;
-            };
-        } else if (nowKeyPairGenLength == -1) {
-            nowKeyPairGenLength = 1024;
-        }
-        this.component.buttonEncryptAsymmetricGenerateKey.setText(MessageUtil.getMessage("encrypt.asymmetric.button.generate.key.title") + " (" + nowKeyPairGenLength + ")");
         String algorithm = (String) this.component.selectEncryptAsymmetricType.getModel().getSelectedItem();
+        if (!"SM2".equals(algorithm)) {
+            if ((ActionEvent.SHIFT_MASK & e.getModifiers()) != 0) {
+                nowKeyPairGenLength = switch (nowKeyPairGenLength) {
+                    case 1024 -> 2048;
+                    case 2048 -> 4096;
+                    case 4096, 8192 -> 8192;
+                    default -> 1024;
+                };
+            } else if ((ActionEvent.CTRL_MASK & e.getModifiers()) != 0) {
+                nowKeyPairGenLength = switch (nowKeyPairGenLength) {
+                    case 8192 -> 4096;
+                    case 4096 -> 2048;
+                    default -> 1024;
+                };
+            } else if (nowKeyPairGenLength == -1) {
+                nowKeyPairGenLength = 1024;
+            }
+        }
+        this.component.buttonEncryptAsymmetricGenerateKey.setText(MessageUtil.getMessage("encrypt.asymmetric.button.generate.key.title") + " (" + ("SM2".equals(algorithm) ? 256 : nowKeyPairGenLength) + ")");
         ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("encrypt.asymmetric.tip.generate")) {
             @Override
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 KeyPair keyPair = null;
                 try {
-                    keyPair = SecureUtil.generateKeyPair(algorithm, nowKeyPairGenLength);
+                    keyPair = SecureUtil.generateKeyPair(algorithm, "SM2".equals(algorithm) ? 256 : nowKeyPairGenLength);
                 } catch (Exception ex) {
                     NotificationUtil.error(ex.getClass().getName(), ex.getLocalizedMessage());
                 } finally {

@@ -425,19 +425,6 @@
                           <toolTipText resource-bundle="applicationMessage" key="convert.base64.select.encoding.tooltip"/>
                         </properties>
                       </component>
-                      <component id="60cc" class="javax.swing.JComboBox" binding="selectEncryptAsymmetricType">
-                        <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <editable value="true"/>
-                          <model>
-                            <item value="RSA"/>
-                            <item value="SM2"/>
-                          </model>
-                          <toolTipText resource-bundle="applicationMessage" key="encrypt.asymmetric.select.mode.tooltip"/>
-                        </properties>
-                      </component>
                       <grid id="310bd" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
@@ -460,6 +447,38 @@
                             </constraints>
                             <properties>
                               <text resource-bundle="applicationMessage" key="encrypt.asymmetric.button.clean.title"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <grid id="d58d4" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="60cc" class="javax.swing.JComboBox" binding="selectEncryptAsymmetricType">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <editable value="true"/>
+                              <model>
+                                <item value="RSA"/>
+                                <item value="SM2"/>
+                              </model>
+                              <toolTipText resource-bundle="applicationMessage" key="encrypt.asymmetric.select.mode.tooltip"/>
+                            </properties>
+                          </component>
+                          <component id="bd5de" class="javax.swing.JButton" binding="buttonEncryptAsymmetricSwitchSm2KeyType">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text resource-bundle="applicationMessage" key="encrypt.asymmetric.button.switch.sm2.title"/>
+                              <toolTipText resource-bundle="applicationMessage" key="encrypt.asymmetric.button.switch.sm2.tooltip"/>
                             </properties>
                           </component>
                         </children>

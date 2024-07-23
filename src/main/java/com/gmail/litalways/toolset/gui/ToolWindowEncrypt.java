@@ -56,6 +56,7 @@ public class ToolWindowEncrypt {
     TextFieldWithBrowseButton fileEncryptAsymmetricPublicKey;
     JTextField textEncryptAsymmetricPrivateKey;
     TextFieldWithBrowseButton fileEncryptAsymmetricPrivateKey;
+    JButton buttonEncryptAsymmetricSwitchSm2KeyType;
     JButton buttonEncryptAsymmetricEncryptWithPublicKey;
     JButton buttonEncryptAsymmetricDecryptWithPrivateKey;
     JButton buttonEncryptAsymmetricEncryptWithPrivateKey;
