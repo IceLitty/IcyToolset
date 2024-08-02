@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="IcyToolsetAnalyzeDependenciesReportTable" pageWidth="555" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="573ede82-4b13-4425-b983-8e73e30301d8">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Font" isDefault="true" fontName="宋体"/>
+	<style name="BorderedFont" style="Font">
+		<pen lineColor="#050505"/>
+		<box>
+			<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="5" rightIndent="5"/>
+	</style>
+	<parameter name="dependencyTitle" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Dependency ___:"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dependencyErrorTip" class="java.lang.String"/>
+	<parameter name="dependencyColFilePath" class="java.lang.String">
+		<defaultValueExpression><![CDATA["File path"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dependencyColMajor" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Class major"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dependencyColSupportStatus" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Support status"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="dependencyRowFilePath" class="java.lang.String"/>
+	<field name="dependencyRowMajor" class="java.lang.String"/>
+	<field name="dependencyRowSupportStatus" class="java.lang.String"/>
+	<field name="dependencyRowStatusColor" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="50">
+			<textField>
+				<reportElement style="BorderedFont" x="0" y="0" width="555" height="30" uuid="c5f564b6-d9a8-4d42-80da-87994ca79fc2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dependencyTitle}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="BorderedFont" x="0" y="30" width="555" height="20" isRemoveLineWhenBlank="true" forecolor="#FF0C08" uuid="85c815f3-fd96-4eb6-9a46-ca20c607e575"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dependencyErrorTip}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30">
+			<textField>
+				<reportElement style="BorderedFont" x="0" y="0" width="365" height="30" uuid="686f8f31-a8be-4fce-97a3-ec47c3c3cd46"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dependencyColFilePath}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="BorderedFont" x="365" y="0" width="95" height="30" uuid="9a7998c3-9ef9-49c1-bcdb-5cfdd808b361"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dependencyColMajor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="BorderedFont" x="460" y="0" width="95" height="30" uuid="21dc6143-d10e-44a6-8f18-c9cdfebc5ec5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dependencyColSupportStatus}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField>
+				<reportElement style="BorderedFont" x="0" y="0" width="365" height="30" uuid="927b8c32-bf25-4fd1-80af-44f8b23ff36d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cf8b957d-f1c6-49e1-88db-176b08c794f6"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dependencyRowFilePath}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="BorderedFont" x="365" y="0" width="95" height="30" uuid="76d47b0c-da50-4cad-890e-c7d34c6ffb04">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cf8b957d-f1c6-49e1-88db-176b08c794f6"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dependencyRowMajor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="BorderedFont" x="460" y="0" width="95" height="30" uuid="c759c50e-4316-4018-921c-6356bd2af0cf">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cf8b957d-f1c6-49e1-88db-176b08c794f6"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dependencyRowStatusColor} == null ? $F{dependencyRowSupportStatus} : ("<style forecolor='"+$F{dependencyRowStatusColor}+"'>"+$F{dependencyRowSupportStatus}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

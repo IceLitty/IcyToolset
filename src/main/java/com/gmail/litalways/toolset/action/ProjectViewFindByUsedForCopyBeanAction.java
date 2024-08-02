@@ -35,6 +35,18 @@ import java.util.*;
 public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
 
     @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+        boolean visible = psiFile != null && !psiFile.isDirectory() && psiFile.getName().endsWith(".java");
+        e.getPresentation().setEnabledAndVisible(visible);
+    }
+
+    @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
         PsiFile file = e.getData(LangDataKeys.PSI_FILE);
@@ -156,18 +168,6 @@ public class ProjectViewFindByUsedForCopyBeanAction extends AnAction {
                 });
             }
         });
-    }
-
-    @Override
-    public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return ActionUpdateThread.BGT;
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent e) {
-        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-        boolean visible = psiFile != null && !psiFile.isDirectory() && psiFile.getName().endsWith(".java");
-        e.getPresentation().setEnabledAndVisible(visible);
     }
 
 }

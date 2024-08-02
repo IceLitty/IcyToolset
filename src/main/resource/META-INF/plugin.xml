@@ -220,6 +220,11 @@
             class="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanAction">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>
     </action>
+    <!-- 右键项目管理的项目寻找各模块依赖需求java版本是否高于sdk版本 -->
+    <action id="com.gmail.litalways.toolset.action.find.dependency.java.version"
+            class="com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction">
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>
+    </action>
     <!-- 用于提供脚本执行Editor快捷键执行的功能 -->
     <action id="com.gmail.litalways.toolset.editor.script.run" icon="AllIcons.Actions.RunAll"
             class="com.gmail.litalways.toolset.action.EditorScriptRunAction">

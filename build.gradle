@@ -10,6 +10,7 @@ repositories {
     mavenLocal()
     maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
     mavenCentral()
+    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -103,6 +104,14 @@ dependencies {
 //    implementation 'com.auth0:jwks-rsa:0.22.1'
     // https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt
     implementation 'com.nimbusds:nimbus-jose-jwt:9.37.3'
+    // PDF生成（7.0.0的库与本地编辑器使用的6.20.0差异有点大，会导致不兼容）
+    // https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports
+    implementation('net.sf.jasperreports:jasperreports:6.20.0') {
+        exclude group: 'xml-apis', module: 'xml-apis'
+        exclude group: 'xml-apis', module: 'xml-apis-ext'
+    }
+    // https://mvnrepository.com/artifact/cn.lesper/iTextAsian
+    implementation 'cn.lesper:iTextAsian:3.0'
     // lombok
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
