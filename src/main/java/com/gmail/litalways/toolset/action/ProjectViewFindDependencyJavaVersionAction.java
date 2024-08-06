@@ -2,6 +2,7 @@ package com.gmail.litalways.toolset.action;
 
 import com.gmail.litalways.toolset.constant.KeyConstant;
 import com.gmail.litalways.toolset.exception.ProxyException;
+import com.gmail.litalways.toolset.exception.UserCancelActionException;
 import com.gmail.litalways.toolset.filter.PdfFileFilter;
 import com.gmail.litalways.toolset.util.*;
 import com.intellij.ide.highlighter.ArchiveFileType;
@@ -74,98 +75,108 @@ public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
                 // BGT
                 ApplicationManager.getApplication().runReadAction(() -> {
                     // BGT with read access
-                    Module[] modules = ModuleManager.getInstance(project).getModules();
-                    AtomicInteger pgInFinished = new AtomicInteger(0);
-                    AtomicInteger pgInMax = new AtomicInteger(modules.length);
-                    DependencyCheckResult result = new DependencyCheckResult();
-                    for (Module module : modules) {
-                        ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-                        Sdk sdk = moduleRootManager.getSdk();
-                        JavaSdkVersion jdkVersion;
-                        if (sdk != null && sdk.getSdkType() instanceof JavaSdk jdk && (jdkVersion = jdk.getVersion(sdk)) != null) {
-                            int feature = jdkVersion.getMaxLanguageLevel().toJavaVersion().feature;
-                            VirtualFile[] classesRoots = moduleRootManager.orderEntries().librariesOnly().getClassesRoots();
-                            pgInMax.addAndGet(classesRoots.length);
-                            for (VirtualFile dependency : classesRoots) {
-                                try {
-                                    String fileKey = dependency.getUrl();
-                                    boolean found = false;
-                                    for (DependencyCheckResult.Dependency resultDependency : result.getDependencies()) {
-                                        if (resultDependency.getUrl().equals(fileKey)) {
-                                            found = true;
-                                            resultDependency.getModules().put(module.getName(), feature);
-                                            break;
+                    try {
+                        Module[] modules = ModuleManager.getInstance(project).getModules();
+                        AtomicInteger pgInFinished = new AtomicInteger(0);
+                        AtomicInteger pgInMax = new AtomicInteger(modules.length);
+                        DependencyCheckResult result = new DependencyCheckResult();
+                        for (Module module : modules) {
+                            if (progressIndicator.isCanceled()) {
+                                throw new UserCancelActionException();
+                            }
+                            ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
+                            Sdk sdk = moduleRootManager.getSdk();
+                            JavaSdkVersion jdkVersion;
+                            if (sdk != null && sdk.getSdkType() instanceof JavaSdk jdk && (jdkVersion = jdk.getVersion(sdk)) != null) {
+                                int feature = jdkVersion.getMaxLanguageLevel().toJavaVersion().feature;
+                                VirtualFile[] classesRoots = moduleRootManager.orderEntries().librariesOnly().getClassesRoots();
+                                pgInMax.addAndGet(classesRoots.length);
+                                for (VirtualFile dependency : classesRoots) {
+                                    if (progressIndicator.isCanceled()) {
+                                        throw new UserCancelActionException();
+                                    }
+                                    try {
+                                        String fileKey = dependency.getUrl();
+                                        boolean found = false;
+                                        for (DependencyCheckResult.Dependency resultDependency : result.getDependencies()) {
+                                            if (resultDependency.getUrl().equals(fileKey)) {
+                                                found = true;
+                                                resultDependency.getModules().put(module.getName(), feature);
+                                                break;
+                                            }
                                         }
-                                    }
-                                    if (found) {
-                                        continue;
-                                    }
-                                    DependencyCheckResult.Dependency resultDependency = new DependencyCheckResult.Dependency();
-                                    resultDependency.setUrl(fileKey);
-                                    resultDependency.getModules().put(module.getName(), feature);
-                                    result.getDependencies().add(resultDependency);
-                                    if (dependency.getFileType() instanceof ArchiveFileType) {
-                                        URI uri = URI.create("jar:" + new File(dependency.getPath().replace("!/", "")).toURI());
-                                        try (FileSystem zipFs = FileSystems.newFileSystem(uri, new HashMap<>());) {
-                                            try (Stream<Path> walk = Files.walk(zipFs.getPath("/"))
-                                                    .filter(Files::isRegularFile)
-                                                    .filter(f -> f.getFileName().toString().endsWith(".class"));) {
-                                                for (Iterator<Path> iterator = walk.iterator(); iterator.hasNext();) {
-                                                    Path pathNode = iterator.next();
-                                                    String name = pathNode.toString();
-                                                    Path path = zipFs.getPath(name);
-                                                    // read
-                                                    try (InputStream inputStream = Files.newInputStream(path);
-                                                         DataInputStream dataInputStream = new DataInputStream(inputStream);) {
-                                                        checkClassFile(feature, name, dataInputStream, resultDependency);
+                                        if (found) {
+                                            continue;
+                                        }
+                                        DependencyCheckResult.Dependency resultDependency = new DependencyCheckResult.Dependency();
+                                        resultDependency.setUrl(fileKey);
+                                        resultDependency.getModules().put(module.getName(), feature);
+                                        result.getDependencies().add(resultDependency);
+                                        if (dependency.getFileType() instanceof ArchiveFileType) {
+                                            URI uri = URI.create("jar:" + new File(dependency.getPath().replace("!/", "")).toURI());
+                                            try (FileSystem zipFs = FileSystems.newFileSystem(uri, new HashMap<>());) {
+                                                try (Stream<Path> walk = Files.walk(zipFs.getPath("/"))
+                                                        .filter(Files::isRegularFile)
+                                                        .filter(f -> f.getFileName().toString().endsWith(".class"));) {
+                                                    for (Iterator<Path> iterator = walk.iterator(); iterator.hasNext();) {
+                                                        Path pathNode = iterator.next();
+                                                        String name = pathNode.toString();
+                                                        Path path = zipFs.getPath(name);
+                                                        // read
+                                                        try (InputStream inputStream = Files.newInputStream(path);
+                                                             DataInputStream dataInputStream = new DataInputStream(inputStream);) {
+                                                            checkClassFile(feature, name, dataInputStream, resultDependency);
+                                                        }
                                                     }
                                                 }
+                                            } catch (IOException ex) {
+                                                resultDependency.setReadError(MessageUtil.getMessage("action.find.dependency.java.version.file.system.error", ex.getLocalizedMessage()));
                                             }
-                                        } catch (IOException ex) {
-                                            resultDependency.setReadError(MessageUtil.getMessage("action.find.dependency.java.version.file.system.error", ex.getLocalizedMessage()));
+                                        } else if (dependency.getFileType() instanceof JavaClassFileType) {
+                                            try (InputStream inputStream = dependency.getInputStream();
+                                                 DataInputStream dataInputStream = new DataInputStream(inputStream);) {
+                                                checkClassFile(feature, dependency.getPath(), dataInputStream, resultDependency);
+                                            } catch (IOException ex) {
+                                                resultDependency.setReadError(MessageUtil.getMessage("action.find.dependency.java.version.file.system.error", ex.getLocalizedMessage()));
+                                            }
+                                        } else {
+                                            resultDependency.setSkip(true);
                                         }
-                                    } else if (dependency.getFileType() instanceof JavaClassFileType) {
-                                        try (InputStream inputStream = dependency.getInputStream();
-                                             DataInputStream dataInputStream = new DataInputStream(inputStream);) {
-                                            checkClassFile(feature, dependency.getPath(), dataInputStream, resultDependency);
-                                        } catch (IOException ex) {
-                                            resultDependency.setReadError(MessageUtil.getMessage("action.find.dependency.java.version.file.system.error", ex.getLocalizedMessage()));
-                                        }
-                                    } else {
-                                        resultDependency.setSkip(true);
+                                    } finally {
+                                        progressIndicator.setFraction((double) pgInFinished.incrementAndGet() / pgInMax.get());
                                     }
-                                } finally {
-                                    progressIndicator.setFraction((double) pgInFinished.incrementAndGet() / pgInMax.get());
                                 }
                             }
+                            progressIndicator.setFraction((double) pgInFinished.incrementAndGet() / pgInMax.get());
                         }
-                        progressIndicator.setFraction((double) pgInFinished.incrementAndGet() / pgInMax.get());
+                        // output
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            // EDT
+                            int sum = result.getDependencies().stream()
+                                    .map(DependencyCheckResult.Dependency::getCheckedFiles)
+                                    .flatMap(Collection::stream)
+                                    .mapToInt(d -> switch (d.getResult()) {
+                                        case SUPPORT, SUPPORT_GUESS, SKIP_CHECK -> 0;
+                                        case UNKNOWN, NOT_SUPPORT_GUESS, NOT_SUPPORT -> 1;
+                                    }).sum();
+                            NotificationGroup group = NotificationGroupManager.getInstance().getNotificationGroup(KeyConstant.NOTIFICATION_GROUP_KEY);
+                            if (sum == 0) {
+                                group.createNotification(MessageUtil.getMessage("action.find.dependency.java.version.done", modules.length, result.getDependencies().size(), sum), NotificationType.INFORMATION)
+                                        .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.clipboard.full.text"), project, result, BalloonActionType.TO_CLIPBOARD_FULL))
+                                        .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.file.full.text"), project, result, BalloonActionType.TO_FILE_FULL))
+                                        .notify(project);
+                            } else {
+                                group.createNotification(MessageUtil.getMessage("action.find.dependency.java.version.done", modules.length, result.getDependencies().size(), sum), NotificationType.INFORMATION)
+                                        .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.clipboard.text"), project, result, BalloonActionType.TO_CLIPBOARD))
+                                        .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.file.text"), project, result, BalloonActionType.TO_FILE))
+                                        .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.clipboard.full.text"), project, result, BalloonActionType.TO_CLIPBOARD_FULL))
+                                        .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.file.full.text"), project, result, BalloonActionType.TO_FILE_FULL))
+                                        .notify(project);
+                            }
+                        });
+                    } catch (UserCancelActionException e) {
+                        NotificationUtil.warning(MessageUtil.getMessage("action.cancel"));
                     }
-                    // output
-                    ApplicationManager.getApplication().invokeLater(() -> {
-                        // EDT
-                        int sum = result.getDependencies().stream()
-                                .map(DependencyCheckResult.Dependency::getCheckedFiles)
-                                .flatMap(Collection::stream)
-                                .mapToInt(d -> switch (d.getResult()) {
-                            case SUPPORT, SUPPORT_GUESS, SKIP_CHECK -> 0;
-                            case UNKNOWN, NOT_SUPPORT_GUESS, NOT_SUPPORT -> 1;
-                        }).sum();
-                        NotificationGroup group = NotificationGroupManager.getInstance().getNotificationGroup(KeyConstant.NOTIFICATION_GROUP_KEY);
-                        if (sum == 0) {
-                            group.createNotification(MessageUtil.getMessage("action.find.dependency.java.version.done", modules.length, result.getDependencies().size(), sum), NotificationType.INFORMATION)
-                                    .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.clipboard.full.text"), project, result, BalloonActionType.TO_CLIPBOARD_FULL))
-                                    .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.file.full.text"), project, result, BalloonActionType.TO_FILE_FULL))
-                                    .notify(project);
-                        } else {
-                            group.createNotification(MessageUtil.getMessage("action.find.dependency.java.version.done", modules.length, result.getDependencies().size(), sum), NotificationType.INFORMATION)
-                                    .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.clipboard.text"), project, result, BalloonActionType.TO_CLIPBOARD))
-                                    .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.file.text"), project, result, BalloonActionType.TO_FILE))
-                                    .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.clipboard.full.text"), project, result, BalloonActionType.TO_CLIPBOARD_FULL))
-                                    .addAction(new BalloonAction(messageBundle.getString("action.com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction.BalloonAction.to.file.full.text"), project, result, BalloonActionType.TO_FILE_FULL))
-                                    .notify(project);
-                        }
-                    });
                 });
             }
         });
@@ -213,7 +224,7 @@ public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
         resultDependency.getCheckedFiles().add(checkedFile);
     }
 
-    private static String generatePdf(DependencyCheckResult result, boolean outputMore, ProgressIndicator progressIndicator, AtomicInteger pgInFinished, AtomicInteger pgInMax) throws ProxyException {
+    private static String generatePdf(DependencyCheckResult result, boolean outputMore, ProgressIndicator progressIndicator, AtomicInteger pgInFinished, AtomicInteger pgInMax) throws ProxyException, UserCancelActionException {
         try {
             Map<String, Integer> bookmark = new LinkedHashMap<>();
             String jrXml;
@@ -249,6 +260,9 @@ public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
             List<Map<String, Object>> datasource = new ArrayList<>();
             pgInMax.addAndGet(result.getDependencies().size());
             for (int i = 0, dependenciesSize = result.getDependencies().size(); i < dependenciesSize; i++) {
+                if (progressIndicator.isCanceled()) {
+                    throw new UserCancelActionException();
+                }
                 DependencyCheckResult.Dependency dependency = result.getDependencies().get(i);
                 AtomicInteger supportCounter = new AtomicInteger(0);
                 AtomicInteger unknownCounter = new AtomicInteger(0);
@@ -342,6 +356,9 @@ public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
             int max = reader.getNumberOfPages();
             pgInMax.addAndGet(max);
             for (int i = 1; i <= max; i++) {
+                if (progressIndicator.isCanceled()) {
+                    throw new UserCancelActionException();
+                }
                 String textFromPage = pdfTextExtractor.getTextFromPage(i);
                 textFromPdf.put(i, textFromPage);
                 progressIndicator.setFraction((double) pgInFinished.incrementAndGet() / pgInMax.get());
@@ -367,6 +384,9 @@ public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
                 }
             }
             pgInMax.addAndGet(1);
+            if (progressIndicator.isCanceled()) {
+                throw new UserCancelActionException();
+            }
             try {
                 pdfBytes = PdfGenerateUtil.bookmark(pdfBytes, bookmark);
                 base64 = Base64.getEncoder().encodeToString(pdfBytes);
@@ -434,6 +454,8 @@ public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
                                 }
                             }
                         });
+                    } catch (UserCancelActionException e) {
+                        NotificationUtil.warning(MessageUtil.getMessage("action.cancel"));
                     } catch (ProxyException e) {
                         NotificationUtil.error(e.getLocalizedMessage());
                     }
