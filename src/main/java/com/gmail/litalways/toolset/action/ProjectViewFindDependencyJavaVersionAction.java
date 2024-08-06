@@ -333,10 +333,8 @@ public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
             request.setParams(params);
             request.setDataSource(datasource);
             request.setExportType(PdfGenerateUtil.Request.ExportType.PDF);
-            pgInMax.addAndGet(1);
             String base64 = PdfGenerateUtil.generate(request);
             byte[] pdfBytes = Base64.getDecoder().decode(base64);
-            progressIndicator.setFraction((double) pgInFinished.incrementAndGet() / pgInMax.get());
             // 生成书签
             PdfReader reader = new PdfReader(pdfBytes);
             PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(reader);
