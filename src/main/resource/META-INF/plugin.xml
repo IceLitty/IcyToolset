@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.gmail.litalways.toolset</id>
   <name>Icy Toolset</name>
-  <version>1.14</version>
+  <version>1.15</version>
   <vendor email="litalways@gmail.com">Icyr</vendor>
 
   <description><![CDATA[
@@ -20,6 +20,7 @@
         <li>哈希计算添加文件夹支持。可将计算来源文件夹导出至清单文件，后续使用另一个目录与该清单文件做哈希比对。</li>
         <li>哈希计算改为后台方式计算，防止大量文件或大文件计算导致冻结UI。</li>
         <li>添加SM2密钥类型（Base64/Hex）切换、对SM2密钥长度固定限制添加UI反馈。</li>
+        <li>项目视图中右键增加依赖类文件Java版本分析功能，如批量识别该项目中各模块依赖包中类文件是否能够使用模块SDK版本所加载，并生成报告。</li>
       </ul>
       <hr/>
       <b>1.14</b>

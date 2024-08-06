@@ -2,6 +2,8 @@ package com.gmail.litalways.toolset.util;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.gmail.litalways.toolset.exception.ProxyException;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -19,6 +21,7 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Comparator;
@@ -27,6 +30,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
+ * Jasper报表生成 / PDF工具类
+ *
  * @author IceRain
  * @since 2024/8/1
  */
@@ -249,5 +254,102 @@ public class PdfGenerateUtil {
 //            }
 //        }
 //    }
+
+    /**
+     * 图片转PDF
+     *
+     * @param img 图片
+     * @return PDF
+     * @throws DocumentException PDF生成异常
+     * @throws IOException 图片解析异常
+     */
+    public static byte[] image2Pdf(byte[] img) throws DocumentException, IOException {
+        Document doc = new Document(PageSize.A4, 0, 0, 0, 0);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PdfWriter.getInstance(doc, byteArrayOutputStream);
+        doc.open();
+        Image image = Image.getInstance(img);
+        image.getHeight();
+        image.setAlignment(Image.MIDDLE);
+        float height = image.getHeight();
+        float width = image.getWidth();
+        doc.setPageSize(new Rectangle(width, height));
+        doc.newPage();
+        doc.add(image);
+        doc.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    /**
+     * PDF合并
+     *
+     * @param pdf1                PDF1
+     * @param pdf2                PDF2
+     * @param bookmarkWithPageNum 书签信息储存Map&lt;书签名称,书签页码>
+     * @param bookmarkName        书签名称
+     * @return PDF
+     * @throws DocumentException PDF生成异常
+     * @throws IOException PDF解析异常
+     */
+    public static byte[] pdfCombine(byte[] pdf1, byte[] pdf2, Map<String, Integer> bookmarkWithPageNum, String bookmarkName) throws DocumentException, IOException {
+        PdfReader pdfReader = new PdfReader(pdf1);
+        int numberOfPages = pdfReader.getNumberOfPages();
+        PdfReader pdfReader2 = new PdfReader(pdf2);
+        int numberOfPages2 = pdfReader2.getNumberOfPages();
+        if (numberOfPages2 < 1) {
+            return pdf1;
+        }
+        Document doc = new Document(PageSize.A4, 0, 0, 0, 0);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PdfCopy pdfCopy = new PdfCopy(doc, byteArrayOutputStream);
+        doc.open();
+        for (int p = 1; p <= numberOfPages; p++) {
+            doc.newPage();
+            PdfImportedPage importedPage = pdfCopy.getImportedPage(pdfReader, p);
+            pdfCopy.addPage(importedPage);
+        }
+        if (bookmarkName != null && !bookmarkName.trim().isEmpty()) {
+            int number = pdfCopy.getPageNumber();
+            bookmarkWithPageNum.put(bookmarkName, number);
+        }
+        for (int p = 1; p <= numberOfPages2; p++) {
+            doc.newPage();
+            PdfImportedPage importedPage = pdfCopy.getImportedPage(pdfReader2, p);
+            pdfCopy.addPage(importedPage);
+        }
+        doc.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    /**
+     * 将书签信息应用至PDF中
+     *
+     * @param pdf                 PDF
+     * @param bookmarkWithPageNum 书签信息储存Map&lt;书签名称,书签页码>
+     * @return PDF
+     * @throws DocumentException PDF生成异常
+     * @throws IOException PDF解析异常
+     */
+    public static byte[] bookmark(byte[] pdf, Map<String, Integer> bookmarkWithPageNum) throws DocumentException, IOException {
+        Document doc = new Document(PageSize.A4, 0, 0, 0, 0);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PdfCopy pdfCopy = new PdfCopy(doc, byteArrayOutputStream);
+        pdfCopy.setViewerPreferences(PdfWriter.PageModeUseOutlines);
+        doc.open();
+        PdfReader pdfReader = new PdfReader(pdf);
+        int numberOfPages = pdfReader.getNumberOfPages();
+        for (int p = 1; p <= numberOfPages; p++) {
+            doc.newPage();
+            PdfImportedPage importedPage = pdfCopy.getImportedPage(pdfReader, p);
+            pdfCopy.addPage(importedPage);
+        }
+        pdfCopy.freeReader(pdfReader);
+        PdfOutline root = pdfCopy.getRootOutline();
+        for (Map.Entry<String, Integer> mark : bookmarkWithPageNum.entrySet()) {
+            new PdfOutline(root, PdfAction.gotoLocalPage(mark.getValue(), new PdfDestination(PdfDestination.FIT), pdfCopy), mark.getKey(), true);
+        }
+        doc.close();
+        return byteArrayOutputStream.toByteArray();
+    }
 
 }

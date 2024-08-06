@@ -16,6 +16,11 @@ public class ExplorerUtil {
 
     private static final String EXPLORER = "explorer";
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().startsWith("windows");
+    }
+
     /**
      * 直接打开路径
      *
@@ -24,6 +29,9 @@ public class ExplorerUtil {
      */
     public static void openExplorer(String dirPath) throws IOException {
         if (dirPath == null) {
+            return;
+        }
+        if (!isWindows()) {
             return;
         }
         Runtime.getRuntime().exec(EXPLORER + " file://" + dirPath);
@@ -39,6 +47,9 @@ public class ExplorerUtil {
         if (savedFile == null) {
             return;
         }
+        if (!isWindows()) {
+            return;
+        }
         Runtime.getRuntime().exec(EXPLORER + " file://" + savedFile.getParent());
     }
 
@@ -50,6 +61,9 @@ public class ExplorerUtil {
      */
     public static void openExplorer(VirtualFile savedFile) throws IOException {
         if (savedFile == null) {
+            return;
+        }
+        if (!isWindows()) {
             return;
         }
         Runtime.getRuntime().exec(EXPLORER + " " + (String.valueOf(savedFile.getParent()).startsWith("file://") ? savedFile.getParent() : "file://" + savedFile.getParent()));
@@ -65,6 +79,9 @@ public class ExplorerUtil {
         if (savedFile == null) {
             return;
         }
+        if (!isWindows()) {
+            return;
+        }
         Runtime.getRuntime().exec(EXPLORER + " /select,\"" + savedFile.getPath() + "\"");
     }
 
@@ -76,6 +93,9 @@ public class ExplorerUtil {
      */
     public static void openExplorerAndHighlightFile(VirtualFile savedFile) throws IOException {
         if (savedFile == null) {
+            return;
+        }
+        if (!isWindows()) {
             return;
         }
         Runtime.getRuntime().exec(EXPLORER + " /select,\"" + savedFile.getPath().replace("/", "\\") + "\"");

@@ -37,17 +37,38 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="50">
-			<textField>
-				<reportElement style="BorderedFont" x="0" y="0" width="555" height="30" uuid="c5f564b6-d9a8-4d42-80da-87994ca79fc2"/>
+		<band height="60" splitType="Prevent">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="0" y="30" width="555" height="30" uuid="c5f564b6-d9a8-4d42-80da-87994ca79fc2">
+					<property name="com.jaspersoft.layout.grid.x" value="-1"/>
+					<property name="com.jaspersoft.layout.grid.y" value="0"/>
+					<property name="com.jaspersoft.layout.grid.weight.x" value="1.0"/>
+					<property name="com.jaspersoft.layout.grid.weight.y" value="1.0"/>
+					<property name="com.jaspersoft.layout.grid.rowspan" value="1"/>
+					<property name="com.jaspersoft.layout.grid.colspan" value="1"/>
+					<property name="com.jaspersoft.layout.grid.weight.fixed" value="true"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{dependencyTitle}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="BorderedFont" x="0" y="30" width="555" height="20" isRemoveLineWhenBlank="true" forecolor="#FF0C08" uuid="85c815f3-fd96-4eb6-9a46-ca20c607e575"/>
-				<textElement>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="0" y="0" width="555" height="30" isRemoveLineWhenBlank="true" forecolor="#FF0C08" uuid="85c815f3-fd96-4eb6-9a46-ca20c607e575">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.layout.grid.x" value="-1"/>
+					<property name="com.jaspersoft.layout.grid.y" value="1"/>
+					<property name="com.jaspersoft.layout.grid.weight.x" value="1.0"/>
+					<property name="com.jaspersoft.layout.grid.weight.y" value="1.0"/>
+					<property name="com.jaspersoft.layout.grid.rowspan" value="1"/>
+					<property name="com.jaspersoft.layout.grid.colspan" value="1"/>
+					<property name="com.jaspersoft.layout.grid.weight.fixed" value="true"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{dependencyErrorTip}]]></textFieldExpression>
@@ -55,23 +76,23 @@
 		</band>
 	</title>
 	<columnHeader>
-		<band height="30">
-			<textField>
-				<reportElement style="BorderedFont" x="0" y="0" width="365" height="30" uuid="686f8f31-a8be-4fce-97a3-ec47c3c3cd46"/>
+		<band height="30" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="0" y="0" width="365" height="30" uuid="686f8f31-a8be-4fce-97a3-ec47c3c3cd46"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{dependencyColFilePath}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="BorderedFont" x="365" y="0" width="95" height="30" uuid="9a7998c3-9ef9-49c1-bcdb-5cfdd808b361"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="365" y="0" width="95" height="30" uuid="9a7998c3-9ef9-49c1-bcdb-5cfdd808b361"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{dependencyColMajor}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="BorderedFont" x="460" y="0" width="95" height="30" uuid="21dc6143-d10e-44a6-8f18-c9cdfebc5ec5"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="460" y="0" width="95" height="30" uuid="21dc6143-d10e-44a6-8f18-c9cdfebc5ec5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14"/>
 				</textElement>
@@ -81,8 +102,8 @@
 	</columnHeader>
 	<detail>
 		<band height="30" splitType="Stretch">
-			<textField>
-				<reportElement style="BorderedFont" x="0" y="0" width="365" height="30" uuid="927b8c32-bf25-4fd1-80af-44f8b23ff36d">
+			<textField textAdjust="StretchHeight">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="0" y="0" width="365" height="30" uuid="927b8c32-bf25-4fd1-80af-44f8b23ff36d">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cf8b957d-f1c6-49e1-88db-176b08c794f6"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -90,8 +111,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dependencyRowFilePath}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="BorderedFont" x="365" y="0" width="95" height="30" uuid="76d47b0c-da50-4cad-890e-c7d34c6ffb04">
+			<textField textAdjust="StretchHeight">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="365" y="0" width="95" height="30" uuid="76d47b0c-da50-4cad-890e-c7d34c6ffb04">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cf8b957d-f1c6-49e1-88db-176b08c794f6"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -99,8 +120,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dependencyRowMajor}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="BorderedFont" x="460" y="0" width="95" height="30" uuid="c759c50e-4316-4018-921c-6356bd2af0cf">
+			<textField textAdjust="StretchHeight">
+				<reportElement style="BorderedFont" stretchType="ElementGroupHeight" x="460" y="0" width="95" height="30" uuid="c759c50e-4316-4018-921c-6356bd2af0cf">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cf8b957d-f1c6-49e1-88db-176b08c794f6"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
