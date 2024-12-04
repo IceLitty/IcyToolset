@@ -20,7 +20,7 @@
         <clientProperties>
           <BorderFactoryClass class="java.lang.String" value="com.intellij.ui.IdeBorderFactory$PlainSmallWithIndent"/>
         </clientProperties>
-        <border type="none" title-resource-bundle="applicationMessage" title-key="setting.main.bean.utils.frame.title"/>
+        <border type="none" title-resource-bundle="messages/applicationMessage" title-key="setting.main.bean.utils.frame.title"/>
         <children>
           <component id="72c9b" class="javax.swing.JComponent" binding="beanUtilsToolbar" custom-create="true">
             <constraints>

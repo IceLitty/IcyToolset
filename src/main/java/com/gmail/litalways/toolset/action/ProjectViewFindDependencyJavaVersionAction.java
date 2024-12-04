@@ -55,7 +55,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class ProjectViewFindDependencyJavaVersionAction extends AnAction {
 
-    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("message");
+    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages/message");
     private static File lastSelect = null;
 
     @Override

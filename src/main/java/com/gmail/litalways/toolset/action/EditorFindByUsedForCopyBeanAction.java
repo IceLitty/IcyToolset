@@ -35,7 +35,7 @@ import java.util.*;
 @SuppressWarnings("IntentionDescriptionNotFoundInspection")
 public class EditorFindByUsedForCopyBeanAction implements IntentionAction {
 
-    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("message");
+    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages/message");
 
     /**
      * 操作提示

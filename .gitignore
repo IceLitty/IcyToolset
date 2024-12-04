@@ -1,5 +1,5 @@
-# 项目排除路径
-/.gradle/
-/build/
-/build/classes/java/main/
-/build/classes/java/test/
+.gradle
+.idea
+.intellijPlatform
+.qodana
+build

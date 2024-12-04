@@ -11,7 +11,6 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
-import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ToolWindow;
@@ -66,7 +65,8 @@ public class ToolWindowFormat {
             this.aDocumentListener = new ADocumentListener();
         }
         ToolWindowFormatEditorService toolWindowFormatEditorService = this.project.getService(ToolWindowFormatEditorService.class);
-        PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("format.txt", PlainTextFileType.INSTANCE, "", 0, true);
+        FileType plainTextFileType = FileTypeManager.getInstance().getFileTypeByExtension("TXT");
+        PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("format.txt", plainTextFileType, "", 0, true);
         Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
         if (document == null) {
             document = EditorFactory.getInstance().createDocument("");

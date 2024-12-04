@@ -10,6 +10,8 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -139,8 +141,10 @@ public class ToolWindowEncrypt {
         this.jwtIssuedAt = new JFormattedTextField(LongNumberTextFormat.getInstance());
         this.jwtExpirationTime = new JFormattedTextField(LongNumberTextFormat.getInstance());
         ToolWindowEncryptEditorService editorService = this.project.getService(ToolWindowEncryptEditorService.class);
+        FileType plainTextFileType = FileTypeManager.getInstance().getFileTypeByExtension("TXT");
+        FileType jsonFileType = FileTypeManager.getInstance().getFileTypeByExtension("JSON");
         {
-            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtEncoded.txt", PlainTextFileType.INSTANCE, "", 0, true);
+            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtEncoded.txt", plainTextFileType, "", 0, true);
             Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
             if (document == null) {
                 document = EditorFactory.getInstance().createDocument("");
@@ -157,7 +161,7 @@ public class ToolWindowEncrypt {
             }
         }
         {
-            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtDecoded.json", JsonFileType.INSTANCE, "", 0, true);
+            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtDecoded.json", jsonFileType, "", 0, true);
             Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
             if (document == null) {
                 document = EditorFactory.getInstance().createDocument("");
@@ -167,7 +171,7 @@ public class ToolWindowEncrypt {
             this.jwtDecodedEditor = this.jwtDecodedEditorEx.getComponent();
         }
         {
-            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtJwkPublicKey.json", PlainTextFileType.INSTANCE, "", 0, true);
+            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtJwkPublicKey.json", plainTextFileType, "", 0, true);
             Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
             if (document == null) {
                 document = EditorFactory.getInstance().createDocument("");
@@ -178,7 +182,7 @@ public class ToolWindowEncrypt {
             this.jwtPublicKeyEditor.setToolTipText(MessageUtil.getMessage("encrypt.jwt.editor.public.tooltip"));
         }
         {
-            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtJwkPrivateKey.json", PlainTextFileType.INSTANCE, "", 0, true);
+            PsiFile file = PsiFileFactory.getInstance(this.project).createFileFromText("jwtJwkPrivateKey.json", plainTextFileType, "", 0, true);
             Document document = PsiDocumentManager.getInstance(this.project).getDocument(file);
             if (document == null) {
                 document = EditorFactory.getInstance().createDocument("");

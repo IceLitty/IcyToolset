@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
  */
 public class MessageUtil {
 
-    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("applicationMessage");
+    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages/applicationMessage");
 
     /**
      * 获取提示文本

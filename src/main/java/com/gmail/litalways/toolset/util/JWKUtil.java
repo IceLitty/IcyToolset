@@ -63,7 +63,7 @@ public class JWKUtil {
     public static byte[] publicKeyPkcs8ToPkcs1(byte[] key) {
         ASN1Sequence publicKeyASN1Object = ASN1Sequence.getInstance(key);
         ASN1Encodable derBitStringASN1Encodable = publicKeyASN1Object.getObjectAt(1);
-        DERBitString derBitStringObject = DERBitString.getInstance(derBitStringASN1Encodable);
+        DERBitString derBitStringObject = (DERBitString) DERBitString.getInstance(derBitStringASN1Encodable);
         return derBitStringObject.getBytes();
     }
 

@@ -1,0 +1,79 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.gmail.litalways.toolset</id>
+    <name>Icy Toolset</name>
+    <vendor>Icyr</vendor>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.java</depends>
+    <!-- 仅用到FileType未用到高级功能所以无需依赖 -->
+<!--  <depends optional="true" config-file="icyToolset-withJavaScript.xml">JavaScript</depends>-->
+<!--  <depends optional="true" config-file="icyToolset-withPython.xml">com.intellij.modules.python</depends>-->
+<!--  <depends optional="true" config-file="icyToolset-withLua.xml">com.tang</depends>-->
+<!--  <depends optional="true" config-file="icyToolset-withGroovy.xml">org.intellij.groovy</depends>-->
+
+    <!-- 默认控件资源包 -->
+    <resource-bundle>messages.message</resource-bundle>
+
+    <actions>
+        <!-- 用于试验菜单功能 -->
+<!--        <group id="com.gmail.litalways.toolset.actions.simple" popup="true" icon="AllIcons.General.ExternalTools">-->
+<!--          &lt;!&ndash; 组ID https://centic9.github.io/IntelliJ-Action-IDs/ &ndash;&gt;-->
+<!--          <add-to-group group-id="ToolsMenu" anchor="last" />-->
+<!--          &lt;!&ndash; 快捷键 https://github.com/JetBrains/intellij-community/blob/master/platform/platform-resources/src/keymaps/%24default.xml &ndash;&gt;-->
+<!--          <keyboard-shortcut keymap="$default" first-keystroke="control alt ENTER" />-->
+<!--          <action id="com.gmail.litalways.toolset.actions.simple.simple" class="com.gmail.litalways.toolset.action.SimpleAction" />-->
+<!--        </group>-->
+        <!-- Alt+Insert 生成菜单添加Setter生成功能 -->
+        <action id="com.gmail.litalways.toolset.editor.generate.setter" icon="AllIcons.Duplicates.SendToTheLeft"
+                class="com.gmail.litalways.toolset.action.GenerateSetterAction">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
+        <!-- 右键项目管理的类文件寻找被BeanUtil拷贝的地方 -->
+        <action id="com.gmail.litalways.toolset.action.find.by.bean.copy"
+                class="com.gmail.litalways.toolset.action.ProjectViewFindByUsedForCopyBeanAction">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>
+        </action>
+        <!-- 右键项目管理的项目寻找各模块依赖需求java版本是否高于sdk版本 -->
+        <action id="com.gmail.litalways.toolset.action.find.dependency.java.version"
+                class="com.gmail.litalways.toolset.action.ProjectViewFindDependencyJavaVersionAction">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="FindUsages"/>
+        </action>
+        <!-- 用于提供脚本执行Editor快捷键执行的功能 -->
+        <action id="com.gmail.litalways.toolset.editor.script.run" icon="AllIcons.Actions.RunAll"
+                class="com.gmail.litalways.toolset.action.EditorScriptRunAction">
+<!--            <add-to-group group-id="EditorPopupMenu" anchor="first" />-->
+            <add-to-group group-id="EditorGutterPopupMenu" anchor="first" />
+            <keyboard-shortcut keymap="$default" first-keystroke="control ENTER" />
+        </action>
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- 声明顶级通知组 -->
+        <notificationGroup id="com.gmail.litalways.toolset.notifications" displayType="BALLOON" />
+        <!-- 工具菜单组 -->
+        <toolWindow id="com.gmail.litalways.toolset.toolwindow.main" anchor="bottom" icon="AllIcons.General.ExternalTools"
+                    factoryClass="com.gmail.litalways.toolset.gui.MainFormFactory" />
+        <!-- Alt+Enter 用于寻找实例或类被BeanUtil拷贝的地方 -->
+        <intentionAction id="com.gmail.litalways.toolset.editor.find.by.copy.bean">
+            <className>com.gmail.litalways.toolset.action.EditorFindByUsedForCopyBeanAction</className>
+            <language>JAVA</language>
+        </intentionAction>
+        <!-- 用于试验配置储存（简单配置） -->
+<!--    <applicationConfigurable id="com.gmail.litalways.toolset.settings.simple" parentId="tools"-->
+<!--                             instance="com.gmail.litalways.toolset.config.MainSettingSimpleConfigurable" />-->
+        <!-- 插件配置菜单（复杂配置） -->
+        <applicationConfigurable id="com.gmail.litalways.toolset.settings" parentId="tools" displayName="Icy Toolset"
+                                 instance="com.gmail.litalways.toolset.config.MainSettingStateConfigurable" />
+    </extensions>
+
+    <projectListeners>
+        <!-- 防止Editor在退出时没有被回收 -->
+        <listener class="com.gmail.litalways.toolset.listener.EditorDisposeListener" topic="com.intellij.openapi.project.ProjectManagerListener" />
+    </projectListeners>
+
+</idea-plugin>

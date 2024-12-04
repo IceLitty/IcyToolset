@@ -12,6 +12,8 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -110,7 +112,8 @@ public class ToolWindowScript {
         ToolWindowScriptEditorService toolWindowScriptEditorService = this.project.getService(ToolWindowScriptEditorService.class);
         toolWindowScriptEditorService.setScriptUi(this);
         // 生成空文本默认编辑器
-        this.textareaScriptSourceEditor = toolWindowScriptEditorService.newEditor("dummy.txt", PlainTextFileType.INSTANCE, "");
+        FileType plainTextFileType = FileTypeManager.getInstance().getFileTypeByExtension("TXT");
+        this.textareaScriptSourceEditor = toolWindowScriptEditorService.newEditor("dummy.txt", plainTextFileType, "");
         this.textareaScriptSource = this.textareaScriptSourceEditor.getComponent();
         // 生成按钮组
         DefaultActionGroup group = new DefaultActionGroup();
@@ -288,7 +291,8 @@ public class ToolWindowScript {
         this.scrollScriptSource.remove(this.textareaScriptSource);
         toolWindowScriptEditorService.disposed();
         if (selectedValue == null) {
-            this.textareaScriptSourceEditor = toolWindowScriptEditorService.newEditor("dummy.txt", PlainTextFileType.INSTANCE, "");
+            FileType plainTextFileType = FileTypeManager.getInstance().getFileTypeByExtension("TXT");
+            this.textareaScriptSourceEditor = toolWindowScriptEditorService.newEditor("dummy.txt", plainTextFileType, "");
         } else {
             this.textareaScriptSourceEditor = toolWindowScriptEditorService.newEditor(selectedValue.getFileName() + "." + selectedValue.getFileSuffix(), selectedValue.getFileType(), selectedValue.getScript());
             this.textareaScriptSourceEditor.getDocument().addDocumentListener(new DocumentListener() {

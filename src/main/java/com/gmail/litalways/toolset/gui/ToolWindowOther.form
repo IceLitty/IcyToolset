@@ -124,8 +124,8 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text resource-bundle="applicationMessage" key="other.generate.hash.button.run.title"/>
-                      <toolTipText resource-bundle="applicationMessage" key="other.generate.hash.button.run.tooltip"/>
+                      <text resource-bundle="messages/applicationMessage" key="other.generate.hash.button.run.title"/>
+                      <toolTipText resource-bundle="messages/applicationMessage" key="other.generate.hash.button.run.tooltip"/>
                     </properties>
                   </component>
                   <component id="57655" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="fileAboutGenHashPath">
@@ -133,7 +133,7 @@
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <toolTipText resource-bundle="applicationMessage" key="other.generate.hash.file.tooltip"/>
+                      <toolTipText resource-bundle="messages/applicationMessage" key="other.generate.hash.file.tooltip"/>
                     </properties>
                   </component>
                   <component id="cdc85" class="javax.swing.JComboBox" binding="selectAboutGenHashType">
@@ -151,7 +151,7 @@
                         <item value="SHA-512"/>
                         <item value="SM3"/>
                       </model>
-                      <toolTipText resource-bundle="applicationMessage" key="encrypt.hash.select.algorithm.tooltip"/>
+                      <toolTipText resource-bundle="messages/applicationMessage" key="encrypt.hash.select.algorithm.tooltip"/>
                     </properties>
                   </component>
                   <component id="78a51" class="javax.swing.JTextField" binding="textAboutGenHashSuffix">
@@ -160,7 +160,7 @@
                     </constraints>
                     <properties>
                       <text value=""/>
-                      <toolTipText resource-bundle="applicationMessage" key="other.generate.hash.input.suffix.tooltip"/>
+                      <toolTipText resource-bundle="messages/applicationMessage" key="other.generate.hash.input.suffix.tooltip"/>
                     </properties>
                   </component>
                   <component id="aa3a5" class="javax.swing.JTextField" binding="textAboutGenHashPathFilter">
@@ -168,7 +168,7 @@
                       <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <toolTipText resource-bundle="applicationMessage" key="other.generate.hash.input.path.filter.tooltip"/>
+                      <toolTipText resource-bundle="messages/applicationMessage" key="other.generate.hash.input.path.filter.tooltip"/>
                     </properties>
                   </component>
                   <component id="5cc8b" class="javax.swing.JTextField" binding="textAboutGenHashFileFilter">
@@ -176,7 +176,7 @@
                       <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <toolTipText resource-bundle="applicationMessage" key="other.generate.hash.input.filename.filter.tooltip"/>
+                      <toolTipText resource-bundle="messages/applicationMessage" key="other.generate.hash.input.filename.filter.tooltip"/>
                     </properties>
                   </component>
                   <component id="28cf3" class="javax.swing.JCheckBox" binding="checkAboutGenHashPom">
@@ -185,7 +185,7 @@
                     </constraints>
                     <properties>
                       <selected value="true"/>
-                      <text resource-bundle="applicationMessage" key="other.generate.hash.check.pom.title"/>
+                      <text resource-bundle="messages/applicationMessage" key="other.generate.hash.check.pom.title"/>
                     </properties>
                   </component>
                 </children>
@@ -203,8 +203,8 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text resource-bundle="applicationMessage" key="other.get.encoding.button.tooltip"/>
-                      <toolTipText resource-bundle="applicationMessage" key="other.get.encoding.button.tooltip"/>
+                      <text resource-bundle="messages/applicationMessage" key="other.get.encoding.button.tooltip"/>
+                      <toolTipText resource-bundle="messages/applicationMessage" key="other.get.encoding.button.tooltip"/>
                     </properties>
                   </component>
                   <component id="aeb99" class="javax.swing.JButton" binding="buttonAboutGC">
@@ -212,7 +212,7 @@
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text resource-bundle="applicationMessage" key="other.gc.button.title"/>
+                      <text resource-bundle="messages/applicationMessage" key="other.gc.button.title"/>
                     </properties>
                   </component>
                 </children>
