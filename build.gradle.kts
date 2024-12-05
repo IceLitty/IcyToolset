@@ -87,7 +87,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:9.47")
     // PDF生成（7.0.0的库与本地编辑器使用的6.20.0差异有点大，会导致不兼容）
     // https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports
-    implementation("net.sf.jasperreports:jasperreports:6.20.0") {
+    implementation("net.sf.jasperreports:jasperreports:7.0.1") {
         exclude(group = "xml-apis", module = "xml-apis")
         exclude(group = "xml-apis", module = "xml-apis-ext")
         exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
