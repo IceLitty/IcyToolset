@@ -386,7 +386,7 @@ public class MainFormEncryptJWTFunction {
         List<String> audience = jwt.getAudience();
         if (audience != null && !audience.isEmpty()) {
             if (audience.size() == 1) {
-                this.component.jwtAudience.setText(audience.get(0));
+                this.component.jwtAudience.setText(audience.getFirst());
             } else {
                 try {
                     this.component.jwtAudience.setText(JsonUtil.INSTANCE.writeValueAsString(audience));

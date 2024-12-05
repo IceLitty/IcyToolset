@@ -10,6 +10,7 @@ import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ import java.util.List;
 public class MainSettingStateConfigurable implements Configurable {
 
     private MainSetting mainSetting;
+    private List<MainSettingsClassName> lastSaved;
 
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
@@ -36,28 +38,30 @@ public class MainSettingStateConfigurable implements Configurable {
     public @Nullable JComponent createComponent() {
         MainSettingState settingObject = MainSettingState.getInstance();
         mainSetting = new MainSetting(settingObject);
+        lastSaved = new ArrayList<>(settingObject.beanUtilsClassName);
         // 初始化配置到UI
-        mainSetting.loadTableData(settingObject.beanUtilsClassName);
+        mainSetting.loadTableData(lastSaved);
         return mainSetting.getPanelMain();
     }
 
     @Override
     @SuppressWarnings("CommentedOutCode")
     public boolean isModified() {
-        MainSettingState settingObject = MainSettingState.getInstance();
         boolean modified = false;
-        List<MainSettingsClassName> tableDataValue = mainSetting.getTableDataValue();
-        if (tableDataValue.size() != settingObject.beanUtilsClassName.size()) {
+        List<MainSettingsClassName> newTableDataValue = mainSetting.getTableDataValue();
+        if (newTableDataValue.size() != lastSaved.size()) {
             modified = true;
         } else {
-            for (MainSettingsClassName saved : settingObject.beanUtilsClassName) {
-                for (MainSettingsClassName ui : tableDataValue) {
-                    if (!saved.equals(ui)) {
-                        modified = true;
+            for (MainSettingsClassName saved : lastSaved) {
+                boolean foundSame = false;
+                for (MainSettingsClassName ui : newTableDataValue) {
+                    if (saved.equals(ui)) {
+                        foundSame = true;
                         break;
                     }
                 }
-                if (modified) {
+                if (!foundSame) {
+                    modified = true;
                     break;
                 }
             }
@@ -72,7 +76,12 @@ public class MainSettingStateConfigurable implements Configurable {
     public void apply() throws ConfigurationException {
         MainSettingState settingObject = MainSettingState.getInstance();
         // 储存UI配置项
-        settingObject.beanUtilsClassName = mainSetting.getTableDataValue();
+        synchronized (MainSettingState.class) {
+            settingObject.beanUtilsClassName.clear();
+            settingObject.beanUtilsClassName.addAll(mainSetting.getTableDataValue());
+            lastSaved.clear();
+            lastSaved.addAll(settingObject.beanUtilsClassName);
+        }
         // 应用更改到程序
     }
 
