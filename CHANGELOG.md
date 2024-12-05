@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 ### 调整
+
+## [1.16]
+### 调整
 - 更新至2024.3
 - 脚本执行工具支持IDE进度条取消事件
 
@@ -122,7 +125,8 @@
 - **其他：**
   - 其他功能如显示当前编辑器的JVM系统编码。
 
-[Unreleased]: https://github.com/IceLitty/IcyToolset/compare/v1.15...HEAD
+[Unreleased]: https://github.com/IceLitty/IcyToolset/compare/v1.16...HEAD
+[1.16]: https://github.com/IceLitty/IcyToolset/compare/v1.15...v1.16
 [1.15]: https://github.com/IceLitty/IcyToolset/compare/8e63c82e813361165431735668aa78f8369acdef...v1.15
 [1.14]: https://github.com/IceLitty/IcyToolset/compare/d96bf5bcc2b849cc3840ff65bfbecd9b47b343c5...8e63c82e813361165431735668aa78f8369acdef
 [1.13]: https://github.com/IceLitty/IcyToolset/compare/2fdc7f2c5a7cdf77e4dbe4908787c7aaa057be7f...d96bf5bcc2b849cc3840ff65bfbecd9b47b343c5
