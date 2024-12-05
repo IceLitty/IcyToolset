@@ -9,6 +9,9 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +35,12 @@ public class EditorScriptRunAction extends AnAction {
             } else {
                 ToolWindowScript scriptUi = service.getScriptUi();
                 if (scriptUi != null) {
-                    scriptUi.eval();
+                    ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("script.tip.running")) {
+                        @Override
+                        public void run(@NotNull ProgressIndicator progressIndicator) {
+                            scriptUi.eval(progressIndicator);
+                        }
+                    });
                 }
             }
         }

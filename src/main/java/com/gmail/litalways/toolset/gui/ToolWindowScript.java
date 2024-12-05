@@ -14,7 +14,6 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
-import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -28,8 +27,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.ListSpeedSearch;
 import com.intellij.ui.SimpleListCellRenderer;
+import com.intellij.ui.TreeUIHelper;
 import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -47,9 +46,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
@@ -207,7 +206,7 @@ public class ToolWindowScript {
 //            }
         }));
         this.scriptList.addListSelectionListener(this::onScriptSelected);
-        new ListSpeedSearch<>(this.scriptList, ScriptFile::getFileName);
+        TreeUIHelper.getInstance().installListSpeedSearch(this.scriptList, ScriptFile::getFileName);
         this.scriptModel = new ScriptModel();
         this.scriptList.setModel(this.scriptModel);
         if (ToolWindowScriptState.getInstance().scriptFiles != null) {
@@ -276,7 +275,7 @@ public class ToolWindowScript {
                 ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("script.tip.running")) {
                     @Override
                     public void run(@NotNull ProgressIndicator progressIndicator) {
-                        eval();
+                        eval(progressIndicator);
                     }
                 });
             }
@@ -309,7 +308,7 @@ public class ToolWindowScript {
                         ProgressManager.getInstance().run(new Task.Backgroundable(project, MessageUtil.getMessage("script.tip.running")) {
                             @Override
                             public void run(@NotNull ProgressIndicator progressIndicator) {
-                                eval();
+                                eval(progressIndicator);
                             }
                         });
                     }
@@ -325,16 +324,19 @@ public class ToolWindowScript {
         this.textareaScriptSourceEditor.getScrollPane().getHorizontalScrollBar().addAdjustmentListener(this.syncListener);
     }
 
-    public void eval() {
+    public void eval(ProgressIndicator progressIndicator) {
         try {
             if (this.injectedNashorn.get() != 2) {
                 return;
             }
+            progressIndicator.isCanceled();
             String script = this.textareaScriptSourceEditor.getDocument().getText();
             if (this.radioScriptJavascript.isSelected()) {
-                this.textareaScriptResult.setText(String.valueOf(ScriptUtil.getJsEngine().eval(script)));
+                List<String> result = evalFuture(ScriptUtil.getJsEngine(), Collections.singletonList(script), false, progressIndicator, null, null);
+                this.textareaScriptResult.setText(String.join("\n", result));
             } else if (this.radioScriptLua.isSelected()) {
-                this.textareaScriptResult.setText(String.valueOf(ScriptUtil.getLuaEngine().eval(script)));
+                List<String> result = evalFuture(ScriptUtil.getLuaEngine(), Collections.singletonList(script), false, progressIndicator, null, null);
+                this.textareaScriptResult.setText(String.join("\n", result));
             } else if (this.radioScriptGroovy.isSelected()) {
                 AtomicReference<Exception> failLoadEx = new AtomicReference<>(null);
                 List<String> failLoads = new ArrayList<>();
@@ -373,7 +375,8 @@ public class ToolWindowScript {
                 Method setClassLoader = groovyEngine.getClass().getMethod("setClassLoader", groovyClassLoaderClass);
                 setClassLoader.invoke(groovyEngine, newGroovyClassLoader);
                 if (failLoads.isEmpty()) {
-                    this.textareaScriptResult.setText(String.valueOf(groovyEngine.eval(script)));
+                    List<String> result = evalFuture(groovyEngine, Collections.singletonList(script), false, progressIndicator, null, null);
+                    this.textareaScriptResult.setText(String.join("\n", result));
                 } else {
                     Exception e = failLoadEx.get();
                     if (e == null) {
@@ -386,18 +389,127 @@ public class ToolWindowScript {
                 }
             } else if (this.radioScriptPython.isSelected()) {
                 String[] scripts = script.split("\n\n");
-                ScriptEngine pythonEngine = ScriptUtil.getPythonEngine();
-                StringBuilder builder = new StringBuilder();
-                for (String s : scripts) {
-                    builder.append(pythonEngine.eval(s)).append("\n\n");
-                }
-                this.textareaScriptResult.setText(builder.toString());
+                List<String> result = evalFuture(ScriptUtil.getPythonEngine(), Arrays.asList(scripts), false, progressIndicator, null, null);
+                this.textareaScriptResult.setText(String.join("\n\n", result));
             } else {
                 NotificationUtil.warning(MessageUtil.getMessage("script.tip.not.select.type"));
             }
         } catch (Throwable ex) {
             this.textareaScriptResult.setText(ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage());
         }
+    }
+
+    /**
+     * 串行/并行执行脚本
+     *
+     * @param engine            ScriptEngine上下文
+     * @param script            脚本列表
+     * @param isSerial          true串行执行|false并行执行
+     * @param progressIndicator IDEA进度条指示器，用于中止执行
+     * @param timeout           指定单个脚本运行超时时间
+     * @param timeoutUnit       指定单个脚本运行超时时间单位
+     * @return 脚本结果
+     */
+    @SuppressWarnings("SameParameterValue")
+    private static List<String> evalFuture(ScriptEngine engine, List<String> script, boolean isSerial, ProgressIndicator progressIndicator, Long timeout, TimeUnit timeoutUnit) {
+        if (isSerial) {
+            // 串行
+            List<String> result = new ArrayList<>(script.size());
+            for (String s : script) {
+                List<String> strings = evalFuture(engine, Collections.singletonList(s), progressIndicator, timeout, timeoutUnit);
+                if (!strings.isEmpty()) {
+                    result.add(strings.getFirst());
+                }
+                if (progressIndicator != null && progressIndicator.isCanceled()) {
+                    break;
+                }
+            }
+            return result;
+        } else {
+            return evalFuture(engine, script, progressIndicator, timeout, timeoutUnit);
+        }
+    }
+
+    /**
+     * 并行执行脚本
+     *
+     * @param engine            ScriptEngine上下文
+     * @param script            脚本列表
+     * @param progressIndicator IDEA进度条指示器，用于中止执行
+     * @param timeout           指定单个脚本运行超时时间
+     * @param timeoutUnit       指定单个脚本运行超时时间单位
+     * @return 脚本结果
+     */
+    private static List<String> evalFuture(ScriptEngine engine, List<String> script, ProgressIndicator progressIndicator, Long timeout, TimeUnit timeoutUnit) {
+        String[] result = new String[script.size()];
+        try (ExecutorService fixedExecutor = new ThreadPoolExecutor(script.size(), script.size(), 0L, TimeUnit.MILLISECONDS, new SynchronousQueue<>());) {
+            CountDownLatch threadCountDown = new CountDownLatch(script.size());
+            Map<Integer, Future<String>> futureList = new LinkedHashMap<>(script.size());
+            // 添加任务，若添加过程中任务被取消，则中止添加
+            for (int i = 0, scriptSize = script.size(); i < scriptSize; i++) {
+                String s = script.get(i);
+                Future<String> future = fixedExecutor.submit(() -> {
+                    try {
+                        Object eval = engine.eval(s);
+                        return eval == null ? null : String.valueOf(eval);
+                    } finally {
+                        threadCountDown.countDown();
+                    }
+                });
+                futureList.put(i, future);
+                if (progressIndicator != null && progressIndicator.isCanceled()) {
+                    for (int j = scriptSize - i - 1; j > 0; j--) {
+                        threadCountDown.countDown();
+                    }
+                    break;
+                }
+            }
+            // 主动等待，且支持根据进度条取消状态进行等待中止
+            while (true) {
+                if (progressIndicator != null && progressIndicator.isCanceled()) {
+                    break;
+                }
+                boolean containsRunning = false;
+                for (Map.Entry<Integer, Future<String>> entry : futureList.entrySet()) {
+                    Future<String> future = entry.getValue();
+                    if (future.state() == Future.State.RUNNING) {
+                        containsRunning = true;
+                        try {
+                            //noinspection BusyWait
+                            Thread.sleep(500);
+                        } catch (Exception ignored) {}
+                        break;
+                    }
+                }
+                if (!containsRunning) {
+                    break;
+                }
+            }
+            // 若进度条取消，则中止还在运行的Future
+            if (progressIndicator != null && progressIndicator.isCanceled()) {
+                for (Map.Entry<Integer, Future<String>> entry : futureList.entrySet()) {
+                    Future<String> future = entry.getValue();
+                    future.cancel(true);
+                }
+            }
+            // 获取结果
+            for (Map.Entry<Integer, Future<String>> entry : futureList.entrySet()) {
+                Integer order = entry.getKey();
+                Future<String> future = entry.getValue();
+                String s;
+                try {
+                    if (timeout != null && timeoutUnit != null) {
+                        s = future.get(timeout, timeoutUnit);
+                    } else {
+                        s = future.get();
+                    }
+                } catch (Exception ex) {
+                    s = ex.getClass().getSimpleName() + ": " + ex.getLocalizedMessage();
+                }
+                result[order] = s;
+            }
+        }
+        return Arrays.asList(result);
     }
 
     // same as com.intellij.ide.fileTemplates.impl.FileTemplateTabAsList.MyListModel.fireListDataChanged
